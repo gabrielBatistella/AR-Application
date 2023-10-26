@@ -39,9 +39,9 @@ public abstract class TCPClient : MonoBehaviour
             syncObj = new CommunicationSynchron();
             StartCoroutine(ReceivingRoutine());
         }
-        catch (SocketException e)
+        catch (SocketException)
         {
-            Debug.Log("Connection refused! - " + e + "\n");
+            Debug.Log("Connection refused!\n");
         }
         catch (Exception e)
         {
@@ -103,9 +103,9 @@ public abstract class TCPClient : MonoBehaviour
 
     private void ReceivingFromServer()
     {
-        while (true)
+        try
         {
-            try
+            while (true)
             {
                 byte[] readBuffer_header = ReadAll(networkStream, headerSize);
                 string header = Encoding.UTF8.GetString(readBuffer_header, 0, headerSize);
@@ -120,23 +120,21 @@ public abstract class TCPClient : MonoBehaviour
                     syncObj.recvBalance++;
                 }
             }
-            catch (EndOfStreamException e)
+        }
+        catch (EndOfStreamException)
+        {
+            Debug.Log("Connection closed!\n");
+            lock (syncObj)
             {
-                Debug.Log("Connection closed by server! - " + e + "\n");
-                lock (syncObj)
-                {
-                    syncObj.comDown = true;
-                }
-                return;
+                syncObj.comDown = true;
             }
-            catch (Exception e)
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Error receiving data! - " + e + "\n");
+            lock (syncObj)
             {
-                Debug.Log("Error receiving data! - " + e + "\n");
-                lock (syncObj)
-                {
-                    syncObj.comDown = true;
-                }
-                return;
+                syncObj.comDown = true;
             }
         }
     }
