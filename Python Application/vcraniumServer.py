@@ -55,6 +55,11 @@ class VCraniumServer(TCPServer):
                 hand["rVec"] = rVec[:]
                 hand["tVec"] = tVec[:]
 
+                px2cmRate_x = tVec[0]/(hand["lmList"][0][0] - self.calib.w/2)
+                px2cmRate_y = -tVec[1]/(-hand["lmList"][0][1] + self.calib.h/2)
+                px2cmRate_z = px2cmRate_x
+                hand["px2cmRate"] = [px2cmRate_x, px2cmRate_y, px2cmRate_z]
+
                 hand["fingersUp"] = self.handDetector.fingersUp(hand)
 
             for writer in self.handInstructionWriters:

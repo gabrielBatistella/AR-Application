@@ -13,14 +13,10 @@ class FollowIndexFinger(InstructionWriter):
         if len(trackObjs) > 0:
             hand = trackObjs[0]
 
-            px2cmRate_x = hand["tVec"][0]/(hand["lmList"][0][0] - camCalib.w/2)
-            px2cmRate_y = -hand["tVec"][1]/(-hand["lmList"][0][1] + camCalib.h/2)
-            px2cmRate_z = px2cmRate_x
-
             fingerLm = hand["lmList"][detector.tipIds[1]]
-            hDist = (fingerLm[0] - camCalib.w/2)*px2cmRate_x
-            vDist = (-fingerLm[1] + camCalib.h/2)*px2cmRate_y
-            pDist = fingerLm[2]*px2cmRate_z + hand["tVec"][2]
+            hDist = (fingerLm[0] - camCalib.w/2)*hand["px2cmRate"][0]
+            vDist = (-fingerLm[1] + camCalib.h/2)*hand["px2cmRate"][1]
+            pDist = fingerLm[2]*hand["px2cmRate"][2] + hand["tVec"][2]
 
             instruction += str(round(hDist, 2)) + ";" + str(round(vDist, 2)) + ";" + str(round(pDist, 2))
             self.following = True
