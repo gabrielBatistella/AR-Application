@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 
-public class FollowPosition : InstructionReader
+public class PositionFollower : InstructionReader
 {
     public override void SetDefault()
     {

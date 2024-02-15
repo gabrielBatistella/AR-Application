@@ -14,6 +14,7 @@ public class InfiniteScrollHandler : MonoBehaviour
 
     private ScrollRect scrollRect;
 
+    private float startingScrollPos;
     private Vector2 oldVelocity;
     private bool isUpdated;
 
@@ -27,6 +28,7 @@ public class InfiniteScrollHandler : MonoBehaviour
     private void Start()
     {
         int amountToAdd = Mathf.CeilToInt(viewport.rect.height / (itemList[0].rect.height + layoutGroup.spacing));
+        startingScrollPos = (itemList[0].rect.height + layoutGroup.spacing) * amountToAdd - viewport.rect.height / 2 + itemList[0].rect.height / 2;
 
         for (int i = 0; i < amountToAdd; i++)
         {
@@ -45,7 +47,7 @@ public class InfiniteScrollHandler : MonoBehaviour
             RT.SetAsFirstSibling();
         }
 
-        contentPanel.localPosition = new Vector3(contentPanel.localPosition.x, -(itemList[0].rect.height + layoutGroup.spacing) * amountToAdd, contentPanel.localPosition.z);
+        contentPanel.localPosition = new Vector3(contentPanel.localPosition.x, startingScrollPos, contentPanel.localPosition.z);
     }
 
     private void Update()
@@ -77,5 +79,10 @@ public class InfiniteScrollHandler : MonoBehaviour
             float scrollPos = contentPanel.localPosition.y + contentPanel.GetChild(i).localPosition.y;
             contentPanel.GetChild(i).localScale = new Vector2(Mathf.Lerp(1f, 0.9f, Mathf.Abs(scrollPos + viewport.rect.height / 2) / (itemList[0].rect.height)), 1f);
         }
+    }
+
+    public void SetScrollPosition(float pos)
+    {
+        contentPanel.localPosition = new Vector3(contentPanel.localPosition.x, startingScrollPos + (itemList[0].rect.height + layoutGroup.spacing) * pos, contentPanel.localPosition.z);
     }
 }
