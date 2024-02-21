@@ -7,6 +7,7 @@ from Camera.cameraCalibration import CalibrationInfo
 from Modules.handTrackingModule import HandDetector
 from Modules.faceMeshModule import FaceMeshDetector
 from Writers.followIndexFinger import FollowIndexFinger
+from Writers.menuHandler import MenuHandler
 
 class VCraniumServer(TCPServer):
     
@@ -22,7 +23,8 @@ class VCraniumServer(TCPServer):
 
         self.handDetector = HandDetector(maxHands=2, minDetectionCon=0.8)
         self.handInstructionWriters = [
-            FollowIndexFinger(self.__class__.inInstructionHandleValueSeparator)
+            FollowIndexFinger(self.__class__.inInstructionHandleValueSeparator),
+            MenuHandler(self.__class__.inInstructionHandleValueSeparator)
         ]
 
         #self.faceDetector = FaceMeshDetector(maxFaces=1, minDetectionCon=0.5)

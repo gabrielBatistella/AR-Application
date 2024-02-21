@@ -34,7 +34,7 @@ class MenuHandler(InstructionWriter):
                 dist = math.hypot(x2 - x1, y2 - y1, z2 - z1)
                 
                 #If index and middle fingers are close
-                if dist < 1:
+                if dist < 5:
                     yAvg = (y1+y2)/2
 
                     if not self.menu:
@@ -43,9 +43,9 @@ class MenuHandler(InstructionWriter):
                             self.loading = True
                     
                         else:
-                            yDelta = yAvg - self.yAvgInit
+                            yDelta = self.yAvgInit - yAvg
                             #If hand moved down, will have short delay of 20 frames to show menu
-                            if yDelta > 3:
+                            if yDelta > 5:
                                 self.menu = True
                                 self.loading = False
 
@@ -65,26 +65,26 @@ class MenuHandler(InstructionWriter):
                         else:
                             yDelta = yAvg - self.yAvgInit
                             xDelta = xAvg - self.xAvgInit
-                            percentage = round(100*yDelta/4)
+                            percentage = round(100*yDelta/7)
                             #If fingers move to right, resets initial x value
                             #If fingers move to left, enter the mode shown
                             #If fingers move up or down, changes the modes shown
                             
                             if xDelta < 0:
                                 self.xAvgInit = xAvg
-                            if xDelta > 3:
+                            if xDelta > 7:
                                 self.modeCurrent = self.modeShown
                                 self.menu = 0
                                 self.loading = 0
                                 instruction += "Selected " + str(self.modeCurrent)
                             else:
-                                if yDelta > 4:
+                                if yDelta > 7:
                                     self.modeShown = (self.modeShown + 1) % 3
                                     self.loading = False
-                                if yDelta < -4:
+                                if yDelta < -7:
                                     self.modeShown = (self.modeShown - 1) % 3
                                     self.loading = False
-                                instruction += str(self.modeShown) + ";" + (percentage)
+                                instruction += str(self.modeShown) + ";" + str(percentage)
 
                 else:
                     if self.menu:
