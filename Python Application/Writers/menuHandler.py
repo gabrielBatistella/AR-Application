@@ -1,111 +1,114 @@
-import cv2
-from cvzone.HandTrackingModule import HandDetector
-import cvzone
-import numpy as np
+from Writers.instructionWriter import InstructionWriter
 import math
 
-cap = cv2.VideoCapture(0)
-cap.set(3, 1280)
-cap.set(4, 720)
-detector = HandDetector(detectionCon=0.8)
+class MenuHandler(InstructionWriter):
+    
+    def __init__(self, inInstructionHandleValueSeparator):
+        super().__init__(inInstructionHandleValueSeparator)
 
-colorR = (255, 0, 255)
-cx, cy, w, h = 100, 100, 200, 200
-menu = 0
-temp = 0
-opt = 0
-optshow = None
-wait = 0
+        self.menu = False
+        self.loading = False
+        self.modeShown = 0
+        self.modeCurrent = 0
+        self.yAvgInit = 0
+        self.xAvgInit = 0
 
-while True:
-    success, img = cap.read()
-    hands, img = detector.findHands(img, draw=False)
+    def generateInstruction(self, detector, trackObjs, camCalib):
+        instruction = "Menu" + self.inInstructionHandleValueSeparator
 
-    if hands and detector.fingersUp(hands[0]) == [0, 1, 1, 0, 0]:
-        lmList = hands[0]['lmList']
+        if len(trackObjs) > 0:
+            hand = trackObjs[0]
 
-        x1, y1, z1 = lmList[8]
-        x2, y2, z2 = lmList[12]
-        d = int(math.sqrt((y2 - y1) ** 2 + (x2 - x1) ** 2))
-        #cvzone.putTextRect(img, "Loading Menu..." , (x1+50, y1-100), scale= 2, thickness= 1, colorT=(255, 255, 255), colorR=(150, 150, 150))
-        #print (x1 , y1)
-        if d < 40:
-            ym = (y1+y2)/2
-            if menu == 0:
-                if wait == 0:   
-                    yc = ym
-                    wait = 1
-                elif wait == 1:
-                    dy = ym - yc
-                    if dy > 70 and temp == 0:
-                        temp = 1
-                    if 0 < temp < 30:
-                        cvzone.putTextRect(img, "Loading Menu..." , (x1+50, y1), scale= 2, thickness= 1, colorT=(255, 255, 255), colorR=(150, 150, 150))
-                        temp += 1
-                        if temp == 15:
-                            menu = 1
-                            #Writer menu = 1
-                            display = 1
-                            wait = 0
-                            temp = 0
+            #If only index and middle fingers are up
+            if hand["fingersUp"] == [0, 1, 1, 0, 0]:
+                lmList = hand["lmList"]
+                
+                x1 = (lmList[8][0] - camCalib.w/2)*hand["px2cmRate"][0]
+                y1 = (-lmList[8][1] + camCalib.h/2)*hand["px2cmRate"][1]
+                z1 = lmList[8][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                
+                x2 = (lmList[12][0] - camCalib.w/2)*hand["px2cmRate"][0]
+                y2 = (-lmList[12][1] + camCalib.h/2)*hand["px2cmRate"][1]
+                z2 = lmList[12][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                
+                dist = math.hypot(x2 - x1, y2 - y1, z2 - z1)
+                
+                #If index and middle fingers are close
+                if dist < 1:
+                    yAvg = (y1+y2)/2
 
-            if menu == 1:
-                xm = (x1+x2)/2
-                if wait == 0:
-                    yc = ym
-                    xc = xm
-                    wait = 1
-
-                elif wait == 1:
-                    dy = ym - yc
-                    dx = xm - xc
-                    porc = abs(round(100*dy/70))
-                    print (porc,"%")
-                    if dx < -20:
-                        xc = xm
-                    elif dx > 60:
-                        optshow = opt
-                        menu = 0
-                        #Writer menu = opt
-                    elif dy > 70:
-                        opt += 1
-                        wait = 0
-                        if opt == 2:
-                            opt = -1
-                    elif dy < -70:
-                        opt -= 1
-                        wait = 0
-                        if opt == -2:
-                            opt = 1
-                    elif opt == 0:
-                        cvzone.putTextRect(img, "Zoom" , (x1+50, y1-60), scale= 2, thickness= 1, colorT=(255, 255, 255), colorR=(150, 150, 150))
-                        cvzone.putTextRect(img, "Move" , (x1+50, y1), scale= 3, thickness= 4, colorT=(255, 255, 255), colorR=(150, 150, 150))
-                        cvzone.putTextRect(img, "Rotate" , (x1+50, y1+50), scale= 2, thickness= 1, colorT=(255, 255, 255), colorR=(150, 150, 150))
-                    elif opt == -1:
-                        cvzone.putTextRect(img, "Zoom" , (x1+50, y1), scale= 3, thickness= 4, colorT=(255, 255, 255), colorR=(150, 150, 150))
-                        cvzone.putTextRect(img, "Move" , (x1+50, y1+50), scale= 2, thickness= 1, colorT=(255, 255, 255), colorR=(150, 150, 150))
-                        cvzone.putTextRect(img, "Rotate" , (x1+50, y1-60), scale= 2, thickness= 1, colorT=(255, 255, 255), colorR=(150, 150, 150))
-                    elif opt == 1:
-                        cvzone.putTextRect(img, "Zoom" , (x1+50, y1-60), scale= 2, thickness= 1, colorT=(255, 255, 255), colorR=(150, 150, 150))
-                        cvzone.putTextRect(img, "Move" , (x1+50, y1+50), scale= 2, thickness= 1, colorT=(255, 255, 255), colorR=(150, 150, 150))
-                        cvzone.putTextRect(img, "Rotate" , (x1+50, y1), scale= 3, thickness= 4, colorT=(255, 255, 255), colorR=(150, 150, 150))
+                    if not self.menu:
+                        if not self.loading:
+                            self.yAvgInit = yAvg
+                            self.loading = True
                     
+                        else:
+                            yDelta = yAvg - self.yAvgInit
+                            #If hand moved down, will have short delay of 20 frames to show menu
+                            if yDelta > 3:
+                                self.menu = True
+                                self.loading = False
+
+                        instruction = ""
+                    
+                    #If menu = True, will show Menu UI in Unity
+                    else:
+                        xAvg = (x1+x2)/2
+                        
+                        if not self.loading:
+                            self.yAvgInit = yAvg
+                            self.xAvgInit = xAvg
+                            self.loading = True
+
+                            instruction = ""
+                        
+                        else:
+                            yDelta = yAvg - self.yAvgInit
+                            xDelta = xAvg - self.xAvgInit
+                            percentage = round(100*yDelta/4)
+                            #If fingers move to right, resets initial x value
+                            #If fingers move to left, enter the mode shown
+                            #If fingers move up or down, changes the modes shown
+                            
+                            if xDelta < 0:
+                                self.xAvgInit = xAvg
+                            if xDelta > 3:
+                                self.modeCurrent = self.modeShown
+                                self.menu = 0
+                                self.loading = 0
+                                instruction += "Selected " + str(self.modeCurrent)
+                            else:
+                                if yDelta > 4:
+                                    self.modeShown = (self.modeShown + 1) % 3
+                                    self.loading = False
+                                if yDelta < -4:
+                                    self.modeShown = (self.modeShown - 1) % 3
+                                    self.loading = False
+                                instruction += str(self.modeShown) + ";" + (percentage)
+
+                else:
+                    if self.menu:
+                        instruction += "Close Menu"
+                    else:
+                        instruction = ""
+                    self.menu = 0
+                    self.loading = False
+                    
+                    
+            else:
+                if self.menu:
+                    instruction += "Close Menu"
+                else:
+                    instruction = ""
+                self.menu = 0
+                self.loading = False
+
         else:
-            menu = 0
-            wait = 0
-
-    if optshow == 0:
-        cvzone.putTextRect(img, "Move" , (50, 50), scale= 2, thickness= 2, colorT=(255, 255, 255), colorR=(150, 150, 150))
-    elif optshow == -1:
-        cvzone.putTextRect(img, "Zoom" , (50, 50), scale= 2, thickness= 2, colorT=(255, 255, 255), colorR=(150, 150, 150))
-    elif optshow == 1:
-        cvzone.putTextRect(img, "Rotate" , (50, 50), scale= 2, thickness= 2, colorT=(255, 255, 255), colorR=(150, 150, 150))
-
-
-
-    cv2.imshow("Image", img)
-    key = cv2.waitKey(1)
-    if key == ord('q'):
-        cap.release()
-        cv2.destroyAllWindows()
-        break
+            if self.menu:
+                instruction += "Close Menu"
+            else:
+                instruction = ""
+            self.menu = 0
+            self.loading = False
+         
+        return instruction
