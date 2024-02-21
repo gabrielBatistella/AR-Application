@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
-public class ObjectSpawner : MonoBehaviour
+public class ObjectSpawner : MonoBehaviour //InstructionReader
 {
     [SerializeField] private string bundleFolder;
     [SerializeField] private string bundleName;

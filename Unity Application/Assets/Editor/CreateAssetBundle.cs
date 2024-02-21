@@ -7,15 +7,13 @@ public class CreateAssetBundles
     public static string assetBundleDirectory = "Assets/AssetBundles/";
 
     [MenuItem("Assets/Build Asset Bundles")]
-    static void BuildAllAssetBundles()
+    private static void BuildAllAssetBundles()
     {
         // If main directory doesnt exist create it
-        if (Directory.Exists(assetBundleDirectory))
+        if (!Directory.Exists(assetBundleDirectory))
         {
-            Directory.Delete(assetBundleDirectory, true);
+            Directory.CreateDirectory(assetBundleDirectory);
         }
-
-        Directory.CreateDirectory(assetBundleDirectory);
 
         // Create bundles for all platform (use IOS for editor support on MAC but must be on IOS build platform)
         BuildPipeline.BuildAssetBundles(assetBundleDirectory, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows64);
@@ -32,7 +30,7 @@ public class CreateAssetBundles
         Debug.Log("Process complete!");
     }
 
-    static void RemoveSpacesInFileNames()
+    private static void RemoveSpacesInFileNames()
     {
         foreach (string path in Directory.GetFiles(assetBundleDirectory))
         {
@@ -42,7 +40,7 @@ public class CreateAssetBundles
         }
     }
 
-    static void AppendPlatformToFileName(string platform)
+    private static void AppendPlatformToFileName(string platform)
     {
         foreach (string path in Directory.GetFiles(assetBundleDirectory))
         {
