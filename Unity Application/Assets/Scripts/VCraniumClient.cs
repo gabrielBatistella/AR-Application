@@ -38,7 +38,7 @@ public class VCraniumClient : TCPClient
     {
         if (Connected && Time.time > nextFrameTime)
         {
-            nextFrameTime = Time.time + 1 / maxFPS;
+            nextFrameTime = Time.time + 1f / maxFPS;
             SendToServer(cam.GetFrameJPG(imageQuality));
         }
     }
