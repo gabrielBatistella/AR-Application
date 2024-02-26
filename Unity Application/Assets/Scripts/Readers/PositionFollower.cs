@@ -26,7 +26,7 @@ public class PositionFollower : InstructionReader
             string[] coordinates = instructionValue.Split(";");
             Vector3 position = new Vector3(float.Parse(coordinates[0], CultureInfo.InvariantCulture.NumberFormat), float.Parse(coordinates[1], CultureInfo.InvariantCulture.NumberFormat), float.Parse(coordinates[2], CultureInfo.InvariantCulture.NumberFormat));
 
-            transform.position = position;
+            transform.localPosition = position;
         }
     }
 }

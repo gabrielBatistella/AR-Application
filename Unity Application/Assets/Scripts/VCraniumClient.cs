@@ -6,19 +6,16 @@ using UnityEngine.UI;
 
 public class VCraniumClient : TCPClient
 {
-    [Header("Image Details")]
-    [SerializeField] private CameraVision cam;
-    [SerializeField] private int imageQuality = 75;
-    [SerializeField] private int maxFPS = 60;
-
     [Header("Decoding Details")]
     [SerializeField] private char headerBodySeparator = '?';
     [SerializeField] private char inHeaderInfoSeparator = '|';
     [SerializeField] private char inBodyInstructionSeparator = '&';
     [SerializeField] private char inInstructionHandleValueSeparator = '=';
 
-    [Header("UI for Header Info")]
-    [SerializeField] private Text headerTextField;
+    [Header("Image Parameters")]
+    [SerializeField] private CameraVision cam;
+    [SerializeField] private int imageQuality = 75;
+    [SerializeField] private int maxFPS = 60;
 
     [Header("Instruction Readers")]
     [SerializeField] private List<InstructionReader> readers;
@@ -60,7 +57,7 @@ public class VCraniumClient : TCPClient
         {
             headerText += info + "\n";
         }
-        headerTextField.text = headerText;
+        specificConnectionInfo = headerText;
     }
 
     private void HandleBodyInstructions(string body)

@@ -43,11 +43,12 @@ public class InfiniteScrollHandler : MonoBehaviour
             int idx = (itemList.Count - 1 - i) % itemList.Count;
             if (idx < 0) idx += itemList.Count;
 
-            RectTransform RT = Instantiate(itemList[idx], contentPanel);
-            RT.SetAsFirstSibling();
+            RectTransform rectTransform = Instantiate(itemList[idx], contentPanel);
+            rectTransform.SetAsFirstSibling();
         }
 
-        contentPanel.localPosition = new Vector3(contentPanel.localPosition.x, startingScrollPos, contentPanel.localPosition.z);
+        SetScrollPosition(0f);
+        //contentPanel.localPosition = new Vector3(contentPanel.localPosition.x, startingScrollPos, contentPanel.localPosition.z);
     }
 
     private void Update()
@@ -58,6 +59,7 @@ public class InfiniteScrollHandler : MonoBehaviour
             scrollRect.velocity = oldVelocity;
         }
 
+        /*
         if (contentPanel.localPosition.y < 0)
         {
             Canvas.ForceUpdateCanvases();
@@ -73,6 +75,7 @@ public class InfiniteScrollHandler : MonoBehaviour
             contentPanel.localPosition -= new Vector3(0, (itemList[0].rect.height + layoutGroup.spacing) * itemList.Count, 0);
             isUpdated = true;
         }
+        */
 
         for (int i = 0; i < contentPanel.childCount; i++)
         {
@@ -83,6 +86,9 @@ public class InfiniteScrollHandler : MonoBehaviour
 
     public void SetScrollPosition(float pos)
     {
+        Canvas.ForceUpdateCanvases();
+        oldVelocity = scrollRect.velocity;
         contentPanel.localPosition = new Vector3(contentPanel.localPosition.x, startingScrollPos + (itemList[0].rect.height + layoutGroup.spacing) * pos, contentPanel.localPosition.z);
+        isUpdated = true;
     }
 }
