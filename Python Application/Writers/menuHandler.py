@@ -10,8 +10,8 @@ class MenuHandler(InstructionWriter):
         self.loading = False
         self.modeShown = 0
         self.modeCurrent = 0
-        self.yAvgInit = 0
         self.xAvgInit = 0
+        self.yAvgInit = 0
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Menu" + self.inInstructionHandleValueSeparator
@@ -77,6 +77,8 @@ class MenuHandler(InstructionWriter):
                                 self.menu = 0
                                 self.loading = 0
                                 instruction += "Selected " + str(self.modeCurrent)
+                            
+                            #Modes: 0)Calibrate (followFingerTips) 1)Move, Rotate and Zoom 2)Spawn and Delete 4)???                                
                             else:
                                 if yDelta > 7:
                                     self.modeShown = (self.modeShown + 1) % 3
