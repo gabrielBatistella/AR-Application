@@ -10,8 +10,8 @@ class MenuHandler(InstructionWriter):
         self.loading = False
         self.modeShown = 0
         self.modeCurrent = 0
-        self.xAvgInit = 0
-        self.yAvgInit = 0
+        self.xAvgInit = None
+        self.yAvgInit = None
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Menu" + self.inInstructionHandleValueSeparator
@@ -38,19 +38,15 @@ class MenuHandler(InstructionWriter):
                     yAvg = (y1+y2)/2
 
                     if not self.menu:
-                        if not self.loading:
+                        if not self.yAvgInit:
                             self.yAvgInit = yAvg
-                            self.loading = True
-                    
                         else:
                             yDelta = self.yAvgInit - yAvg
-                            #If hand moved down, will have short delay of 20 frames to show menu
                             if yDelta > 5:
                                 self.menu = True
-                                self.loading = False
 
-                        instruction = ""
-                    
+                            instruction = ""
+                        
                     #If menu = True, will show Menu UI in Unity
                     else:
                         xAvg = (x1+x2)/2
@@ -65,7 +61,7 @@ class MenuHandler(InstructionWriter):
                         else:
                             yDelta = yAvg - self.yAvgInit
                             xDelta = xAvg - self.xAvgInit
-                            percentage = round(100*yDelta/7)
+                            percentage = round(50*yDelta/7)
                             #If fingers move to right, resets initial x value
                             #If fingers move to left, enter the mode shown
                             #If fingers move up or down, changes the modes shown
@@ -74,7 +70,7 @@ class MenuHandler(InstructionWriter):
                                 self.xAvgInit = xAvg
                             if xDelta > 7:
                                 self.modeCurrent = self.modeShown
-                                self.menu = 0
+                                self.menu = False
                                 self.loading = 0
                                 instruction += "Selected " + str(self.modeCurrent)
                             
