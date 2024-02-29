@@ -35,7 +35,7 @@ public class MenuHandler : InstructionReader
             menu.SetScrollPosition(mode);
             gameObject.SetActive(false);
         }
-        else if (instructionValue.Contains("Selected"))
+        else if (instructionValue.StartsWith("Selected"))
         {
             mode = int.Parse(instructionValue.Split(" ")[1]);
             switch (mode)
@@ -57,7 +57,7 @@ public class MenuHandler : InstructionReader
                 }
                 default:
                 {
-                    Debug.Log("Erro no modo do menu");
+                    Debug.Log("Error on menu mode");
                     break;
                 }
             }

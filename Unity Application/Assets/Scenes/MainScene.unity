@@ -335,7 +335,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a76fe00b751a28b4bb19caa9700b2d76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultServerIP: 192.168.0.216
+  defaultServerIP: 192.168.0.6
   defaultServerPort: 5050
   startConnecting: 0
   connTextField: {fileID: 1038576001}
@@ -398,7 +398,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &278427173
 Transform:
   m_ObjectHideFlags: 0
@@ -577,14 +577,13 @@ GameObject:
   - component: {fileID: 474512654}
   - component: {fileID: 474512653}
   - component: {fileID: 474512652}
-  - component: {fileID: 474512655}
   m_Layer: 0
   m_Name: Finger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!23 &474512652
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -644,25 +643,12 @@ Transform:
   m_GameObject: {fileID: 474512650}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 8.37}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1057352965}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &474512655
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 474512650}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 82307a5de42e73f429f55b45d28a7a1c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  handle: FingerPos
 --- !u!1 &474740132
 GameObject:
   m_ObjectHideFlags: 0
@@ -673,6 +659,7 @@ GameObject:
   m_Component:
   - component: {fileID: 474740133}
   - component: {fileID: 474740134}
+  - component: {fileID: 474740135}
   m_Layer: 0
   m_Name: Aim
   m_TagString: Untagged
@@ -688,8 +675,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 474740132}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -742,7 +729,7 @@ LineRenderer:
   - {x: 10, y: 0, z: 0}
   m_Parameters:
     serializedVersion: 3
-    widthMultiplier: 0.1
+    widthMultiplier: 0.01
     widthCurve:
       serializedVersion: 2
       m_Curve:
@@ -799,6 +786,25 @@ LineRenderer:
   m_UseWorldSpace: 0
   m_Loop: 0
   m_ApplyActiveColorSpace: 1
+--- !u!114 &474740135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 474740132}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c415bf01e78088a48b715013c7b3e7d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  handle: 
+  reachDistance: 50
+  freeParent: {fileID: 1307689010}
+  fixedParent: {fileID: 1057352965}
+  layerGrabbable:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!1 &539792849
 GameObject:
   m_ObjectHideFlags: 0
@@ -1127,8 +1133,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1579563188}
-        m_TargetAssemblyTypeName: TranslationCaster, Assembly-CSharp
+      - m_Target: {fileID: 474740135}
+        m_TargetAssemblyTypeName: RotationCaster, Assembly-CSharp
         m_MethodName: TryGrabbing
         m_Mode: 1
         m_Arguments:
@@ -2050,8 +2056,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1579563188}
-        m_TargetAssemblyTypeName: TranslationCaster, Assembly-CSharp
+      - m_Target: {fileID: 474740135}
+        m_TargetAssemblyTypeName: RotationCaster, Assembly-CSharp
         m_MethodName: Release
         m_Mode: 1
         m_Arguments:
@@ -3208,7 +3214,6 @@ GameObject:
   - component: {fileID: 1579563185}
   - component: {fileID: 1579563187}
   - component: {fileID: 1579563186}
-  - component: {fileID: 1579563188}
   m_Layer: 0
   m_Name: Pointer
   m_TagString: Untagged
@@ -3281,26 +3286,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1579563184}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
---- !u!114 &1579563188
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1579563184}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3036412b5eb210c478f747a2faf68448, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  reachDistance: 50
-  originTransform: {fileID: 963194228}
-  aimLine: {fileID: 474740134}
-  freeParent: {fileID: 1307689010}
-  fixedParent: {fileID: 1057352965}
-  layerGrabbable:
-    serializedVersion: 2
-    m_Bits: 64
 --- !u!1 &1599994319
 GameObject:
   m_ObjectHideFlags: 0
@@ -3604,7 +3589,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!65 &1623842842
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3703,8 +3688,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5da3c8227f379194a9f978dfa45de837, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  bundleFolder: C:/Users/Gabriel/Desktop/test
-  bundleName: capsule
   freeParent: {fileID: 1307689010}
 --- !u!1 &1632330589
 GameObject:

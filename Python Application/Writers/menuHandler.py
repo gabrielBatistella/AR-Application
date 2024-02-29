@@ -65,7 +65,7 @@ class MenuHandler(InstructionWriter):
                         else:
                             yDelta = yAvg - self.yAvgInit
                             xDelta = xAvg - self.xAvgInit
-                            percentage = round(100*yDelta/7)
+                            percentage = round(50*yDelta/7)
                             #If fingers move to right, resets initial x value
                             #If fingers move to left, enter the mode shown
                             #If fingers move up or down, changes the modes shown

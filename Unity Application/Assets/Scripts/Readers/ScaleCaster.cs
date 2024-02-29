@@ -1,9 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
-public class TranslationCaster : InstructionReader
+public class ScaleCaster : InstructionReader
 {
     [SerializeField] private float reachDistance = 20f;
 
@@ -16,9 +17,8 @@ public class TranslationCaster : InstructionReader
     private LineRenderer aimLine;
 
     private GameObject grabbedObj;
-    private Vector3 objPosWhenGrabbed;
+    private Vector3 objSizeWhenGrabbed;
     private Vector3 contactPointOnObject;
-    private float pointerObjTranslationRatio;
 
     private void Awake()
     {
@@ -34,9 +34,8 @@ public class TranslationCaster : InstructionReader
 
         grabbedObj = null;
 
-        objPosWhenGrabbed = Vector3.zero;
+        objSizeWhenGrabbed = Vector3.zero;
         contactPointOnObject = Vector3.zero;
-        pointerObjTranslationRatio = 0;
 
         gameObject.SetActive(false);
     }
@@ -65,8 +64,8 @@ public class TranslationCaster : InstructionReader
         {
             if (grabbedObj != null)
             {
-                Vector3 deltaPos = pointFromCoords(instructionValue.Split(" ")[1].Split(";"));
-                grabbedObj.transform.localPosition = objPosWhenGrabbed + deltaPos * pointerObjTranslationRatio;
+                float sizeFactor = float.Parse(instructionValue.Split(" ")[1], CultureInfo.InvariantCulture.NumberFormat);
+                grabbedObj.transform.localScale = objSizeWhenGrabbed * sizeFactor;
 
                 aimLine.SetPosition(1, grabbedObj.transform.TransformPoint(contactPointOnObject));
             }
@@ -97,9 +96,8 @@ public class TranslationCaster : InstructionReader
             grabbedObj = hitInfo.collider.gameObject;
             grabbedObj.transform.SetParent(fixedParent);
 
-            objPosWhenGrabbed = grabbedObj.transform.localPosition;
+            objSizeWhenGrabbed = grabbedObj.transform.localEulerAngles;
             contactPointOnObject = grabbedObj.transform.InverseTransformPoint(hitInfo.point);
-            pointerObjTranslationRatio = fixedParent.InverseTransformPoint(hitInfo.point).magnitude / targetPoint.magnitude;
 
             aimLine.startColor = aimLine.endColor = Color.red;
         }
@@ -112,9 +110,8 @@ public class TranslationCaster : InstructionReader
             grabbedObj.transform.SetParent(freeParent);
             grabbedObj = null;
 
-            objPosWhenGrabbed = Vector3.zero;
+            objSizeWhenGrabbed = Vector3.zero;
             contactPointOnObject = Vector3.zero;
-            pointerObjTranslationRatio = 0;
 
             aimLine.startColor = aimLine.endColor = Color.blue;
         }
