@@ -27,12 +27,14 @@ public class ObjectSpawner : InstructionReader
         }
         else
         {
-            string[] bundleInfo = instructionValue.Split("#");
+            string[] instructionInfos = instructionValue.Split("/");
 
-            AssetBundle bundle = LoadBundleFromHex(bundleInfo[1]);
+            transform.localPosition = pointFromCoords(instructionInfos[0].Split(";"));
+
+            AssetBundle bundle = LoadBundleFromHex(instructionInfos[2]);
             if (bundle != null)
             {
-                GameObject obj = Instantiate(bundle.LoadAsset<GameObject>(bundleInfo[0]), transform.position, transform.rotation);
+                GameObject obj = Instantiate(bundle.LoadAsset<GameObject>(instructionInfos[1]), transform.position, transform.rotation);
                 obj.transform.SetParent(objParent);
                 obj.layer = (int) Mathf.Log(objLayer.value, 2);
                 bundle.Unload(false);
