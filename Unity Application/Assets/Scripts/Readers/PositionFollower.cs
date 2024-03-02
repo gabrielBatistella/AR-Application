@@ -5,6 +5,8 @@ using UnityEngine;
 
 public class PositionFollower : InstructionReader
 {
+    [SerializeField] private List<Transform> objPoints;
+
     public override void SetDefault()
     {
         gameObject.SetActive(false);
@@ -23,10 +25,11 @@ public class PositionFollower : InstructionReader
                 gameObject.SetActive(true);
             }
 
-            string[] coordinates = instructionValue.Split(";");
-            Vector3 position = new Vector3(float.Parse(coordinates[0], CultureInfo.InvariantCulture.NumberFormat), float.Parse(coordinates[1], CultureInfo.InvariantCulture.NumberFormat), float.Parse(coordinates[2], CultureInfo.InvariantCulture.NumberFormat));
-
-            transform.position = position;
+            string[] coordsOfObjPoints = instructionValue.Split("/");
+            for (int i = 0; i < coordsOfObjPoints.Length; i++)
+            {
+                objPoints[i].localPosition = pointFromCoords(coordsOfObjPoints[i].Split(";"));
+            }
         }
     }
 }

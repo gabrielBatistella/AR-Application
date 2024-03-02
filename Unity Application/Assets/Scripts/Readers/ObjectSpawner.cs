@@ -1,29 +1,70 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using UnityEngine;
-using UnityEngine.Networking;
 
-public class ObjectSpawner : MonoBehaviour //InstructionReader
+public class ObjectSpawner : InstructionReader
 {
-    [SerializeField] private string bundleFolder;
-    [SerializeField] private string bundleName;
-    [SerializeField] private Transform freeParent;
+    [SerializeField] private Transform objParent;
+    [SerializeField] private LayerMask objLayer;
 
-    public void LoadObject()
+    public override void SetDefault()
     {
+        gameObject.SetActive(false);
+    }
+
+    public override void FollowInstruction(string instructionValue)
+    {
+        if (instructionValue.StartsWith("Loading"))
+        {
+            if (!gameObject.activeSelf)
+            {
+                gameObject.SetActive(true);
+            }
+
+            transform.localPosition = pointFromCoords(instructionValue.Split(" ")[1].Split(";"));
+        }
+        else
+        {
+            string[] bundleInfo = instructionValue.Split("#");
+
+            AssetBundle bundle = LoadBundleFromHex(bundleInfo[1]);
+            if (bundle != null)
+            {
+                GameObject obj = Instantiate(bundle.LoadAsset<GameObject>(bundleInfo[0]), transform.position, transform.rotation);
+                obj.transform.SetParent(objParent);
+                obj.layer = (int) Mathf.Log(objLayer.value, 2);
+                bundle.Unload(false);
+            }
+        }
+    }
+
+    private AssetBundle LoadBundleFromHex(string hexString)
+    {
+        /*
         string bundleURL = bundleFolder + "/" + bundleName + "-";
         #if UNITY_ANDROID
             bundleURL += "Android";
         #else
             bundleURL += "Windows";
         #endif
-
         AssetBundle bundle = AssetBundle.LoadFromFile(bundleURL);
-        //AssetBundle bundle = AssetBundle.LoadFromMemory(bytes);
-        if (bundle != null)
+        */
+
+        if (hexString.Length % 2 != 0)
         {
-            GameObject obj = Instantiate(bundle.LoadAsset<GameObject>(bundleName), transform.position, transform.rotation, freeParent);
-            bundle.Unload(false);
+            throw new ArgumentException("The binary key cannot have an odd number of digits");
         }
+
+        byte[] fileData = new byte[hexString.Length / 2];
+        for (int i = 0; i < fileData.Length; i++)
+        {
+            string byteValue = hexString.Substring(i * 2, 2);
+            fileData[i] = byte.Parse(byteValue, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+        }
+        AssetBundle bundle = AssetBundle.LoadFromMemory(fileData);
+
+        return bundle;
     }
 }

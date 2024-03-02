@@ -6,6 +6,7 @@ using System.Text;
 using UnityEngine;
 using System.Collections;
 using System.Threading;
+using UnityEngine.UI;
 
 public abstract class TCPClient : MonoBehaviour
 {
@@ -14,6 +15,9 @@ public abstract class TCPClient : MonoBehaviour
     [SerializeField] private int defaultServerPort;
 
     [SerializeField] private bool startConnecting;
+
+    [Header("UI for Connection Info")]
+    [SerializeField] private Text connTextField;
 
     [Header("Encoding Details")]
     [SerializeField] private int headerSize;
@@ -25,6 +29,8 @@ public abstract class TCPClient : MonoBehaviour
 
     private bool connected = false;
     public bool Connected { get => connected; }
+
+    protected string specificConnectionInfo = "";
 
     private class CommunicationSynchron
     {
@@ -111,7 +117,7 @@ public abstract class TCPClient : MonoBehaviour
         lock (syncObj)
         {
             syncObj.recvBalance--;
-            Debug.Log(syncObj.recvBalance);
+            connTextField.text = specificConnectionInfo + "Balance: " + syncObj.recvBalance;
         }
     }
 

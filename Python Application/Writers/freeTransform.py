@@ -20,7 +20,7 @@ class FreeTransform(InstructionWriter):
         if len(trackObjs) == 2:
             hand0 = trackObjs[0]
             hand1 = trackObjs[1]
-
+            
             #Free
             if hand0["fingersUp"] == [1, 1, 0, 0, 0] and hand1["fingersUp"] == [1, 1, 0, 0, 0]:
                 lmList0 = hand0["lmList"]

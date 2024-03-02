@@ -20,7 +20,7 @@ class FollowFingerTips(InstructionWriter):
                 z = round(lmList[id][2]*hand["px2cmRate"][2] + hand["tVec"][2],2)
 
                 instruction += str(x) + ";" + str(y) + ";" + str(z) + "/"
-
+            
             instruction = instruction[:-1]
 
             self.following = True
