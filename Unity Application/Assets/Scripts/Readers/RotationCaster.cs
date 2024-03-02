@@ -5,7 +5,7 @@ using UnityEngine;
 [RequireComponent(typeof(LineRenderer))]
 public class RotationCaster : InstructionReader
 {
-    [SerializeField] private float reachDistance = 20f;
+    [SerializeField] private float reachDistance = 50f;
 
     [SerializeField] private Transform freeParent;
     [SerializeField] private Transform fixedParent;

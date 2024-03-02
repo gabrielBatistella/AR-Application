@@ -6,7 +6,7 @@ using UnityEngine;
 [RequireComponent(typeof(LineRenderer))]
 public class ScaleCaster : InstructionReader
 {
-    [SerializeField] private float reachDistance = 20f;
+    [SerializeField] private float reachDistance = 50f;
 
     [SerializeField] private Transform freeParent;
     [SerializeField] private Transform fixedParent;
@@ -96,7 +96,7 @@ public class ScaleCaster : InstructionReader
             grabbedObj = hitInfo.collider.gameObject;
             grabbedObj.transform.SetParent(fixedParent);
 
-            objSizeWhenGrabbed = grabbedObj.transform.localEulerAngles;
+            objSizeWhenGrabbed = grabbedObj.transform.localScale;
             contactPointOnObject = grabbedObj.transform.InverseTransformPoint(hitInfo.point);
 
             aimLine.startColor = aimLine.endColor = Color.red;
