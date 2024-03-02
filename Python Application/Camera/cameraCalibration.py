@@ -61,7 +61,7 @@ def main():
 
             # Draw and display the corners
             cv.drawChessboardCorners(img, chessboardSize, corners2, ret)
-            cv.imshow('img', img)
+            cv.imshow("img", img)
             cv.waitKey(400)
 
     cv.destroyAllWindows()
@@ -72,7 +72,7 @@ def main():
 
     ret, cameraMatrix, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, frameSize, None, None)
 
-    with open('calib_results/intrinsic.npy', 'wb') as f:
+    with open("calib_results/intrinsic.npy", "wb") as f:
         np.save(f, cameraMatrix)
 
 
@@ -88,7 +88,7 @@ def main():
 
     print(newCameraMatrix)
 
-    with open('calib_results/intrinsicNew.npy', 'wb') as f:
+    with open("calib_results/intrinsicNew.npy", "wb") as f:
         np.save(f, newCameraMatrix)
 
     # Undistort
@@ -116,7 +116,7 @@ def main():
         error = cv.norm(imgpoints[i], imgpoints2, cv.NORM_L2)/len(imgpoints2)
         mean_error += error
 
-    print( "total error: {}".format(mean_error/len(objpoints)) )
+    print("total error: {}".format(mean_error/len(objpoints)))
 
     print("Calibration finished")
 
