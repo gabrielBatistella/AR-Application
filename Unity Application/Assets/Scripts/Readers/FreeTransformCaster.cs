@@ -62,11 +62,15 @@ public class FreeTransformCaster : InstructionReader
         string[] instructions = instructionValue.Split("/");
         for (int i = 0; i < 2; i++)
         {
-            if (instructions[i] == "Sem mao")
+            if (instructions[i] == "None")
+            {
+
+            }
+            else if (instructions[i] == "Lost Track")
             {
                 if (grabbedObjs[i] != null && grabbedObjs[(i + 1) % 2] == grabbedObjs[i] && instructions[(i + 1) % 2].StartsWith("Segurando"))
                 {
-                    Vector3 targetPointOther = pointFromCoords(instructions[(i + 1) % 2].Split(" ")[1].Split(";"));
+                    Vector3 targetPointOther = pointFromCoords(instructions[(i + 1) % 2].Split(":")[1].Split(";"));
 
                     aims[(i + 1) % 2].direction = (fixedParent.TransformPoint(targetPointOther) - aims[(i + 1) % 2].origin).normalized;
                     aimLines[(i + 1) % 2].SetPosition(1, aims[(i + 1) % 2].origin + aims[(i + 1) % 2].direction * reachDistance);
@@ -77,11 +81,30 @@ public class FreeTransformCaster : InstructionReader
                 ReleaseIfHolding(i);
                 aimLines[i].gameObject.SetActive(false);
             }
-            else if (instructions[i] == "Soltar")
+            else if (instructions[i].StartsWith("Grab"))
             {
-                if (grabbedObjs[i] != null && grabbedObjs[(i + 1) % 2] == grabbedObjs[i] && instructions[(i + 1) % 2].StartsWith("Segurando"))
+                Vector3 targetPoint = pointFromCoords(instructions[i].Split(":")[1].Split(";"));
+
+                aims[i].direction = (fixedParent.TransformPoint(targetPoint) - aims[i].origin).normalized;
+                aimLines[i].SetPosition(1, aims[i].origin + aims[i].direction * reachDistance);
+
+                TryGrabbing(i, targetPoint);
+
+                if (grabbedObjs[i] != null && grabbedObjs[(i + 1) % 2] == grabbedObjs[i] && instructions[(i + 1) % 2].StartsWith("Holding"))
                 {
-                    Vector3 targetPointOther = pointFromCoords(instructions[(i + 1) % 2].Split(" ")[1].Split(";"));
+                    Vector3 targetPointOther = pointFromCoords(instructions[(i + 1) % 2].Split(":")[1].Split(";"));
+
+                    aims[(i + 1) % 2].direction = (fixedParent.TransformPoint(targetPointOther) - aims[(i + 1) % 2].origin).normalized;
+                    aimLines[(i + 1) % 2].SetPosition(1, aims[(i + 1) % 2].origin + aims[(i + 1) % 2].direction * reachDistance);
+
+                    TryGrabbing((i + 1) % 2, targetPointOther);
+                }
+            }
+            else if (instructionValue.StartsWith("Release"))
+            {
+                if (grabbedObjs[i] != null && grabbedObjs[(i + 1) % 2] == grabbedObjs[i] && instructions[(i + 1) % 2].StartsWith("Holding"))
+                {
+                    Vector3 targetPointOther = pointFromCoords(instructions[(i + 1) % 2].Split(":")[1].Split(";"));
 
                     aims[(i + 1) % 2].direction = (fixedParent.TransformPoint(targetPointOther) - aims[(i + 1) % 2].origin).normalized;
                     aimLines[(i + 1) % 2].SetPosition(1, aims[(i + 1) % 2].origin + aims[(i + 1) % 2].direction * reachDistance);
@@ -90,36 +113,22 @@ public class FreeTransformCaster : InstructionReader
                 }
 
                 ReleaseIfHolding(i);
-            }
-            else if (instructions[i].StartsWith("Segurar"))
-            {
-                Vector3 targetPoint = pointFromCoords(instructions[i].Split(" ")[1].Split(";"));
+
+                Vector3 targetPoint = pointFromCoords(instructions[i].Split(":")[1].Split(";"));
 
                 aims[i].direction = (fixedParent.TransformPoint(targetPoint) - aims[i].origin).normalized;
                 aimLines[i].SetPosition(1, aims[i].origin + aims[i].direction * reachDistance);
-
-                TryGrabbing(i, targetPoint);
-
-                if (grabbedObjs[i] != null && grabbedObjs[(i + 1) % 2] == grabbedObjs[i] && instructions[(i + 1) % 2].StartsWith("Segurando"))
-                {
-                    Vector3 targetPointOther = pointFromCoords(instructions[(i + 1) % 2].Split(" ")[1].Split(";"));
-
-                    aims[(i + 1) % 2].direction = (fixedParent.TransformPoint(targetPointOther) - aims[(i + 1) % 2].origin).normalized;
-                    aimLines[(i + 1) % 2].SetPosition(1, aims[(i + 1) % 2].origin + aims[(i + 1) % 2].direction * reachDistance);
-
-                    TryGrabbing((i + 1) % 2, targetPointOther);
-                }
             }
-            else if (instructions[i].StartsWith("Segurando"))
+            else if (instructions[i].StartsWith("Holding"))
             {
                 if (grabbedObjs[i] != null)
                 {
-                    if (grabbedObjs[(i + 1) % 2] == grabbedObjs[i] && instructions[(i + 1) % 2].StartsWith("Segurando"))
+                    if (grabbedObjs[(i + 1) % 2] == grabbedObjs[i] && instructions[(i + 1) % 2].StartsWith("Holding"))
                     {
                         if (i == 0)
                         {
-                            Vector3 targetPoint1 = pointFromCoords(instructions[0].Split(" ")[1].Split(";"));
-                            Vector3 targetPoint2 = pointFromCoords(instructions[1].Split(" ")[1].Split(";"));
+                            Vector3 targetPoint1 = pointFromCoords(instructions[0].Split(":")[1].Split(";"));
+                            Vector3 targetPoint2 = pointFromCoords(instructions[1].Split(":")[1].Split(";"));
 
                             Vector3 deltaPos = (targetPoint1 + targetPoint2) / 2 - (pointersPosWhenGrabbed[0] + pointersPosWhenGrabbed[1]) / 2;
                             Quaternion deltaAngle = Quaternion.FromToRotation((pointersPosWhenGrabbed[1] - pointersPosWhenGrabbed[0]).normalized, (targetPoint2 - targetPoint1).normalized);
@@ -132,7 +141,7 @@ public class FreeTransformCaster : InstructionReader
                     }
                     else
                     {
-                        Vector3 deltaPos = pointFromCoords(instructions[i].Split(" ")[1].Split(";")) - pointersPosWhenGrabbed[i];
+                        Vector3 deltaPos = pointFromCoords(instructions[i].Split(":")[1].Split(";")) - pointersPosWhenGrabbed[i];
                         grabbedObjs[i].transform.localPosition = objsPosWhenGrabbed[i] + deltaPos * pointerObjTranslationRatios[i];
                     }
                     aimLines[i].SetPosition(1, grabbedObjs[i].transform.TransformPoint(contactPointsOnObject[i]));

@@ -14,6 +14,8 @@ public class MenuHandler : InstructionReader
     private int mode;
     public int Mode { get => mode; }
 
+    private readonly string[] modeNames = { "Calibrate", "Single Transform", "Free Transform", "Spawn" };
+
     private void Awake()
     {
         menu = GetComponent<InfiniteScrollHandler>();
@@ -22,7 +24,7 @@ public class MenuHandler : InstructionReader
     public override void SetDefault()
     {
         mode = 0;
-        modeTextField.text = "Calibrate";
+        modeTextField.text = modeNames[0];
 
         menu.SetScrollPosition(0);
         gameObject.SetActive(false);
@@ -37,30 +39,9 @@ public class MenuHandler : InstructionReader
         }
         else if (instructionValue.StartsWith("Selected"))
         {
-            mode = int.Parse(instructionValue.Split(" ")[1]);
-            switch (mode)
-            {
-                case 0:
-                {
-                    modeTextField.text = "Calibrate";
-                    break;
-                }
-                case 1:
-                {
-                    modeTextField.text = "Transform";
-                    break;
-                }
-                case 2:
-                {
-                    modeTextField.text = "Spawn";
-                    break;
-                }
-                default:
-                {
-                    Debug.Log("Error on menu mode");
-                    break;
-                }
-            }
+            mode = int.Parse(instructionValue.Split(":")[1]);
+            modeTextField.text = modeNames[mode];
+
             menu.SetScrollPosition(mode);
             gameObject.SetActive(false);
         }

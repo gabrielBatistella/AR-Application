@@ -16,27 +16,29 @@ public class ObjectSpawner : InstructionReader
 
     public override void FollowInstruction(string instructionValue)
     {
-        if (instructionValue.StartsWith("Loading"))
+        if (instructionValue.StartsWith("Spawn"))
+        {
+            string[] instructionInfos = instructionValue.Split(":")[1].Split("/");
+
+            transform.localPosition = pointFromCoords(instructionInfos[0].Split(";"));
+
+            AssetBundle bundle = LoadBundleFromHex(instructionInfos[2]);
+            if (bundle != null)
+            {
+                GameObject obj = Instantiate(bundle.LoadAsset<GameObject>(instructionInfos[1]), transform.position, transform.rotation);
+                obj.transform.SetParent(objParent);
+                obj.layer = (int)Mathf.Log(objLayer.value, 2);
+                bundle.Unload(false);
+            }
+        }
+        else
         {
             if (!gameObject.activeSelf)
             {
                 gameObject.SetActive(true);
             }
 
-            transform.localPosition = pointFromCoords(instructionValue.Split(" ")[1].Split(";"));
-        }
-        else
-        {
-            string[] bundleInfo = instructionValue.Split("#");
-
-            AssetBundle bundle = LoadBundleFromHex(bundleInfo[1]);
-            if (bundle != null)
-            {
-                GameObject obj = Instantiate(bundle.LoadAsset<GameObject>(bundleInfo[0]), transform.position, transform.rotation);
-                obj.transform.SetParent(objParent);
-                obj.layer = (int) Mathf.Log(objLayer.value, 2);
-                bundle.Unload(false);
-            }
+            transform.localPosition = pointFromCoords(instructionValue.Split(";"));
         }
     }
 
