@@ -8,6 +8,8 @@ class FreeTransformer(InstructionWriter):
 
         self.left = False
         self.right = False
+        self.leftFollowing = False
+        self.rightFollowing = False
 
     def getDisableInstruction(self):
         instruction = "Free" + self.inInstructionHandleValueSeparator
@@ -67,13 +69,17 @@ class FreeTransformer(InstructionWriter):
                         self.left = False
                         leftPos = "Release:"
                         
+                self.leftFollowing = True
+                        
                 leftPos += str(xLAvg) + ";" + str(yLAvg) + ";" + str(zLAvg)
             
             else:
-                if leftOn:
+                if self.leftFollowing:
                     leftPos = "Lost Track"
+                    self.left = False
+                    self.leftFollowing = False
                 else:
-                    leftPos = "None"  
+                    leftPos = "None"
                 
             if rightOn:
                 lmListRight = rightHand["lmList"]
@@ -93,26 +99,27 @@ class FreeTransformer(InstructionWriter):
                 
                 if distR < 4: 
                     if not self.right:
-                        self.right = True
-                        rightPos = "Grab:"
-                    else:
                         rightPos = "Holding:"
                 else:
                     if self.right:
                         self.right = False
                         rightPos = "Release:"
                         
+                self.rightFollowing = True
+            
                 rightPos += str(xRAvg) + ";" + str(yRAvg) + ";" + str(zRAvg)
 
             else:
-                if rightOn:
+                if self.rightFollowing:
                     rightPos = "Lost Track"
+                    self.right = False
+                    self.rightFollowing = False
                 else:
                     rightPos = "None" 
         
-        if leftOn or rightOn:
-            instruction = leftPos + "/" + rightPos
+        if leftPos == "None" and rightPos =="None":
+            instruction = ""
         else:
-            instruction = "" 
+            instruction += leftPos + "/" + rightPos
             
         return instruction

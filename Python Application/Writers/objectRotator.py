@@ -7,6 +7,7 @@ class ObjectRotator(InstructionWriter):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.holding = False
+        self.following = False
         self.xAvgInit = 0
         self.yAvgInit = 0
         self.zAvgInit = 0
@@ -34,11 +35,19 @@ class ObjectRotator(InstructionWriter):
                 y1 = (-lmList[6][1] + camCalib.h/2)*hand["px2cmRate"][1]
                 z1 = lmList[6][2]*hand["px2cmRate"][2] + hand["tVec"][2]
                 
-                dist = math.hypot(x1 - x0, y1 - y0, z1 - z0)
+                x2 = (lmList[8][0] - camCalib.w/2)*hand["px2cmRate"][0]
+                y2 = (-lmList[8][1] + camCalib.h/2)*hand["px2cmRate"][1]
+                z2 = lmList[8][2]*hand["px2cmRate"][2] + hand["tVec"][2]
                 
-                xAvg = (x0 + x1)/2
-                yAvg = (y0 + y1)/2
-                zAvg = (z0 + z1)/2
+                x3 = (lmList[12][0] - camCalib.w/2)*hand["px2cmRate"][0]
+                y3 = (-lmList[12][1] + camCalib.h/2)*hand["px2cmRate"][1]
+                z3 = lmList[12][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                
+                dist = math.hypot(x3 - x2, y3 - y2, z3 - z2)
+                
+                xAvg = (x2 + x3)/2
+                yAvg = (y2 + y3)/2
+                zAvg = (z2 + z3)/2
             
                 #If thumb is touching index finger second landmark
                 if dist < 4:
@@ -53,6 +62,8 @@ class ObjectRotator(InstructionWriter):
                         pitchDelta = round((self.yAvgInit - yAvg)/4*360)
                         yawDelta = round((self.zAvgInit - zAvg)/4*360)
                         instruction += "Holding:" + str(rollDelta) + ";" + str(pitchDelta) + ";" + str(yawDelta)
+                    
+                    self.following = True
 
                 else:
                     if self.holding:
@@ -61,15 +72,19 @@ class ObjectRotator(InstructionWriter):
                     instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
 
             else:
-                if self.holding:
+                if self.following:
                     instruction += "Lost Track"
                     self.holding = False
-                instruction = ""
+                    self.following = False
+                else:
+                    instruction = ""
             
         else:
-            if self.holding:
+            if self.following:
                 instruction += "Lost Track"
                 self.holding = False
-            instruction = ""
+                self.following = False
+            else:
+                instruction = ""
 
         return instruction
