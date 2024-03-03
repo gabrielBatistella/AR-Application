@@ -81,6 +81,10 @@ class TCPServer(abc.ABC):
         except ConnectionCloseException:
             TCPServer._closeConnection(conn, addr)
 
+        except OSError:
+            print(f'The connection with {addr} is closed')
+            #TCPServer._closeConnection(conn, addr)
+
         except:
             print(f'An error ocurred in the connection with {addr} => ' + traceback.format_exc())
             TCPServer._closeConnection(conn, addr)
@@ -126,9 +130,14 @@ class TCPServer(abc.ABC):
     
     @staticmethod
     def _closeConnection(conn, addr):
-        conn.shutdown(socket.SHUT_RDWR)
-        conn.close()
-        print(f'Connection with client {addr} closed')
+        try:
+            conn.shutdown(socket.SHUT_RDWR)
+            conn.close()
+            print(f'Connection with client {addr} closed')
+        except OSError:
+            print(f'Connection with client {addr} was already closed')
+        except:
+            print(traceback.format_exc())
 
     @staticmethod
     def _isConnected(conn):

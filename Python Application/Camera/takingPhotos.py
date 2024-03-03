@@ -2,9 +2,17 @@ import socket
 import numpy as np
 import cv2 as cv
 
+import sys
+sys.path.insert(0, "C:\\Users\\Gabriel\\Desktop\\TCC\\AR-Application\\Python Application")
+
 from Connection.tcpServer import TCPServer
 
 class PhotosServer(TCPServer):
+
+    headerBodySeparator = "?"
+    inHeaderInfoSeparator = "|"
+    inBodyInstructionSeparator = "&"
+    inInstructionHandleValueSeparator = "="
 
     chessboardSize = (9,6)
     criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
@@ -30,6 +38,10 @@ class PhotosServer(TCPServer):
             cv.imshow('img', self.imageWithBoard)
 
         key = cv.waitKey(1)
+        if key == ord('s'):
+            width, height, _ = frame.shape
+            print(width," - ",height)
+
         if key == ord(' ') and not self.showingBoard:
             gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
