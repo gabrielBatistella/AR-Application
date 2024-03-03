@@ -8,6 +8,11 @@ class ObjectRemover(InstructionWriter):
 
         self.delete = False
 
+    def getDisableInstruction(self):
+        instruction = "Remove" + self.inInstructionHandleValueSeparator
+        instruction += "Lost Track"
+        return instruction
+
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Remove" + self.inInstructionHandleValueSeparator
 

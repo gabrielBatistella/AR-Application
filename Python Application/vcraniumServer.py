@@ -77,13 +77,17 @@ class VCraniumServer(TCPServer):
 
                 hand["fingersUp"] = self.handDetector.fingersUp(hand)
 
-            mode = self.handInstructionWriters[0].modeCurrent
+            initialMode = self.handInstructionWriters[0].modeCurrent
             for writer in self.handInstructionWriters:
-                if writer.shouldExecuteInMode(mode):
-                    instruction = writer.generateInstruction(self.handDetector, hands, self.calib)
+                if writer.shouldExecuteInMode(initialMode):
+                    if not writer.shouldExecuteInMode(self.handInstructionWriters[0].modeCurrent):
+                        instruction = writer.getDisableInstruction()
+                    else:
+                        instruction = writer.generateInstruction(self.handDetector, hands, self.calib)
+
                     if instruction != "":
                         result += instruction + self.inBodyInstructionSeparator
-
+                        
         return result
         
 

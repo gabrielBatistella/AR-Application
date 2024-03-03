@@ -11,6 +11,11 @@ class ObjectRotator(InstructionWriter):
         self.yAvgInit = 0
         self.zAvgInit = 0
 
+    def getDisableInstruction(self):
+        instruction = "Rotate" + self.inInstructionHandleValueSeparator
+        instruction += "Lost Track"
+        return instruction
+
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Rotate" + self.inInstructionHandleValueSeparator
 

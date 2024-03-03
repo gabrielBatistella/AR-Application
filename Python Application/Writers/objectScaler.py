@@ -9,6 +9,11 @@ class ObjectScaler(InstructionWriter):
         self.holding = False
         self.scaleDistance = 0
 
+    def getDisableInstruction(self):
+        instruction = "Scale" + self.inInstructionHandleValueSeparator
+        instruction += "Lost Track"
+        return instruction
+
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Scale" + self.inInstructionHandleValueSeparator
 

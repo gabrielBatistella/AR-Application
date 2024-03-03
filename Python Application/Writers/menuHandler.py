@@ -13,6 +13,11 @@ class MenuHandler(InstructionWriter):
         self.xAvgInit = None
         self.yAvgInit = None
 
+    def getDisableInstruction(self):
+        instruction = "Menu" + self.inInstructionHandleValueSeparator
+        instruction += "Close Menu"
+        return instruction
+
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Menu" + self.inInstructionHandleValueSeparator
 

@@ -7,6 +7,11 @@ class FollowFingerTips(InstructionWriter):
 
         self.following = False
 
+    def getDisableInstruction(self):
+        instruction = "FingerTips" + self.inInstructionHandleValueSeparator
+        instruction += "Lost Track"
+        return instruction
+
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "FingerTips" + self.inInstructionHandleValueSeparator
 

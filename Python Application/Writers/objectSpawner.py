@@ -15,6 +15,11 @@ class ObjectSpawner(InstructionWriter):
         self.spawn = False
         self.path = "C:/Users/Gabriel/Desktop/test/"
 
+    def getDisableInstruction(self):
+        instruction = "Spawn" + self.inInstructionHandleValueSeparator
+        instruction += "Lost Track"
+        return instruction
+
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Spawn" + self.inInstructionHandleValueSeparator
 
@@ -56,25 +61,25 @@ class ObjectSpawner(InstructionWriter):
                     else:
                         instruction = ""
             
-            else:
+            else: #Esse
                 if self.spawn:
                     files = os.listdir(self.path)
                     fileName = files[0].split("-", 1)[0]
                     filePath = self.path + files[0]
                     fileHexData = loadFile(filePath)
                     instruction += "Spawn:" + str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg) + "/" + fileName + "/" + fileHexData
-                    self.spawn = True
+                    self.spawn = False
                 else:
                     instruction = ""
 
-        else:
+        else: #E esse
             if self.spawn:
                 files = os.listdir(self.path)
                 fileName = files[0].split("-", 1)[0]
                 filePath = self.path + files[0]
                 fileHexData = loadFile(filePath)
                 instruction += "Spawn:" + str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg) + "/" + fileName + "/" + fileHexData
-                self.spawn = True
+                self.spawn = False
             else:
                 instruction = ""
                     

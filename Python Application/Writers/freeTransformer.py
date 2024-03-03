@@ -9,6 +9,11 @@ class FreeTransformer(InstructionWriter):
         self.left = False
         self.right = False
 
+    def getDisableInstruction(self):
+        instruction = "Free" + self.inInstructionHandleValueSeparator
+        instruction += "Lost Track/Lost Track"
+        return instruction
+
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Free" + self.inInstructionHandleValueSeparator
 

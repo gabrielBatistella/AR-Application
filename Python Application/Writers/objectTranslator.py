@@ -11,6 +11,11 @@ class ObjectTranslator(InstructionWriter):
         self.yAvgInit = 0
         self.zAvgInit = 0
 
+    def getDisableInstruction(self):
+        instruction = "Translate" + self.inInstructionHandleValueSeparator
+        instruction += "Lost Track"
+        return instruction
+
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Translate" + self.inInstructionHandleValueSeparator
 

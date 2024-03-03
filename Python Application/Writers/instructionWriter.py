@@ -7,6 +7,10 @@ class InstructionWriter(abc.ABC):
         self.modeMask = modeMask
 
     @abc.abstractmethod
+    def getDisableInstruction(self):
+        pass
+
+    @abc.abstractmethod
     def generateInstruction(self, detector, trackObjs, camCalib):
         pass
 
