@@ -6,9 +6,9 @@ class FreeTransformer(InstructionWriter):
     def __init__(self, inInstructionHandleValueSeparator, modeMask):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
 
-        self.left = False
-        self.right = False
+        self.leftHolding = False
         self.leftFollowing = False
+        self.rightHolding = False
         self.rightFollowing = False
 
     def getDisableInstruction(self):
@@ -58,15 +58,17 @@ class FreeTransformer(InstructionWriter):
                 yLAvg = (y0L + y1L)/2
                 zLAvg = (z0L + z1L)/2
                 
+                leftPos = ""
+
                 if distL < 4: 
-                    if not self.left:
-                        self.left = True
+                    if not self.leftHolding:
+                        self.leftHolding = True
                         leftPos = "Grab:"
                     else:
                         leftPos = "Holding:"
                 else:
-                    if self.left:
-                        self.left = False
+                    if self.leftHolding:
+                        self.leftHolding = False
                         leftPos = "Release:"
                         
                 self.leftFollowing = True
@@ -76,7 +78,7 @@ class FreeTransformer(InstructionWriter):
             else:
                 if self.leftFollowing:
                     leftPos = "Lost Track"
-                    self.left = False
+                    self.leftHolding = False
                     self.leftFollowing = False
                 else:
                     leftPos = "None"
@@ -97,25 +99,30 @@ class FreeTransformer(InstructionWriter):
                 yRAvg = (y0R + y1R)/2
                 zRAvg = (z0R + z1R)/2
                 
+                rightPos = ""
+
                 if distR < 4: 
-                    if not self.right:
+                    if not self.rightHolding:
+                        self.rightHolding = True
+                        rightPos = "Grab:"
+                    else:
                         rightPos = "Holding:"
                 else:
-                    if self.right:
-                        self.right = False
+                    if self.rightHolding:
+                        self.rightHolding = False
                         rightPos = "Release:"
                         
                 self.rightFollowing = True
-            
+                        
                 rightPos += str(xRAvg) + ";" + str(yRAvg) + ";" + str(zRAvg)
-
+            
             else:
                 if self.rightFollowing:
                     rightPos = "Lost Track"
-                    self.right = False
+                    self.rightHolding = False
                     self.rightFollowing = False
                 else:
-                    rightPos = "None" 
+                    rightPos = "None"
         
         if leftPos == "None" and rightPos =="None":
             instruction = ""

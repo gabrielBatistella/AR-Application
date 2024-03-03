@@ -52,7 +52,7 @@ public class ScaleCaster : InstructionReader
             Vector3 targetPoint = pointFromCoords(instructionValue.Split(":")[1].Split(";"));
 
             aim.direction = (fixedParent.TransformPoint(targetPoint) - aim.origin).normalized;
-            aimLine.SetPosition(1, aim.origin + aim.direction * reachDistance);
+            aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
 
             TryGrabbing(targetPoint);
         }
@@ -63,7 +63,7 @@ public class ScaleCaster : InstructionReader
             Vector3 targetPoint = pointFromCoords(instructionValue.Split(":")[1].Split(";"));
 
             aim.direction = (fixedParent.TransformPoint(targetPoint) - aim.origin).normalized;
-            aimLine.SetPosition(1, aim.origin + aim.direction * reachDistance);
+            aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
         }
         else if (instructionValue.StartsWith("Holding"))
         {
@@ -72,7 +72,7 @@ public class ScaleCaster : InstructionReader
                 float sizeFactor = float.Parse(instructionValue.Split(":")[1], CultureInfo.InvariantCulture.NumberFormat);
                 grabbedObj.transform.localScale = objSizeWhenGrabbed * sizeFactor;
 
-                aimLine.SetPosition(1, grabbedObj.transform.TransformPoint(contactPointOnObject));
+                aimLine.SetPosition(1, transform.InverseTransformPoint(grabbedObj.transform.TransformPoint(contactPointOnObject)));
             }
             else
             {
@@ -90,7 +90,7 @@ public class ScaleCaster : InstructionReader
             }
 
             aim.direction = (fixedParent.TransformPoint(pointFromCoords(instructionValue.Split(";"))) - aim.origin).normalized;
-            aimLine.SetPosition(1, aim.origin + aim.direction * reachDistance);
+            aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
         }
     }
 
