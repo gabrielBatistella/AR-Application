@@ -47,7 +47,7 @@ class MenuHandler(InstructionWriter):
                             self.yAvgInit = yAvg
                         
                         yDelta = self.yAvgInit - yAvg
-                        if yDelta > 5:
+                        if yDelta > 3:
                             self.menu = True
                             self.yAvgInit = yAvg
 
@@ -61,14 +61,14 @@ class MenuHandler(InstructionWriter):
                     
                         yDelta = yAvg - self.yAvgInit
                         xDelta = xAvg - self.xAvgInit
-                        percentage = round(50*yDelta/5)
+                        percentage = round(50*yDelta/4)
                         
                         #If fingers move to right, resets initial x value
                         #If fingers move to left, enter the mode shown
                         #If fingers move up or down, changes the modes shown
                         if xDelta < 0:
                             self.xAvgInit = xAvg
-                        if xDelta > 5:
+                        if xDelta > 3:
                             self.modeCurrent = self.modeShown
                             self.menu = False
                             self.yAvgInit = None
@@ -77,13 +77,13 @@ class MenuHandler(InstructionWriter):
                         
                         #Modes: 0)Calibrate (followFingerTips) 1)Move, Rotate and Zoom 2)Spawn and Delete 4)???                                
                         else:
-                            if yDelta > 5:
+                            if yDelta > 4:
                                 self.modeShown = (self.modeShown + 1) % 4
-                                self.yAvgInit = yAvg + 2.5
+                                self.yAvgInit = yAvg + 2
                                 self.xAvgInit = xAvg
-                            if yDelta < -5:
+                            if yDelta < -4:
                                 self.modeShown = (self.modeShown - 1) % 4
-                                self.yAvgInit = yAvg - 2.5
+                                self.yAvgInit = yAvg - 2
                                 self.xAvgInit = xAvg
                             instruction += str(self.modeShown) + ";" + str(percentage)
 
