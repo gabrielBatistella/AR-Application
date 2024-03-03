@@ -7,6 +7,7 @@ class ObjectTranslator(InstructionWriter):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.holding = False
+        self.following = False
         self.xAvgInit = 0
         self.yAvgInit = 0
         self.zAvgInit = 0
@@ -56,22 +57,27 @@ class ObjectTranslator(InstructionWriter):
                         instruction += "Holding:" + str(xDelta) + ";" + str(yDelta) + ";" + str(zDelta)
 
                 else:
-                    
                     if self.holding:
                         instruction += "Release:"
                         self.holding = False
                     instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
+                    
+                self.following = True
 
             else:
-                if self.holding:
+                if self.following:
                     instruction += "Lost Track"
                     self.holding = False
-                instruction = ""
+                    self.following = False
+                else:
+                    instruction = ""
 
         else:
-            if self.holding:
+            if self.following:
                 instruction += "Lost Track"
                 self.holding = False
-            instruction = ""
+                self.following = False
+            else:
+                instruction = ""
 
         return instruction

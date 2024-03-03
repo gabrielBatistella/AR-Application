@@ -7,7 +7,8 @@ class ObjectScaler(InstructionWriter):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.holding = False
-        self.scaleDistance = 0
+        self.following = False
+        self.scaleDistance = 6
 
     def getDisableInstruction(self):
         instruction = "Scale" + self.inInstructionHandleValueSeparator
@@ -20,7 +21,7 @@ class ObjectScaler(InstructionWriter):
         if len(trackObjs) > 0:
             hand = trackObjs[0]
 
-            #Rotate
+            #Scale
             if hand["fingersUp"] == [1, 1, 1, 1, 1]:
                 lmList = hand["lmList"]
                 
@@ -28,37 +29,48 @@ class ObjectScaler(InstructionWriter):
                 y0 = (-lmList[4][1] + camCalib.h/2)*hand["px2cmRate"][1]
                 z0 = lmList[4][2]*hand["px2cmRate"][2] + hand["tVec"][2]
                 
-                x1 = (lmList[6][0] - camCalib.w/2)*hand["px2cmRate"][0]
-                y1 = (-lmList[6][1] + camCalib.h/2)*hand["px2cmRate"][1]
-                z1 = lmList[6][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                x1 = (lmList[8][0] - camCalib.w/2)*hand["px2cmRate"][0]
+                y1 = (-lmList[8][1] + camCalib.h/2)*hand["px2cmRate"][1]
+                z1 = lmList[8][2]*hand["px2cmRate"][2] + hand["tVec"][2]
                 
                 dist = math.hypot(x1 - x0, y1 - y0, z1 - z0)
                 
                 xAvg = (x0 + x1)/2
                 yAvg = (y0 + y1)/2
                 zAvg = (z0 + z1)/2
+                
+                if dist < 4:
+                    if not self.holding:
+                        self.holding = True
+                        instruction += "Grab:" + str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
 
-                if not self.holding:
-                    self.scaleDistance = dist
-                    self.holding = True
-                    instruction += "Grab:" + str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
+                    else:
+                        scale = round(dist/self.scaleDistance, 3)
+                        instruction += "Holding:" + str(scale)
 
                 else:
-                    scale = round(dist/self.scaleDistance, 3)
-                    instruction += "Holding:" + str(scale)
-
+                    if self.holding:
+                        instruction += "Release:"
+                        self.holding = False
+                        self.scaleDistance = 0
+                    instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)       
+                
+                self.following = True
+                
             else:
-                if self.holding:
-                    instruction += "Release:"
+                if self.following:
+                    instruction += "Lost Track"
                     self.holding = False
-                    self.scaleDistance = 0
-                instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)       
-            
+                    self.following = False
+                else:
+                    instruction = ""
+
         else:
-            if self.holding:
-                instruction += "Release:"
+            if self.following:
+                instruction += "Lost Track"
                 self.holding = False
-                self.scaleDistance = 0
-            instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)  
-            
+                self.following = False
+            else:
+                instruction = ""
+                
         return instruction

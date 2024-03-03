@@ -13,6 +13,7 @@ class ObjectSpawner(InstructionWriter):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.spawn = False
+        self.following = False
         self.path = "C:/Users/Gabriel/Desktop/test/"
 
     def getDisableInstruction(self):
@@ -60,26 +61,22 @@ class ObjectSpawner(InstructionWriter):
                         self.spawn = False
                     else:
                         instruction = ""
+
+                self.following = True
             
-            else: #Esse
-                if self.spawn:
-                    files = os.listdir(self.path)
-                    fileName = files[0].split("-", 1)[0]
-                    filePath = self.path + files[0]
-                    fileHexData = loadFile(filePath)
-                    instruction += "Spawn:" + str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg) + "/" + fileName + "/" + fileHexData
+            else:
+                if self.following:
+                    instruction += "Lost Track"
                     self.spawn = False
+                    self.following = False
                 else:
                     instruction = ""
 
-        else: #E esse
-            if self.spawn:
-                files = os.listdir(self.path)
-                fileName = files[0].split("-", 1)[0]
-                filePath = self.path + files[0]
-                fileHexData = loadFile(filePath)
-                instruction += "Spawn:" + str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg) + "/" + fileName + "/" + fileHexData
+        else:
+            if self.following:
+                instruction += "Lost Track"
                 self.spawn = False
+                self.following = False
             else:
                 instruction = ""
                     

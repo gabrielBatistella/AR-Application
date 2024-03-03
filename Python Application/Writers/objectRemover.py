@@ -7,6 +7,7 @@ class ObjectRemover(InstructionWriter):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.delete = False
+        self.following = False
 
     def getDisableInstruction(self):
         instruction = "Remove" + self.inInstructionHandleValueSeparator
@@ -39,27 +40,29 @@ class ObjectRemover(InstructionWriter):
             
                 #If thumb is touching index finger second landmark
                 if dist < 4:
-                    
                     if not self.delete:
                         instruction += "Remove:"
                         self.delete = True
                     instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
-
                 else:
                     self.delete = False
                     instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
-
+                
+                self.following = True
+            
             else:
-                if self.delete:
+                if self.following:
                     instruction += "Lost Track"
                     self.delete = False
+                    self.following = False
                 else:
                     instruction = ""
             
         else:
-            if self.delete:
+            if self.following:
                 instruction += "Lost Track"
                 self.delete = False
+                self.following = False
             else:
                 instruction = ""
 
