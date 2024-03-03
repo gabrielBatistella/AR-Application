@@ -29,7 +29,7 @@ public class RotationCaster : InstructionReader
     {
         aim.origin = transform.position;
         aim.direction = transform.forward;
-        aimLine.startColor = aimLine.endColor = Color.blue;
+        aimLine.startColor = aimLine.endColor = Color.magenta;
 
         grabbedObj = null;
 
@@ -117,7 +117,7 @@ public class RotationCaster : InstructionReader
             objAngleWhenGrabbed = Vector3.zero;
             contactPointOnObject = Vector3.zero;
 
-            aimLine.startColor = aimLine.endColor = Color.blue;
+            aimLine.startColor = aimLine.endColor = Color.magenta;
         }
     }
 }

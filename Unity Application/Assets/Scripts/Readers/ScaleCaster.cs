@@ -30,7 +30,7 @@ public class ScaleCaster : InstructionReader
     {
         aim.origin = transform.position;
         aim.direction = transform.forward;
-        aimLine.startColor = aimLine.endColor = Color.blue;
+        aimLine.startColor = aimLine.endColor = Color.yellow;
 
         grabbedObj = null;
 
@@ -118,7 +118,7 @@ public class ScaleCaster : InstructionReader
             objSizeWhenGrabbed = Vector3.zero;
             contactPointOnObject = Vector3.zero;
 
-            aimLine.startColor = aimLine.endColor = Color.blue;
+            aimLine.startColor = aimLine.endColor = Color.yellow;
         }
     }
 }

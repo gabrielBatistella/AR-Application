@@ -124,9 +124,29 @@ class FreeTransformer(InstructionWriter):
                 else:
                     rightPos = "None"
         
-        if leftPos == "None" and rightPos =="None":
-            instruction = ""
+            if leftPos == "None" and rightPos == "None":
+                instruction = ""
+            else:
+                instruction += leftPos + "/" + rightPos
+        
         else:
-            instruction += leftPos + "/" + rightPos
+            if self.leftFollowing:
+                leftPos = "Lost Track"
+                self.leftHolding = False
+                self.leftFollowing = False
+            else:
+                leftPos = "None"
+                
+            if self.rightFollowing:
+                rightPos = "Lost Track"
+                self.rightHolding = False
+                self.rightFollowing = False
+            else:
+                rightPos = "None"
+
+            if leftPos == "None" and rightPos == "None":
+                instruction = ""
+            else:
+                instruction += leftPos + "/" + rightPos
             
         return instruction

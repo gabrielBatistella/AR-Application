@@ -26,7 +26,7 @@ public class ObjectRemover : InstructionReader
     {
         aim.origin = transform.position;
         aim.direction = transform.forward;
-        aimLine.startColor = aimLine.endColor = Color.blue;
+        aimLine.startColor = aimLine.endColor = Color.green;
 
         gameObject.SetActive(false);
     }

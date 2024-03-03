@@ -30,7 +30,7 @@ public class TranslationCaster : InstructionReader
     {
         aim.origin = transform.position;
         aim.direction = transform.forward;
-        aimLine.startColor = aimLine.endColor = Color.blue;
+        aimLine.startColor = aimLine.endColor = Color.black;
 
         grabbedObj = null;
 
@@ -121,7 +121,7 @@ public class TranslationCaster : InstructionReader
             contactPointOnObject = Vector3.zero;
             pointerObjTranslationRatio = 0;
 
-            aimLine.startColor = aimLine.endColor = Color.blue;
+            aimLine.startColor = aimLine.endColor = Color.black;
         }
     }
 }
