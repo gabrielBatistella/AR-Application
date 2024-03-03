@@ -8,7 +8,7 @@ class ObjectScaler(InstructionWriter):
 
         self.holding = False
         self.following = False
-        self.scaleDistance = 6
+        self.xAvgInit = 0
 
     def getDisableInstruction(self):
         instruction = "Scale" + self.inInstructionHandleValueSeparator
@@ -42,17 +42,17 @@ class ObjectScaler(InstructionWriter):
                 if dist < 4:
                     if not self.holding:
                         self.holding = True
+                        self.xAvgInit = xAvg
                         instruction += "Grab:" + str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
 
                     else:
-                        scale = round(dist/self.scaleDistance, 3)
+                        scale = round(abs((self.xAvgInit - xAvg)/3, 3))
                         instruction += "Holding:" + str(scale)
 
                 else:
                     if self.holding:
                         instruction += "Release:"
                         self.holding = False
-                        self.scaleDistance = 0
                     instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)       
                 
                 self.following = True
