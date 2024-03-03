@@ -4,7 +4,7 @@ using System.Globalization;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
-public class ObjectDestroyer : InstructionReader
+public class ObjectRemover : InstructionReader
 {
     [SerializeField] private float reachDistance = 50f;
 
@@ -33,13 +33,13 @@ public class ObjectDestroyer : InstructionReader
 
     public override void FollowInstruction(string instructionValue)
     {
-        if (instructionValue == "Sem mao")
+        if (instructionValue == "Lost Track")
         {
             gameObject.SetActive(false);
         }
-        else if (instructionValue.StartsWith("Deletar"))
+        else if (instructionValue.StartsWith("Remove"))
         {
-            Vector3 targetPoint = pointFromCoords(instructionValue.Split(" ")[1].Split(";"));
+            Vector3 targetPoint = pointFromCoords(instructionValue.Split(":")[1].Split(";"));
 
             aim.direction = (fixedParent.TransformPoint(targetPoint) - aim.origin).normalized;
             aimLine.SetPosition(1, aim.origin + aim.direction * reachDistance);

@@ -42,29 +42,34 @@ public class ScaleCaster : InstructionReader
 
     public override void FollowInstruction(string instructionValue)
     {
-        if (instructionValue == "Sem mao")
+        if (instructionValue == "Lost Track")
         {
             ReleaseIfHolding();
             gameObject.SetActive(false);
         }
-        else if (instructionValue == "Soltar")
+        else if (instructionValue.StartsWith("Grab"))
         {
-            ReleaseIfHolding();
-        }
-        else if (instructionValue.StartsWith("Segurar"))
-        {
-            Vector3 targetPoint = pointFromCoords(instructionValue.Split(" ")[1].Split(";"));
+            Vector3 targetPoint = pointFromCoords(instructionValue.Split(":")[1].Split(";"));
 
             aim.direction = (fixedParent.TransformPoint(targetPoint) - aim.origin).normalized;
             aimLine.SetPosition(1, aim.origin + aim.direction * reachDistance);
 
             TryGrabbing(targetPoint);
         }
-        else if (instructionValue.StartsWith("Segurando"))
+        else if (instructionValue.StartsWith("Release"))
+        {
+            ReleaseIfHolding();
+
+            Vector3 targetPoint = pointFromCoords(instructionValue.Split(":")[1].Split(";"));
+
+            aim.direction = (fixedParent.TransformPoint(targetPoint) - aim.origin).normalized;
+            aimLine.SetPosition(1, aim.origin + aim.direction * reachDistance);
+        }
+        else if (instructionValue.StartsWith("Holding"))
         {
             if (grabbedObj != null)
             {
-                float sizeFactor = float.Parse(instructionValue.Split(" ")[1], CultureInfo.InvariantCulture.NumberFormat);
+                float sizeFactor = float.Parse(instructionValue.Split(":")[1], CultureInfo.InvariantCulture.NumberFormat);
                 grabbedObj.transform.localScale = objSizeWhenGrabbed * sizeFactor;
 
                 aimLine.SetPosition(1, grabbedObj.transform.TransformPoint(contactPointOnObject));
