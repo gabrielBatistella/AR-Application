@@ -1,12 +1,12 @@
 from Writers.instructionWriter import InstructionWriter
 import math
 
-class HandTranslate(InstructionWriter):
+class ObjectTranslator(InstructionWriter):
     
     def __init__(self, inInstructionHandleValueSeparator):
         super().__init__(inInstructionHandleValueSeparator)
 
-        self.hold = False
+        self.holding = False
         self.xAvgInit = 0
         self.yAvgInit = 0
         self.zAvgInit = 0
@@ -38,38 +38,35 @@ class HandTranslate(InstructionWriter):
                 #If thumb and index finger are close
                 if dist < 4:
                     
-                    if not self.hold:
+                    if not self.holding:
                         self.xAvgInit = xAvg
                         self.yAvgInit = yAvg
                         self.zAvgInit = zAvg
-                        self.hold = True
-                        instruction += "Hold" + ":" + str(self.xAvgInit) + ";" + str(self.yAvgInit) + ";" + str(self.zAvgInit)
-                    
+                        self.holding = True
+                        instruction += "Grab:" + str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
                     else:
                         xDelta = self.xAvgInit - xAvg
                         yDelta = self.yAvgInit - yAvg
                         zDelta = self.zAvgInit - zAvg
-                        instruction += str(xDelta) + ";" + str(yDelta) + ";" + str(zDelta)
+                        instruction += "Holding:" + str(xDelta) + ";" + str(yDelta) + ";" + str(zDelta)
 
                 else:
-                    if self.hold:
-                        instruction += "Stop"
-                        self.hold = False
-                    else:
-                        instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
+                    
+                    if self.holding:
+                        instruction += "Release:"
+                        self.holding = False
+                    instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
 
             else:
-                if self.hold:
-                    instruction += "Stop"
-                    self.hold = False
-                else:
-                    instruction = ""
+                if self.holding:
+                    instruction += "Lost Track"
+                    self.holding = False
+                instruction = ""
 
         else:
-            if self.hold:
-                instruction += "Stop"
-                self.hold = False
-            else:
-                instruction = ""
+            if self.holding:
+                instruction += "Lost Track"
+                self.holding = False
+            instruction = ""
 
         return instruction

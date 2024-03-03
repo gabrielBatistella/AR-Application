@@ -6,8 +6,15 @@ from Connection.tcpServer import TCPServer
 from Camera.cameraCalibration import CalibrationInfo
 from Modules.handTrackingModule import HandDetector
 from Modules.faceMeshModule import FaceMeshDetector
-from Writers.followIndexFinger import FollowIndexFinger
+
 from Writers.menuHandler import MenuHandler
+from Writers.followFingerTips import FollowFingerTips
+from Writers.objectSpawner import ObjectSpawner
+from Writers.objectRemover import ObjectRemover
+from Writers.objectTranslator import ObjectTranslator
+from Writers.objectRotator import ObjectRotator
+from Writers.objectScaler import ObjectScaler
+from Writers.freeTransformer import FreeTransformer
 
 class VCraniumServer(TCPServer):
     
@@ -23,8 +30,14 @@ class VCraniumServer(TCPServer):
 
         self.handDetector = HandDetector(maxHands=2, minDetectionCon=0.8)
         self.handInstructionWriters = [
-            FollowIndexFinger(self.__class__.inInstructionHandleValueSeparator),
-            MenuHandler(self.__class__.inInstructionHandleValueSeparator)
+            MenuHandler(self.__class__.inInstructionHandleValueSeparator),
+            FollowFingerTips(self.__class__.inInstructionHandleValueSeparator),
+            ObjectSpawner(self.__class__.inInstructionHandleValueSeparator),
+            ObjectRemover(self.__class__.inInstructionHandleValueSeparator),
+            ObjectTranslator(self.__class__.inInstructionHandleValueSeparator),
+            ObjectRotator(self.__class__.inInstructionHandleValueSeparator),
+            ObjectScaler(self.__class__.inInstructionHandleValueSeparator),
+            FreeTransformer(self.__class__.inInstructionHandleValueSeparator)
         ]
 
         #self.faceDetector = FaceMeshDetector(maxFaces=1, minDetectionCon=0.5)
