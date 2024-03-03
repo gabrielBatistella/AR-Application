@@ -14,7 +14,7 @@ public class MenuHandler : InstructionReader
     private int mode;
     public int Mode { get => mode; }
 
-    private readonly string[] modeNames = { "Calibrate", "Single Transform", "Free Transform", "Spawn" };
+    private readonly string[] modeNames = { "Calibrate", "Spawn", "Single Transform", "Free Transform" };
 
     private void Awake()
     {
