@@ -1,18 +1,15 @@
 from Writers.instructionWriter import InstructionWriter
 import math
 
-class HandRotate(InstructionWriter):
+class ObjectRemover(InstructionWriter):
     
     def __init__(self, inInstructionHandleValueSeparator):
         super().__init__(inInstructionHandleValueSeparator)
 
-        self.rotate = False
-        self.xAvgInit = 0
-        self.yAvgInit = 0
-        self.zAvgInit = 0
+        self.delete = False
 
     def generateInstruction(self, detector, trackObjs, camCalib):
-        instruction = "Rotate" + self.inInstructionHandleValueSeparator
+        instruction = "Remove" + self.inInstructionHandleValueSeparator
 
         if len(trackObjs) > 0:
             hand = trackObjs[0]
@@ -38,37 +35,26 @@ class HandRotate(InstructionWriter):
                 #If thumb is touching index finger second landmark
                 if dist < 4:
                     
-                    if not self.rotate:
-                        self.xAvgInit = xAvg
-                        self.yAvgInit = yAvg
-                        self.zAvgInit = zAvg
-                        self.rotate = True
-                        instruction += "Rotate" + ":" + str(self.xAvgInit) + ";" + str(self.yAvgInit) + ";" + str(self.zAvgInit)
-                    
-                    else:
-                        rollDelta = round((self.xAvgInit - xAvg)/4*360)
-                        pitchDelta = round((self.yAvgInit - yAvg)/4*360)
-                        yawDelta = round((self.zAvgInit - zAvg)/4*360)
-                        instruction += str(rollDelta) + ";" + str(pitchDelta) + ";" + str(yawDelta)
+                    if not self.delete:
+                        instruction += "Remove:"
+                        self.delete = True
+                    instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
 
                 else:
-                    if self.rotate:
-                        instruction += "Stop"
-                        self.rotate = False
-                    else:
-                        instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
+                    self.delete = False
+                    instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
 
             else:
-                if self.rotate:
-                    instruction += "Stop"
-                    self.rotate = False
+                if self.delete:
+                    instruction += "Lost Track"
+                    self.delete = False
                 else:
                     instruction = ""
             
         else:
-            if self.rotate:
-                instruction += "Stop"
-                self.rotate = False
+            if self.delete:
+                instruction += "Lost Track"
+                self.delete = False
             else:
                 instruction = ""
 

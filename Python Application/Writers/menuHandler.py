@@ -38,51 +38,49 @@ class MenuHandler(InstructionWriter):
                     yAvg = (y1+y2)/2
 
                     if not self.menu:
-                        if not self.yAvgInit:
+                        if self.yAvgInit is None:
                             self.yAvgInit = yAvg
-                        else:
-                            yDelta = self.yAvgInit - yAvg
-                            if yDelta > 5:
-                                self.menu = True
-
-                            instruction = ""
                         
-                    #If menu = True, will show Menu UI in Unity
+                        yDelta = self.yAvgInit - yAvg
+                        if yDelta > 5:
+                            self.menu = True
+                            self.yAvgInit = yAvg
+
+                        instruction = ""
+
                     else:
                         xAvg = (x1+x2)/2
                         
-                        if not self.loading:
-                            self.yAvgInit = yAvg
+                        if self.xAvgInit is None:
                             self.xAvgInit = xAvg
-                            self.loading = True
-
-                            instruction = ""
+                    
+                        yDelta = yAvg - self.yAvgInit
+                        xDelta = xAvg - self.xAvgInit
+                        percentage = round(50*yDelta/5)
                         
+                        #If fingers move to right, resets initial x value
+                        #If fingers move to left, enter the mode shown
+                        #If fingers move up or down, changes the modes shown
+                        if xDelta < 0:
+                            self.xAvgInit = xAvg
+                        if xDelta > 5:
+                            self.modeCurrent = self.modeShown
+                            self.menu = False
+                            self.yAvgInit = None
+                            self.xAvgInit = None
+                            instruction += "Selected:" + str(self.modeCurrent)
+                        
+                        #Modes: 0)Calibrate (followFingerTips) 1)Move, Rotate and Zoom 2)Spawn and Delete 4)???                                
                         else:
-                            yDelta = yAvg - self.yAvgInit
-                            xDelta = xAvg - self.xAvgInit
-                            percentage = round(50*yDelta/7)
-                            #If fingers move to right, resets initial x value
-                            #If fingers move to left, enter the mode shown
-                            #If fingers move up or down, changes the modes shown
-                            
-                            if xDelta < 0:
+                            if yDelta > 5:
+                                self.modeShown = (self.modeShown + 1) % 4
+                                self.yAvgInit = yAvg
                                 self.xAvgInit = xAvg
-                            if xDelta > 7:
-                                self.modeCurrent = self.modeShown
-                                self.menu = False
-                                self.loading = 0
-                                instruction += "Selected " + str(self.modeCurrent)
-                            
-                            #Modes: 0)Calibrate (followFingerTips) 1)Move, Rotate and Zoom 2)Spawn and Delete 4)???                                
-                            else:
-                                if yDelta > 7:
-                                    self.modeShown = (self.modeShown + 1) % 3
-                                    self.loading = False
-                                if yDelta < -7:
-                                    self.modeShown = (self.modeShown - 1) % 3
-                                    self.loading = False
-                                instruction += str(self.modeShown) + ";" + str(percentage)
+                            if yDelta < -5:
+                                self.modeShown = (self.modeShown - 1) % 4
+                                self.yAvgInit = yAvg
+                                self.xAvgInit = xAvg
+                            instruction += str(self.modeShown) + ";" + str(percentage)
 
                 else:
                     if self.menu:
@@ -90,16 +88,17 @@ class MenuHandler(InstructionWriter):
                     else:
                         instruction = ""
                     self.menu = 0
-                    self.loading = False
-                    
-                    
+                    self.yAvgInit = None
+                    self.xAvgInit = None
+
             else:
                 if self.menu:
                     instruction += "Close Menu"
                 else:
                     instruction = ""
                 self.menu = 0
-                self.loading = False
+                self.yAvgInit = None
+                self.xAvgInit = None
 
         else:
             if self.menu:
@@ -107,6 +106,7 @@ class MenuHandler(InstructionWriter):
             else:
                 instruction = ""
             self.menu = 0
-            self.loading = False
+            self.yAvgInit = None
+            self.xAvgInit = None
          
         return instruction
