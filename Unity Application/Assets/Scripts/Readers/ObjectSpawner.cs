@@ -16,7 +16,11 @@ public class ObjectSpawner : InstructionReader
 
     public override void FollowInstruction(string instructionValue)
     {
-        if (instructionValue.StartsWith("Spawn"))
+        if (instructionValue == "Lost Track")
+        {
+            gameObject.SetActive(false);
+        }
+        else if (instructionValue.StartsWith("Spawn"))
         {
             string[] instructionInfos = instructionValue.Split(":")[1].Split("/");
 
