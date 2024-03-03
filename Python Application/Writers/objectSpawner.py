@@ -9,11 +9,11 @@ def loadFile(filePath):
 
 class ObjectSpawner(InstructionWriter):
     
-    def __init__(self, inInstructionHandleValueSeparator):
-        super().__init__(inInstructionHandleValueSeparator)
+    def __init__(self, inInstructionHandleValueSeparator, modeMask):
+        super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.spawn = False
-        self.path = "C:/Users/Gabriel/Desktop/test"
+        self.path = "C:/Users/Gabriel/Desktop/test/"
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Spawn" + self.inInstructionHandleValueSeparator
@@ -66,5 +66,16 @@ class ObjectSpawner(InstructionWriter):
                     self.spawn = True
                 else:
                     instruction = ""
+
+        else:
+            if self.spawn:
+                files = os.listdir(self.path)
+                fileName = files[0].split("-", 1)[0]
+                filePath = self.path + files[0]
+                fileHexData = loadFile(filePath)
+                instruction += "Spawn:" + str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg) + "/" + fileName + "/" + fileHexData
+                self.spawn = True
+            else:
+                instruction = ""
                     
-            return instruction
+        return instruction

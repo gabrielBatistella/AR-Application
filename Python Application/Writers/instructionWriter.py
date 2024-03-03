@@ -11,4 +11,4 @@ class InstructionWriter(abc.ABC):
         pass
 
     def shouldExecuteInMode(self, mode):
-        return self.modeMask & 2**mode > 0
+        return self.modeMask & 2**(3-mode) > 0

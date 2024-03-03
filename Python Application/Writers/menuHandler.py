@@ -3,8 +3,8 @@ import math
 
 class MenuHandler(InstructionWriter):
     
-    def __init__(self, inInstructionHandleValueSeparator):
-        super().__init__(inInstructionHandleValueSeparator)
+    def __init__(self, inInstructionHandleValueSeparator, modeMask):
+        super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.menu = False
         self.loading = False

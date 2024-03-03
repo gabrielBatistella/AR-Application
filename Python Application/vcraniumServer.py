@@ -30,14 +30,14 @@ class VCraniumServer(TCPServer):
 
         self.handDetector = HandDetector(maxHands=2, minDetectionCon=0.8)
         self.handInstructionWriters = [
-            MenuHandler(self.__class__.inInstructionHandleValueSeparator, b"1111"),
-            FollowFingerTips(self.__class__.inInstructionHandleValueSeparator, b"1000"),
-            ObjectSpawner(self.__class__.inInstructionHandleValueSeparator, b"0100"),
-            ObjectRemover(self.__class__.inInstructionHandleValueSeparator, b"0100"),
-            ObjectTranslator(self.__class__.inInstructionHandleValueSeparator, b"0010"),
-            ObjectRotator(self.__class__.inInstructionHandleValueSeparator, b"0010"),
-            ObjectScaler(self.__class__.inInstructionHandleValueSeparator, b"0010"),
-            FreeTransformer(self.__class__.inInstructionHandleValueSeparator, b"0001")
+            MenuHandler(self.__class__.inInstructionHandleValueSeparator, 0b1111),
+            FollowFingerTips(self.__class__.inInstructionHandleValueSeparator, 0b1000),
+            ObjectSpawner(self.__class__.inInstructionHandleValueSeparator, 0b0100),
+            ObjectRemover(self.__class__.inInstructionHandleValueSeparator, 0b0100),
+            ObjectTranslator(self.__class__.inInstructionHandleValueSeparator, 0b0010),
+            ObjectRotator(self.__class__.inInstructionHandleValueSeparator, 0b0010),
+            ObjectScaler(self.__class__.inInstructionHandleValueSeparator, 0b0010),
+            FreeTransformer(self.__class__.inInstructionHandleValueSeparator, 0b0001)
         ]
 
         #self.faceDetector = FaceMeshDetector(maxFaces=1, minDetectionCon=0.5)
@@ -77,7 +77,7 @@ class VCraniumServer(TCPServer):
 
                 hand["fingersUp"] = self.handDetector.fingersUp(hand)
 
-            mode = self.handInstructionWriters[0].currentMode
+            mode = self.handInstructionWriters[0].modeCurrent
             for writer in self.handInstructionWriters:
                 if writer.shouldExecuteInMode(mode):
                     instruction = writer.generateInstruction(self.handDetector, hands, self.calib)

@@ -3,8 +3,8 @@ import math
 
 class ObjectRemover(InstructionWriter):
     
-    def __init__(self, inInstructionHandleValueSeparator):
-        super().__init__(inInstructionHandleValueSeparator)
+    def __init__(self, inInstructionHandleValueSeparator, modeMask):
+        super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.delete = False
 
