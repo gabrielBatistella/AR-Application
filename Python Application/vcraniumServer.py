@@ -40,8 +40,8 @@ class VCraniumServer(TCPServer):
             FreeTransformer(self.__class__.inInstructionHandleValueSeparator, 0b0001)
         ]
 
-        #self.faceDetector = FaceMeshDetector(maxFaces=1, minDetectionCon=0.5)
-        #self.faceInstructionWriters = []
+        self.faceDetector = FaceMeshDetector(maxFaces=1, minDetectionCon=0.5)
+        self.faceInstructionWriters = []
 
     def _operateOnDataReceived(self, data):
         frame_encoded = np.frombuffer(data, dtype=np.uint8)
@@ -87,7 +87,33 @@ class VCraniumServer(TCPServer):
 
                     if instruction != "":
                         result += instruction + self.inBodyInstructionSeparator
-                        
+
+        if len(self.faceInstructionWriters) > 0:
+            faces = self.faceDetector.findFaceMesh(frame, draw=False)
+
+            for face in faces:
+                featureMarkPoints = []
+                for index in self.faceDetector.featureMarkIds:
+                    featureMarkPoints.append(np.array(face["lmList"][index][0:2]))
+                featureMarkPoints = np.array(featureMarkPoints, dtype=np.float32)
+
+                ret, rVec, tVec = cv.solvePnP(self.faceDetector.featureMark3dPoints, featureMarkPoints, self.calib.camMatrix, self.calib.distCof, cv.SOLVEPNP_IPPE)
+                rVec = np.reshape(rVec, 3)
+                tVec = np.reshape(tVec, 3)
+                face["rVec"] = rVec[:]
+                face["tVec"] = tVec[:]
+
+            initialMode = self.handInstructionWriters[0].modeCurrent
+            for writer in self.faceInstructionWriters:
+                if writer.shouldExecuteInMode(initialMode):
+                    if not writer.shouldExecuteInMode(self.handInstructionWriters[0].modeCurrent):
+                        instruction = writer.getDisableInstruction()
+                    else:
+                        instruction = writer.generateInstruction(self.faceDetector, faces, self.calib)
+
+                    if instruction != "":
+                        result += instruction + self.inBodyInstructionSeparator
+
         return result
         
 
