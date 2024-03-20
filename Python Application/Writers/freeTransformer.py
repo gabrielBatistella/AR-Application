@@ -21,6 +21,8 @@ class FreeTransformer(InstructionWriter):
 
         leftOn = False
         rightOn = False
+        leftPos = "None"
+        rightPos = "None"
         
         if len(trackObjs) > 0:
             if trackObjs[0]["type"] == "Left":
@@ -57,8 +59,6 @@ class FreeTransformer(InstructionWriter):
                 xLAvg = (x0L + x1L)/2
                 yLAvg = (y0L + y1L)/2
                 zLAvg = (z0L + z1L)/2
-                
-                leftPos = ""
 
                 if distL < 4: 
                     if not self.leftHolding:
@@ -70,19 +70,17 @@ class FreeTransformer(InstructionWriter):
                     if self.leftHolding:
                         self.leftHolding = False
                         leftPos = "Release:"
+                    else:
+                        leftPos = ""
                         
                 self.leftFollowing = True
-                        
                 leftPos += str(xLAvg) + ";" + str(yLAvg) + ";" + str(zLAvg)
             
-            else:
-                if self.leftFollowing:
-                    leftPos = "Lost Track"
-                    self.leftHolding = False
-                    self.leftFollowing = False
-                else:
-                    leftPos = "None"
-                
+            elif self.leftFollowing:
+                self.leftHolding = False
+                self.leftFollowing = False
+                leftPos = "Lost Track"
+            
             if rightOn:
                 lmListRight = rightHand["lmList"]
                 x0R = (lmListRight[4][0] - camCalib.w/2)*rightHand["px2cmRate"][0]
@@ -99,8 +97,6 @@ class FreeTransformer(InstructionWriter):
                 yRAvg = (y0R + y1R)/2
                 zRAvg = (z0R + z1R)/2
                 
-                rightPos = ""
-
                 if distR < 4: 
                     if not self.rightHolding:
                         self.rightHolding = True
@@ -111,22 +107,36 @@ class FreeTransformer(InstructionWriter):
                     if self.rightHolding:
                         self.rightHolding = False
                         rightPos = "Release:"
+                    else:
+                        rightPos = ""
                         
                 self.rightFollowing = True
-                        
                 rightPos += str(xRAvg) + ";" + str(yRAvg) + ";" + str(zRAvg)
             
-            else:
-                if self.rightFollowing:
-                    rightPos = "Lost Track"
-                    self.rightHolding = False
-                    self.rightFollowing = False
-                else:
-                    rightPos = "None"
-        
-        if leftPos == "None" and rightPos =="None":
-            instruction = ""
-        else:
+            elif self.rightFollowing:
+                self.rightHolding = False
+                self.rightFollowing = False
+                rightPos = "Lost Track"
+                
             instruction += leftPos + "/" + rightPos
-            
+
+            if not self.leftFollowing and not self.rightFollowing:
+                if not leftPos == "Lost Track" and not rightPos == "Lost Track":
+                    instruction = ""
+
+        else:
+            if self.leftFollowing:
+                self.leftHolding = False
+                self.leftFollowing = False
+                leftPos = "Lost Track"
+            if self.rightFollowing:
+                self.rightHolding = False
+                self.rightFollowing = False
+                rightPos = "Lost Track"
+            instruction += leftPos + "/" + rightPos
+
+            if not self.leftFollowing and not self.rightFollowing:
+                if not leftPos == "Lost Track" and not rightPos == "Lost Track":
+                    instruction = ""
+
         return instruction

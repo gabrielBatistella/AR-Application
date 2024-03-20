@@ -51,9 +51,9 @@ class ObjectTranslator(InstructionWriter):
                         self.holding = True
                         instruction += "Grab:" + str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
                     else:
-                        xDelta = self.xAvgInit - xAvg
-                        yDelta = self.yAvgInit - yAvg
-                        zDelta = self.zAvgInit - zAvg
+                        xDelta = xAvg - self.xAvgInit
+                        yDelta = yAvg - self.yAvgInit
+                        zDelta = zAvg - self.zAvgInit
                         instruction += "Holding:" + str(xDelta) + ";" + str(yDelta) + ";" + str(zDelta)
 
                 else:
