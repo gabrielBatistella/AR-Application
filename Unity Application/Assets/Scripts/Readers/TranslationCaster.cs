@@ -53,7 +53,7 @@ public class TranslationCaster : InstructionReader
             Vector3 targetPoint = pointFromCoords(instructionValue.Split(":")[1].Split(";"));
 
             aim.direction = (fixedParent.TransformPoint(targetPoint) - aim.origin).normalized;
-            aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
+            aimLine.SetPosition(1, transform.parent.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
 
             TryGrabbing(targetPoint);
         }
@@ -64,7 +64,7 @@ public class TranslationCaster : InstructionReader
             Vector3 targetPoint = pointFromCoords(instructionValue.Split(":")[1].Split(";"));
 
             aim.direction = (fixedParent.TransformPoint(targetPoint) - aim.origin).normalized;
-            aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
+            aimLine.SetPosition(1, transform.parent.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
         }
         else if (instructionValue.StartsWith("Holding"))
         {
@@ -73,7 +73,7 @@ public class TranslationCaster : InstructionReader
                 Vector3 deltaPos = pointFromCoords(instructionValue.Split(":")[1].Split(";"));
                 grabbedObj.transform.localPosition = objPosWhenGrabbed + deltaPos * pointerObjTranslationRatio;
 
-                aimLine.SetPosition(1, transform.InverseTransformPoint(grabbedObj.transform.TransformPoint(contactPointOnObject)));
+                aimLine.SetPosition(1, transform.parent.InverseTransformPoint(grabbedObj.transform.TransformPoint(contactPointOnObject)));
             }
             else
             {
@@ -91,7 +91,7 @@ public class TranslationCaster : InstructionReader
             }
 
             aim.direction = (fixedParent.TransformPoint(pointFromCoords(instructionValue.Split(";"))) - aim.origin).normalized;
-            aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
+            aimLine.SetPosition(1, transform.parent.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
         }
     }
 

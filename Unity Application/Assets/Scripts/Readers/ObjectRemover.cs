@@ -42,7 +42,7 @@ public class ObjectRemover : InstructionReader
             Vector3 targetPoint = pointFromCoords(instructionValue.Split(":")[1].Split(";"));
 
             aim.direction = (fixedParent.TransformPoint(targetPoint) - aim.origin).normalized;
-            aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
+            aimLine.SetPosition(1, transform.parent.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
 
             if (Physics.Raycast(aim, out RaycastHit hitInfo, reachDistance, layerGrabbable))
             {
@@ -57,7 +57,7 @@ public class ObjectRemover : InstructionReader
             }
 
             aim.direction = (fixedParent.TransformPoint(pointFromCoords(instructionValue.Split(";"))) - aim.origin).normalized;
-            aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
+            aimLine.SetPosition(1, transform.parent.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
         }
     }
 }
