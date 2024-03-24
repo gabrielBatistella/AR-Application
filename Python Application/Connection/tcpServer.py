@@ -1,118 +1,52 @@
 import socket
-import time
-import traceback
-from threading import Thread
-import abc
-
-class ConnectionCloseException(Exception):
-    def __init__(self):
-        super().__init__('Client request to close connection.')
+from server import Server, EnvironmentCloseException
 
 
 
-class TCPServer(abc.ABC):
+class TCPServer(Server):
 
-    def __init__(self, ip, port):
-        self._listenerSock = TCPServer._initSocket(ip, port)
-        self._listenerThread = Thread(target=self._handleListening, args=())
-        self._listenerThread.daemon = True
+    def __init__(self, handlerClass, ip = socket.gethostbyname(socket.gethostname()), port = 5050):
+        print('Server type: TCP')
+        super().__init__(TCPServer._initSocket(ip, port))
 
-        self._conns = []
-        self._addrs = []
-        self._handlers = []
+        self._handlerClass = handlerClass
 
-    def run(self):
-        self.start()
-        try:
-            while self.isRunning(): time.sleep(10)
-        except KeyboardInterrupt:
-            print('Server execution interrupted.')
-        except:
-            print('An error ocurred => ' + traceback.format_exc())
-        finally:
-            self.close()
-
-    def start(self):
-        self._listenerThread.start()
-
-    def close(self):
-        print('Closing all server and connected devices...')
-
-        self._listenerSock.close()
-
-        while len(self._handlers) > 0:
-            self._handlers.pop()
-
-        while len(self._conns) > 0:
-            conn, addr = self._conns.pop(), self._addrs.pop()
-            if TCPServer._isConnected(conn):
-                TCPServer._closeConnection(conn, addr)
-            
-        print('Server down.')
-
-    def isRunning(self):
-        return self._listenerThread.is_alive()
+        self._conn = None
+        self._addr = None
 
 
 
-    @abc.abstractmethod
-    def _operateOnDataReceived(self, data):
-        pass
+    def _createEnvironment(self):
+        self._listenerSock.listen(1)
+        conn, addr = self._listenerSock.accept()
+        print(f'Connection accepted with client {addr}.')
+
+        self._conn = conn
+        self._addr = addr
+
+        return self._handlerClass()
+
+    def _destroyEnvironment(self):
+        TCPServer._closeConnection(self._conn, self._addr)
+
+        self._conn = None
+        self._addr = None
+
+    def _receiveData(self):
+        readBuffer_header = TCPServer._recvall(self._conn, 16)
+        header = readBuffer_header.decode('utf-8')
+        dataSize = int(header)
+
+        readBuffer_data = TCPServer._recvall(self._conn, dataSize)
+
+        return readBuffer_data, dataSize
+
+    def _sendResponse(self, response):
+        headerEncoded = str(len(response)).ljust(16).encode('utf-8')
+        infoEncoded = response.encode('utf-8')
     
-    def _handleConnection(self, conn, addr):
-        t = time.time()
-        try:
-            while True:          
-                data, dataSize = TCPServer._receiveData(conn)
-                output = self._operateOnDataReceived(data)
-
-                deltaT = time.time() - t
-                connectionInfo = str(round(1/deltaT)) + ' FPS' + self.__class__.inHeaderInfoSeparator + str(round((dataSize/1024**2)/deltaT, 2)) + ' MBps' if deltaT > 0 else '0 FPS' + self.__class__.inHeaderInfoSeparator + '0.00 MBps'
-                t = time.time()
-
-                infoToSend = connectionInfo + self.__class__.headerBodySeparator + output
-
-                headerEncoded = str(len(infoToSend)).ljust(16).encode('utf-8')
-                infoEncoded = infoToSend.encode('utf-8')
-            
-                conn.sendall(headerEncoded)
-                conn.sendall(infoEncoded)
-
-        except ConnectionCloseException:
-            TCPServer._closeConnection(conn, addr)
-
-        except OSError:
-            print(f'The connection with {addr} is closed')
-            #TCPServer._closeConnection(conn, addr)
-
-        except:
-            print(f'An error ocurred in the connection with {addr} => ' + traceback.format_exc())
-            TCPServer._closeConnection(conn, addr)
-        
-    def _handleListening(self):
-        try:
-            print(f'Socket mode: {self._listenerSock.getblocking()}')
-            print(f'Timeout time: {self._listenerSock.timeout}')
-            print('Waiting for connections...')
-
-            while True:
-                self._listenerSock.listen(1)
-                conn, addr = self._listenerSock.accept()
-                print(f'Connection accepted with device {addr}.')
-
-                thr = Thread(target=self._handleConnection, args=(conn, addr))
-                thr.daemon = True
-                thr.start()
-
-                self._conns.append(conn)
-                self._addrs.append(addr)
-                self._handlers.append(thr)
-            
-        except OSError:
-            print('Stopped listening.')
-
-        except:
-            print(traceback.format_exc())
+        self._conn.sendall(headerEncoded)
+        self._conn.sendall(infoEncoded)
 
 
 
@@ -120,50 +54,27 @@ class TCPServer(abc.ABC):
     def _initSocket(ip, port):      
         print(f'Host IP: {ip} | Port: {port}')
 
-        newSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        newSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)      
-        newSock.bind((ip, port))
-        # newSock.settimeout(1.0)
-        # newSock.setblocking(0)
+        newSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        newSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)      
+        newSocket.bind((ip, port))
+        # newSocket.settimeout(1.0)
+        # newSocket.setblocking(0)
 
-        return newSock
+        return newSocket
     
     @staticmethod
     def _closeConnection(conn, addr):
-        try:
-            conn.shutdown(socket.SHUT_RDWR)
-            conn.close()
-            print(f'Connection with client {addr} closed')
-        except OSError:
-            print(f'Connection with client {addr} was already closed')
-        except:
-            print(traceback.format_exc())
-
-    @staticmethod
-    def _isConnected(conn):
-        try:
-            conn.sendall(b'')
-            return True
-        except:
-            return False
-
+        conn.shutdown(socket.SHUT_RDWR)
+        conn.close()
+        print(f'Connection with client {addr} closed')
+    
     @staticmethod
     def _recvall(conn, amount):
         buf = b''
         while amount:
             newbuf = conn.recv(amount)
             if len(newbuf) == 0:
-                raise ConnectionCloseException()
+                raise EnvironmentCloseException()
             buf += newbuf
             amount -= len(newbuf)
         return buf
-    
-    @staticmethod
-    def _receiveData(conn):
-        readBuffer_header = TCPServer._recvall(conn, 16)
-        header = readBuffer_header.decode('utf-8')
-        dataSize = int(header)
-
-        readBuffer_data = TCPServer._recvall(conn, dataSize)
-
-        return readBuffer_data, dataSize
