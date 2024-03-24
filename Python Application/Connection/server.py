@@ -28,7 +28,11 @@ class Server(abc.ABC):
 
 
     @abc.abstractmethod
-    def _createEnvironment(self):
+    def _waitForClient(self):
+        pass
+
+    @abc.abstractmethod
+    def _createEnvironment(self, conn, addr):
         pass
 
     @abc.abstractmethod
@@ -48,7 +52,7 @@ class Server(abc.ABC):
     def _watchClients(self):
         while True:
             print('Waiting for client...')
-            handler = self._createEnvironment()
+            handler = self._createEnvironment(*(self._waitForClient()))
 
             print(f'Running environment...')
             self._runEnvironment(handler)

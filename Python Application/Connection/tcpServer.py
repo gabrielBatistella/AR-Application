@@ -16,11 +16,14 @@ class TCPServer(Server):
 
 
 
-    def _createEnvironment(self):
+    def _waitForClient(self):
         self._listenerSock.listen(1)
         conn, addr = self._listenerSock.accept()
         print(f'Connection accepted with client {addr}.')
 
+        return conn, addr
+
+    def _createEnvironment(self, conn, addr):
         self._conn = conn
         self._addr = addr
 
