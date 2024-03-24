@@ -72,43 +72,13 @@ def main():
 
     ret, cameraMatrix, dist, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, frameSize, None, None)
 
-    with open("calib_results/intrinsic.npy", "wb") as f:
-        np.save(f, cameraMatrix)
+    print(cameraMatrix)
+    print(dist)
 
 
 
 ################################### ERRO DE CALIBRAÇÃO #######################################
 
-    print(cameraMatrix)
-    print(dist)
-
-    img = cv.imread("imagesForCalibration/calib_img49.png")
-    h, w = img.shape[:2]
-    newCameraMatrix, roi = cv.getOptimalNewCameraMatrix(cameraMatrix, dist, (w,h), 1, (w,h))
-
-    print(newCameraMatrix)
-
-    with open("calib_results/intrinsicNew.npy", "wb") as f:
-        np.save(f, newCameraMatrix)
-
-    # Undistort
-    dst = cv.undistort(img, cameraMatrix, dist, None, newCameraMatrix)
-
-    # crop the image
-    x, y, w, h = roi
-    dst = dst[y:y+h, x:x+w]
-    cv.imwrite("calib_results/undistortion49-1.png", dst)
-
-    # Undistort with Remapping
-    mapx, mapy = cv.initUndistortRectifyMap(cameraMatrix, dist, None, newCameraMatrix, (w,h), 5)
-    dst = cv.remap(img, mapx, mapy, cv.INTER_LINEAR)
-
-    # crop the image
-    x, y, w, h = roi
-    dst = dst[y:y+h, x:x+w]
-    cv.imwrite("calib_results/undistortion49-2.png", dst)
-
-    # Reprojection Error
     mean_error = 0
 
     for i in range(len(objpoints)):
@@ -116,7 +86,7 @@ def main():
         error = cv.norm(imgpoints[i], imgpoints2, cv.NORM_L2)/len(imgpoints2)
         mean_error += error
 
-    print("total error: {}".format(mean_error/len(objpoints)))
+    print("Total Error: ", mean_error/len(objpoints))
 
     print("Calibration finished")
 
@@ -132,9 +102,6 @@ def main():
         rVector = rvecs,
         tVector = tvecs,
     )
-
-    print(cameraMatrix)
-    print(dist)
 
 
 

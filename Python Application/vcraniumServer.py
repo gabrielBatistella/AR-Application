@@ -47,6 +47,8 @@ class VCraniumServer(TCPServer):
         frame_encoded = np.frombuffer(data, dtype=np.uint8)
         frame = cv.imdecode(frame_encoded, cv.IMREAD_COLOR)
 
+        initialMode = self.handInstructionWriters[0].modeCurrent
+
         result = ""
 
         if len(self.handInstructionWriters) > 0:
@@ -77,7 +79,6 @@ class VCraniumServer(TCPServer):
 
                 hand["fingersUp"] = self.handDetector.fingersUp(hand)
 
-            initialMode = self.handInstructionWriters[0].modeCurrent
             for writer in self.handInstructionWriters:
                 if writer.shouldExecuteInMode(initialMode):
                     if not writer.shouldExecuteInMode(self.handInstructionWriters[0].modeCurrent):
@@ -86,7 +87,7 @@ class VCraniumServer(TCPServer):
                         instruction = writer.generateInstruction(self.handDetector, hands, self.calib)
 
                     if instruction != "":
-                        result += instruction + self.inBodyInstructionSeparator
+                        result += instruction + self.__class__.inBodyInstructionSeparator
 
         if len(self.faceInstructionWriters) > 0:
             faces = self.faceDetector.findFaceMesh(frame, draw=False)
@@ -103,7 +104,6 @@ class VCraniumServer(TCPServer):
                 face["rVec"] = rVec[:]
                 face["tVec"] = tVec[:]
 
-            initialMode = self.handInstructionWriters[0].modeCurrent
             for writer in self.faceInstructionWriters:
                 if writer.shouldExecuteInMode(initialMode):
                     if not writer.shouldExecuteInMode(self.handInstructionWriters[0].modeCurrent):
@@ -112,7 +112,7 @@ class VCraniumServer(TCPServer):
                         instruction = writer.generateInstruction(self.faceDetector, faces, self.calib)
 
                     if instruction != "":
-                        result += instruction + self.inBodyInstructionSeparator
+                        result += instruction + self.__class__.inBodyInstructionSeparator
 
         return result
         
