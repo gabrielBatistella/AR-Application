@@ -1,9 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(TCPClient))]
+[RequireComponent(typeof(Client))]
 public class ConnectFromInput : MonoBehaviour
 {
     [SerializeField] private InputField ipInput;
@@ -12,16 +10,16 @@ public class ConnectFromInput : MonoBehaviour
     [SerializeField] private GameObject errorMessage;
     [SerializeField] private GameObject inputUI;
 
-    private TCPClient client;
+    private Client client;
 
     private void Awake()
     {
-        client = GetComponent<TCPClient>();
+        client = GetComponent<Client>();
     }
 
     public void TryConnecting()
     {
-        bool ok = client.TryToConnect(ipInput.text, int.Parse(portInput.text));
+        bool ok = client.TryToOpenCom(ipInput.text, int.Parse(portInput.text));
 
         if (ok)
         {

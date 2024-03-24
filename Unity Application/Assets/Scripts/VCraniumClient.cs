@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class VCraniumClient : TCPClient
 {
@@ -40,7 +38,7 @@ public class VCraniumClient : TCPClient
         }
     }
 
-    protected override void UseDataReceivedFromServer(byte[] data)
+    protected override void UseResponseReceivedFromServer(byte[] data)
     {
         string textData = Encoding.UTF8.GetString(data, 0, data.Length);
         string[] headerBody = textData.Split(headerBodySeparator);
