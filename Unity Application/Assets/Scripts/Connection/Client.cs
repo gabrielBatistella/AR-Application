@@ -8,13 +8,13 @@ using UnityEngine.UI;
 
 public abstract class Client : MonoBehaviour
 {
-    [Header("Server Connection")]
+    [Header("Server Info")]
     [SerializeField] private string defaultServerIP;
     [SerializeField] private int defaultServerPort;
 
     [SerializeField] private bool startConnecting;
 
-    [Header("UI for Connection Info")]
+    [Header("UI for Comunication Info")]
     [SerializeField] private Text connTextField;
 
     private CommunicationSynchron syncObj;

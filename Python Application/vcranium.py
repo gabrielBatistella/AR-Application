@@ -1,11 +1,11 @@
-import socket
 import numpy as np
 import cv2 as cv
 
-from Connection.tcpServer import TCPServer
 from Camera.cameraCalibration import CalibrationInfo
 from Modules.handTrackingModule import HandDetector
 from Modules.faceMeshModule import FaceMeshDetector
+
+from Connection.handler import Handler
 
 from Writers.menuHandler import MenuHandler
 from Writers.followFingerTips import FollowFingerTips
@@ -16,15 +16,15 @@ from Writers.objectRotator import ObjectRotator
 from Writers.objectScaler import ObjectScaler
 from Writers.freeTransformer import FreeTransformer
 
-class VCraniumServer(TCPServer):
+class VCranium(Handler):
     
     headerBodySeparator = "?"
     inHeaderInfoSeparator = "|"
     inBodyInstructionSeparator = "&"
     inInstructionHandleValueSeparator = "="
 
-    def __init__(self, ip, port):
-        super().__init__(ip, port)
+    def __init__(self):
+        super().__init__()
 
         self.calib = CalibrationInfo("Camera/calib_results/calculatedValues.npz")
 
@@ -43,7 +43,10 @@ class VCraniumServer(TCPServer):
         self.faceDetector = FaceMeshDetector(maxFaces=1, minDetectionCon=0.5)
         self.faceInstructionWriters = []
 
-    def _operateOnDataReceived(self, data):
+    def __del__(self):
+        super().__del__()
+
+    def operateOnData(self, data):
         frame_encoded = np.frombuffer(data, dtype=np.uint8)
         frame = cv.imdecode(frame_encoded, cv.IMREAD_COLOR)
 
@@ -115,14 +118,3 @@ class VCraniumServer(TCPServer):
                         result += instruction + self.__class__.inBodyInstructionSeparator
 
         return result
-        
-
-        
-def main():
-    HOSTNAME = socket.gethostname()
-    HOST = socket.gethostbyname(HOSTNAME)
-
-    server = VCraniumServer(HOST, 5050)
-    server.run()
-
-if __name__ == '__main__' : main()

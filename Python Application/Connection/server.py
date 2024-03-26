@@ -1,72 +1,51 @@
 import time
 import traceback
-import abc
 
-class EnvironmentCloseException(Exception):
+class CommunicationCloseException(Exception):
     def __init__(self):
         super().__init__('Client request to close environment.')
 
+class Server():
 
-
-class Server(abc.ABC):
-
-    def __init__(self, socket):
-        self._mainSocket = socket
+    def __init__(self, Connector, Handler):
+        self._Connector = Connector
+        self._Handler = Handler
 
     def run(self):
         try:
-            self._watchClients()
+            connector = self._Connector()
+            self._manageClients(connector)
         except KeyboardInterrupt:
             print('Server execution interrupted.')
         except:
             print('An error ocurred => ' + traceback.format_exc())
         finally:
             print('Closing server devices...')
-            self._mainSocket.close()
+            del connector
             print('Server down.')
 
 
 
-    @abc.abstractmethod
-    def _waitForClient(self):
-        pass
-
-    @abc.abstractmethod
-    def _createEnvironment(self, conn, addr):
-        pass
-
-    @abc.abstractmethod
-    def _destroyEnvironment(self):
-        pass
-
-    @abc.abstractmethod
-    def _receiveData(self):
-        pass
-
-    @abc.abstractmethod
-    def _sendResponse(self, response):
-        pass
-
-
-
-    def _watchClients(self):
+    def _manageClients(self, connector):
         while True:
             print('Waiting for client...')
-            handler = self._createEnvironment(*(self._waitForClient()))
+            connector.openCommunication(*(connector.waitForClient()))
+            handler = self._Handler()
 
-            print(f'Running environment...')
-            self._runEnvironment(handler)
+            print('Running environment...')
+            self._runEnvironment(connector, handler)
 
-            print(f'Closing environment...')
-            self._destroyEnvironment()
+            print('Closing environment...')
+            connector.closeCommunication()
+            del handler
 
             print()
 
-    def _runEnvironment(self, handler):
+    def _runEnvironment(self, connector, handler):
         try:
             t = time.time()
             while True:          
-                data, dataSize = self._receiveData()
+                data, dataSize = connector.receiveData()
                 output = handler.operateOnData(data)
 
                 deltaT = time.time() - t
@@ -74,7 +53,7 @@ class Server(abc.ABC):
                 t = time.time()
 
                 response = connectionInfo + handler.__class__.headerBodySeparator + output
-                self._sendResponse(response)
+                connector.sendResponse(response)
 
-        except (EnvironmentCloseException, OSError):
+        except (CommunicationCloseException, OSError):
             return

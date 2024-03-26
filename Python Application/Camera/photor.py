@@ -1,13 +1,9 @@
-import socket
 import numpy as np
 import cv2 as cv
 
-import sys
-sys.path.insert(0, "C:\\Users\\Gabriel\\Desktop\\TCC\\AR-Application\\Python Application")
+from Connection.handler import Handler
 
-from Connection.tcpServer import TCPServer
-
-class PhotosServer(TCPServer):
+class Photor(Handler):
 
     headerBodySeparator = "?"
     inHeaderInfoSeparator = "|"
@@ -17,8 +13,8 @@ class PhotosServer(TCPServer):
     chessboardSize = (9,6)
     criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
-    def __init__(self, ip, port):
-        super().__init__(ip, port)
+    def __init__(self):
+        super().__init__()
 
         self.imagesSaved = 0
         self.imageToSave = None
@@ -26,7 +22,11 @@ class PhotosServer(TCPServer):
 
         self.showingBoard = False
 
-    def _operateOnDataReceived(self, data):
+    def __del__(self):
+        super().__del__()
+        cv.destroyAllWindows()
+
+    def operateOnData(self, data):
         frame_encoded = np.frombuffer(data, dtype=np.uint8)
         frame = cv.imdecode(frame_encoded, cv.IMREAD_COLOR)
         #inv = cv.flip(frame, 1)
@@ -64,18 +64,3 @@ class PhotosServer(TCPServer):
             self.showingBoard = False
 
         return ""
-    
-    def close(self):
-        super().close()
-        cv.destroyAllWindows()
-        
-
-        
-def main():
-    HOSTNAME = socket.gethostname()
-    HOST = socket.gethostbyname(HOSTNAME)
-
-    server = PhotosServer(HOST, 5051)
-    server.run()
-
-if __name__ == '__main__' : main()
