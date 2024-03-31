@@ -1,6 +1,6 @@
 import socket
-from connector import Connector
-from server import CommunicationCloseException
+from Connection.connector import Connector
+from Connection.server import CommunicationCloseException
 
 class TCPConnector(Connector):
 
@@ -29,18 +29,18 @@ class TCPConnector(Connector):
 
     def openCommunication(self, conn, addr):
         if self._conn is None:
+            print(f'Connection accepted with client {addr}.')
             self._conn = conn
             self._addr = addr
-            print(f'Connection accepted with client {addr}.')
         else:
             print(f'Already connected to {self._addr}.')
 
     def closeCommunication(self):
         if self._conn is not None:
             TCPConnector._closeConnection(self._conn)
+            print(f'Connection with client {self._addr} closed.')
             self._conn = None
             self._addr = None
-            print(f'Connection with client {self._addr} closed.')
         else:
             print('Not connected to any client.')
 
