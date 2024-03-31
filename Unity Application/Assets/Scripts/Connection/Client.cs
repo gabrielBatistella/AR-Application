@@ -5,8 +5,11 @@ using UnityEngine;
 using System.Collections;
 using System.Threading;
 using UnityEngine.UI;
+using System.Text;
 
-public abstract class Client : MonoBehaviour
+[RequireComponent(typeof(Connector))]
+[RequireComponent(typeof(Handler))]
+public class Client : MonoBehaviour
 {
     [Header("Server Info")]
     [SerializeField] private string defaultServerIP;
@@ -14,15 +17,15 @@ public abstract class Client : MonoBehaviour
 
     [SerializeField] private bool startConnecting;
 
-    [Header("UI for Comunication Info")]
+    [Header("UI for Communication Info")]
     [SerializeField] private Text connTextField;
 
     private CommunicationSynchron syncObj;
+    private Connector connector;
+    private Handler handler;
 
     private bool connected = false;
     public bool Connected { get => connected; }
-
-    protected string specificConnectionInfo = "";
 
     private class CommunicationSynchron
     {
@@ -33,7 +36,13 @@ public abstract class Client : MonoBehaviour
         public bool comDown = false;
     }
 
-    protected virtual void Start()
+    private void Awake()
+    {
+        connector = GetComponent<Connector>();
+        handler = GetComponent<Handler>();
+    }
+
+    private void Start()
     {
         if (startConnecting)
         {
@@ -46,12 +55,6 @@ public abstract class Client : MonoBehaviour
         StopClient();
     }
 
-    protected abstract void OpenCommunication(string ip, int port);
-    protected abstract void CloseCommunication();
-    protected abstract void SendData(byte[] data);
-    protected abstract byte[] ReceiveResponse();
-    protected abstract void UseResponseReceivedFromServer(byte[] response);
-
     public bool TryToOpenCom(string ip, int port)
     {
         if (connected)
@@ -63,7 +66,7 @@ public abstract class Client : MonoBehaviour
         Debug.Log("Trying to establish communication with " + ip + "...");
         try
         {
-            OpenCommunication(ip, port);
+            connector.OpenCommunication(ip, port);
             Debug.Log("Communicating: " + ip);
 
             syncObj = new CommunicationSynchron();
@@ -88,22 +91,27 @@ public abstract class Client : MonoBehaviour
         }
     }
 
-    protected virtual void StopClient()
+    public event Action OnClientStop;
+    private void StopClient()
     {
-        Debug.Log("Stopping client...");
+        if (connected)
+        {
+            Debug.Log("Stopping client...");
 
-        CloseCommunication();
-        connected = false;
+            connector.CloseCommunication();
+            connected = false;
+
+            OnClientStop?.Invoke();
+        }
     }
 
-    protected void SendToServer(byte[] data)
+    public void SendToServer(byte[] data)
     {
-        SendData(data);
+        connector.SendData(data);
 
         lock (syncObj)
         {
             syncObj.recvBalance--;
-            connTextField.text = specificConnectionInfo + "Balance: " + syncObj.recvBalance;
         }
     }
 
@@ -114,6 +122,7 @@ public abstract class Client : MonoBehaviour
 
         while (true)
         {
+            byte[] response = null;
             lock (syncObj)
             {
                 if (syncObj.comDown)
@@ -123,10 +132,20 @@ public abstract class Client : MonoBehaviour
                 }
                 else if (syncObj.recvFlag)
                 {
-                    UseResponseReceivedFromServer(syncObj.recvData);
+                    response = syncObj.recvData;
                     syncObj.recvFlag = false;
                 }
             }
+
+            if (response != null)
+            {
+                string textData = Encoding.UTF8.GetString(response, 0, response.Length);
+                string[] headerBody = textData.Split(handler.HeaderBodySeparator);
+
+                ShowHeaderInfo(headerBody[0]);
+                handler.UseResponseReceivedFromServer(headerBody[1]);
+            }
+
             yield return null;
         }
     }
@@ -137,7 +156,7 @@ public abstract class Client : MonoBehaviour
         {
             while (true)
             {
-                byte[] responseData = ReceiveResponse();
+                byte[] responseData = connector.ReceiveResponse();
 
                 lock (syncObj)
                 {
@@ -163,5 +182,23 @@ public abstract class Client : MonoBehaviour
                 syncObj.comDown = true;
             }
         }
+    }
+
+    private void ShowHeaderInfo(string header)
+    {
+        string[] infos = header.Split(handler.InHeaderInfoSeparator);
+        string headerText = "";
+        foreach (string info in infos)
+        {
+            headerText += info + "\n";
+        }
+
+        string balanceText = "";
+        lock (syncObj)
+        {
+            balanceText = "Balance: " + syncObj.recvBalance;
+        }
+
+        connTextField.text = headerText + balanceText;
     }
 }

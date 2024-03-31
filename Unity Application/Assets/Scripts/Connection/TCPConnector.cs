@@ -4,15 +4,12 @@ using System.Net.Sockets;
 using System.Text;
 using UnityEngine;
 
-public abstract class TCPClient : Client
+public class TCPConnector : Connector
 {
-    [Header("Encoding Details")]
-    [SerializeField] private int headerSize;
-
     private TcpClient tcp = new TcpClient();
     private NetworkStream networkStream;
 
-    protected override void OpenCommunication(string ip, int port)
+    public override void OpenCommunication(string ip, int port)
     {
         IPEndPoint endpoint = new IPEndPoint(IPAddress.Parse(ip), port);
 
@@ -20,7 +17,7 @@ public abstract class TCPClient : Client
         networkStream = tcp.GetStream();
     }
 
-    protected override void CloseCommunication()
+    public override void CloseCommunication()
     {
         if (tcp.Connected)
         {
@@ -29,26 +26,26 @@ public abstract class TCPClient : Client
         }
     }
 
-    protected override void SendData(byte[] data)
+    public override void SendData(byte[] data)
     {
-        string header = data.Length.ToString().PadRight(headerSize);
+        string header = data.Length.ToString().PadRight(HeaderSize);
         byte[] headerEncoded = Encoding.UTF8.GetBytes(header);
 
-        networkStream.Write(headerEncoded, 0, headerSize);
+        networkStream.Write(headerEncoded, 0, HeaderSize);
         networkStream.Write(data, 0, data.Length);
     }
 
-    protected override byte[] ReceiveResponse()
+    public override byte[] ReceiveResponse()
     {
-        byte[] headerData = ReadAll(networkStream, headerSize);
-        string header = Encoding.UTF8.GetString(headerData, 0, headerSize);
+        byte[] headerData = ReadAll(HeaderSize);
+        string header = Encoding.UTF8.GetString(headerData, 0, HeaderSize);
         int responseSize = int.Parse(header);
 
-        byte[] responseData = ReadAll(networkStream, responseSize);
+        byte[] responseData = ReadAll(responseSize);
         return responseData;
     }
 
-    private byte[] ReadAll(NetworkStream networkStream, int amountToRead)
+    private byte[] ReadAll(int amountToRead)
     {
         byte[] readBuffer = new byte[amountToRead];
 
