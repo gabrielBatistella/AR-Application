@@ -413,7 +413,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 1280, y: 480}
+  m_ReferenceResolution: {x: 2340, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
@@ -940,7 +940,7 @@ MonoBehaviour:
   inInstructionHandleValueSeparator: 61
   cam: {fileID: 539792854}
   imageQuality: 100
-  maxFPS: 10
+  maxFPS: 60
   readers:
   - {fileID: 1419024927}
   - {fileID: 136087753}
@@ -1472,8 +1472,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a4030e08f47e3646885852360bedfc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 1280
-  height: 480
+  width: 960
+  height: 540
   startActivated: 1
 --- !u!1 &563308216
 GameObject:
@@ -1960,7 +1960,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 1280, y: 480}
+  m_ReferenceResolution: {x: 2340, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
@@ -2138,7 +2138,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 1280, y: 480}
+  m_ReferenceResolution: {x: 2340, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
@@ -5322,7 +5322,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 1280, y: 480}
+  m_ReferenceResolution: {x: 2340, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3

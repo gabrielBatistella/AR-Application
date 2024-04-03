@@ -9,11 +9,7 @@ class Connector(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def waitForClient(self):
-        pass
-
-    @abc.abstractmethod
-    def openCommunication(self, conn, addr):
+    def waitCommunication(self):
         pass
 
     @abc.abstractmethod

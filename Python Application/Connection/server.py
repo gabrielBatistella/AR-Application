@@ -12,8 +12,8 @@ class Server():
         self._Connector = Connector
         self._Handler = Handler
 
-        self._com = None
-        self._env = None
+        self._communication = None
+        self._environment = None
 
         self._managerThread = Thread(target=self._manageClients, args=())
         self._managerThread.daemon = True
@@ -30,12 +30,12 @@ class Server():
             self.close()
 
     def start(self):
-        self._com = self._Connector()
+        self._communication = self._Connector()
         self._managerThread.start()
 
     def close(self):
         print('Closing server devices...')
-        del self._com
+        del self._communication
         print('Server down.')
 
     def isRunning(self):
@@ -46,15 +46,15 @@ class Server():
     def _manageClients(self):
         while True:
             print('Waiting for client...')
-            self._com.openCommunication(*(self._com.waitForClient()))
-            self._env = self._Handler()
+            self._communication.waitCommunication()
+            self._environment = self._Handler()
 
             print('Running environment...')
             self._runEnvironment()
 
             print('Closing environment...')
-            self._com.closeCommunication()
-            del self._env
+            self._communication.closeCommunication()
+            del self._environment
 
             print()
 
@@ -62,15 +62,15 @@ class Server():
         try:
             t = time.time()
             while True:          
-                data, dataSize = self._com.receiveData()
-                output = self._env.operateOnData(data)
+                data, dataSize = self._communication.receiveData()
+                output = self._environment.operateOnData(data)
 
                 deltaT = time.time() - t
                 connectionInfo = f'{round(1/deltaT)} FPS{self._Handler.inHeaderInfoSeparator}{round((dataSize/1024**2)/deltaT, 2)} MBps' if deltaT > 0 else f'0 FPS{self._Handler.inHeaderInfoSeparator}0.00 MBps'
                 t = time.time()
 
                 response = connectionInfo + self._Handler.headerBodySeparator + output
-                self._com.sendResponse(response)
+                self._communication.sendResponse(response)
 
-        except (CommunicationCloseException, OSError):
+        except (CommunicationCloseException):
             return
