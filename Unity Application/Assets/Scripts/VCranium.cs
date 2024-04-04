@@ -16,8 +16,6 @@ public class VCranium : Handler
 
     private void Start()
     {
-        client.OnClientStop += Shutdown;
-
         foreach (InstructionReader reader in readers)
         {
             reader.SetDefault();
@@ -26,10 +24,14 @@ public class VCranium : Handler
 
     private void Update()
     {
-        if (client.Connected && Time.time > nextFrameTime)
+        if (Time.time > nextFrameTime)
         {
             nextFrameTime = Time.time + 1f / maxFPS;
-            client.SendToServer(cam.GetFrameJPG(imageQuality));
+
+            byte[] data = cam.GetFrameJPG(imageQuality);
+            CallDataReadyEvent(data);
+
+            Debug.Log(data.Length);
         }
     }
 
@@ -62,7 +64,7 @@ public class VCranium : Handler
         }
     }
 
-    private void Shutdown()
+    public override void Shutdown()
     {
         Destroy(gameObject);
     }

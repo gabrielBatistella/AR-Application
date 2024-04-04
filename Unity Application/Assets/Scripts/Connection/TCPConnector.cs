@@ -2,7 +2,6 @@ using System.IO;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
-using UnityEngine;
 
 public class TCPConnector : Connector
 {
@@ -11,9 +10,9 @@ public class TCPConnector : Connector
 
     public override void OpenCommunication(string ip, int port)
     {
-        IPEndPoint endpoint = new IPEndPoint(IPAddress.Parse(ip), port);
+        IPEndPoint serverEndpoint = new IPEndPoint(IPAddress.Parse(ip), port);
 
-        tcp.Connect(endpoint);
+        tcp.Connect(serverEndpoint);
         networkStream = tcp.GetStream();
     }
 

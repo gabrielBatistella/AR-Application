@@ -413,7 +413,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 2340, y: 1080}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
@@ -912,7 +912,7 @@ GameObject:
   m_Component:
   - component: {fileID: 244470660}
   - component: {fileID: 244470663}
-  - component: {fileID: 244470662}
+  - component: {fileID: 244470664}
   - component: {fileID: 244470659}
   - component: {fileID: 244470661}
   m_Layer: 0
@@ -939,8 +939,8 @@ MonoBehaviour:
   inBodyInstructionSeparator: 38
   inInstructionHandleValueSeparator: 61
   cam: {fileID: 539792854}
-  imageQuality: 100
-  maxFPS: 60
+  imageQuality: 60
+  maxFPS: 6
   readers:
   - {fileID: 1419024927}
   - {fileID: 136087753}
@@ -981,19 +981,6 @@ MonoBehaviour:
   portInput: {fileID: 739721939}
   errorMessage: {fileID: 317758191}
   inputUI: {fileID: 139201365}
---- !u!114 &244470662
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 244470658}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 865526cff2eaf814cb7bb464f10e80d3, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  headerSize: 16
 --- !u!114 &244470663
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1010,6 +997,19 @@ MonoBehaviour:
   defaultServerPort: 5050
   startConnecting: 0
   connTextField: {fileID: 1038576001}
+--- !u!114 &244470664
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 244470658}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 037b3b9f0741a2b4da3b527933b55624, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  headerSize: 16
 --- !u!1 &317758191
 GameObject:
   m_ObjectHideFlags: 0
@@ -1472,8 +1472,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a4030e08f47e3646885852360bedfc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 960
-  height: 540
+  width: 1280
+  height: 720
   startActivated: 1
 --- !u!1 &563308216
 GameObject:
@@ -1960,7 +1960,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 2340, y: 1080}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
@@ -2138,7 +2138,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 2340, y: 1080}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
@@ -5322,7 +5322,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 2340, y: 1080}
+  m_ReferenceResolution: {x: 1280, y: 720}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3

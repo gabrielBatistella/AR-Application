@@ -44,6 +44,8 @@ public class Client : MonoBehaviour
 
     private void Start()
     {
+        handler.OnDataReady += SendToServer;
+
         if (startConnecting)
         {
             TryToOpenCom(defaultServerIP, defaultServerPort);
@@ -91,7 +93,6 @@ public class Client : MonoBehaviour
         }
     }
 
-    public event Action OnClientStop;
     private void StopClient()
     {
         if (connected)
@@ -101,23 +102,53 @@ public class Client : MonoBehaviour
             connector.CloseCommunication();
             connected = false;
 
-            OnClientStop?.Invoke();
+            handler.Shutdown();
         }
     }
 
     public void SendToServer(byte[] data)
     {
-        connector.SendData(data);
-
-        lock (syncObj)
+        if (!connected)
         {
-            syncObj.recvBalance--;
+            return;
+        }
+
+        try
+        {
+            connector.SendData(data);
+            lock (syncObj)
+            {
+                syncObj.recvBalance--;
+            }
+        }
+        catch (IOException)
+        {
+            lock (syncObj)
+            {
+                if (!syncObj.comDown)
+                {
+                    Debug.Log("Communication closed!\n");
+                    syncObj.comDown = true;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            lock (syncObj)
+            {
+                if (!syncObj.comDown)
+                {
+                    Debug.Log("Error sending data! - " + e + "\n");
+                    syncObj.comDown = true;
+                }
+            }
         }
     }
 
     private IEnumerator ReceivingRoutine()
     {
         Thread receivingThread = new Thread(ReceivingFromServer);
+        receivingThread.IsBackground = true;
         receivingThread.Start();
 
         while (true)
@@ -166,20 +197,26 @@ public class Client : MonoBehaviour
                 }
             }
         }
-        catch (EndOfStreamException)
+        catch (IOException)
         {
-            Debug.Log("Communication closed!\n");
             lock (syncObj)
             {
-                syncObj.comDown = true;
+                if (!syncObj.comDown)
+                {
+                    Debug.Log("Communication closed!\n");
+                    syncObj.comDown = true;
+                }
             }
         }
         catch (Exception e)
         {
-            Debug.Log("Error receiving data! - " + e + "\n");
             lock (syncObj)
             {
-                syncObj.comDown = true;
+                if (!syncObj.comDown)
+                {
+                    Debug.Log("Error receiving data! - " + e + "\n");
+                    syncObj.comDown = true;
+                }
             }
         }
     }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 [RequireComponent(typeof(Client))]
@@ -9,17 +10,17 @@ public abstract class Handler : MonoBehaviour
     [SerializeField] private char inBodyInstructionSeparator = '&';
     [SerializeField] private char inInstructionHandleValueSeparator = '=';
 
-    protected Client client;
-
     public char HeaderBodySeparator { get => headerBodySeparator; }
     public char InHeaderInfoSeparator { get => inHeaderInfoSeparator; }
     public char InBodyInstructionSeparator { get => inBodyInstructionSeparator; }
     public char InInstructionHandleValueSeparator { get => inInstructionHandleValueSeparator; }
 
-    protected virtual void Awake()
-    {
-        client = GetComponent<Client>();
-    }
-
     public abstract void UseResponseReceivedFromServer(string response);
+    public abstract void Shutdown();
+
+    public event Action<byte[]> OnDataReady;
+    protected void CallDataReadyEvent(byte[] data)
+    {
+        OnDataReady?.Invoke(data);
+    }
 }
