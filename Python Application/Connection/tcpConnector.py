@@ -57,9 +57,12 @@ class TCPConnector(Connector):
         if self._conn is not None: 
             headerEncoded = str(len(response)).ljust(16).encode('utf-8')
             infoEncoded = response.encode('utf-8')
-        
-            self._conn.sendall(headerEncoded)
-            self._conn.sendall(infoEncoded)
+
+            try:
+                self._conn.sendall(headerEncoded)
+                self._conn.sendall(infoEncoded)
+            except ConnectionAbortedError:
+                raise CommunicationCloseException()
         else:
             raise ValueError()
 
@@ -72,7 +75,7 @@ class TCPConnector(Connector):
         newSocket.bind((ip, port))
         newSocket.settimeout(None)
         return newSocket
-    
+
     @staticmethod
     def _waitConnection(listenerSocket):
         listenerSocket.listen(1)
@@ -83,7 +86,7 @@ class TCPConnector(Connector):
     def _closeConnection(conn):
         conn.shutdown(socket.SHUT_RDWR)
         conn.close()
-    
+
     @staticmethod
     def _recvall(conn, amount):
         buf = b''

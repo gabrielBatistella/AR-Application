@@ -72,5 +72,8 @@ class Server():
                 response = connectionInfo + self._Handler.headerBodySeparator + output
                 self._communication.sendResponse(response)
 
-        except (CommunicationCloseException):
+        except CommunicationCloseException:
             return
+        
+        except:
+            print('An error ocurred => ' + traceback.format_exc())

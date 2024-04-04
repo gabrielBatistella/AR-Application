@@ -4,7 +4,7 @@ from Connection.server import CommunicationCloseException
 
 class UDPConnector(Connector):
 
-    def __init__(self, ip = socket.gethostbyname(socket.gethostname()), port = 5050):
+    def __init__(self, ip = socket.gethostbyname(socket.gethostname()), port = 5052):
         super().__init__()
         print('Server type: UDP')
         
@@ -40,14 +40,14 @@ class UDPConnector(Connector):
             print('Not connected to any client.')
 
     def receiveData(self):
-        if self._addr is not None: 
+        if self._addr is not None:
             dataBytes = UDPConnector._recvonlyfrom(self._conn, self._addr)
             return dataBytes, len(dataBytes)
         else:
             raise ValueError()
 
     def sendResponse(self, response):
-        if self._addr is not None: 
+        if self._addr is not None:
             infoEncoded = response.encode('utf-8')
             self._conn.sendto(infoEncoded, self._addr)
         else:
@@ -62,11 +62,16 @@ class UDPConnector(Connector):
         newSocket.bind((ip, port))
         newSocket.settimeout(None)
         return newSocket
-    
+
     @staticmethod
     def _waitConnection(listenerSocket):
-        _, senderAddr = listenerSocket.recvfrom(65535)
-        return senderAddr
+        while True:
+            try:
+                test, addr = listenerSocket.recvfrom(65535)
+                listenerSocket.sendto(test, addr)
+                return addr
+            except ConnectionResetError: 
+                continue
 
     @staticmethod
     def _closeConnection():
@@ -79,7 +84,7 @@ class UDPConnector(Connector):
             try:
                 conn.settimeout(5.0)
                 data, senderAddr = conn.recvfrom(65535)
-            except:
+            except (TimeoutError, ConnectionResetError):
                 raise CommunicationCloseException()
             finally:
                 conn.settimeout(None)
