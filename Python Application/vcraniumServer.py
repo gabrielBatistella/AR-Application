@@ -16,6 +16,8 @@ from Writers.objectRotator import ObjectRotator
 from Writers.objectScaler import ObjectScaler
 from Writers.freeTransformer import FreeTransformer
 
+#Casas de cimaisq (2), Flick menu, Sensibilidade Menu
+
 class VCraniumServer(TCPServer):
     
     headerBodySeparator = "?"
@@ -80,18 +82,13 @@ class VCraniumServer(TCPServer):
             initialMode = self.handInstructionWriters[0].modeCurrent
             for writer in self.handInstructionWriters:
                 if writer.shouldExecuteInMode(initialMode):
-                    if not writer.shouldExecuteInMode(self.handInstructionWriters[0].modeCurrent):
-                        instruction = writer.getDisableInstruction()
-                    else:
-                        instruction = writer.generateInstruction(self.handDetector, hands, self.calib)
+                    instruction = writer.generateInstruction(self.handDetector, hands, self.calib)
 
                     if instruction != "":
                         result += instruction + self.inBodyInstructionSeparator
                         
         return result
-        
 
-        
 def main():
     HOSTNAME = socket.gethostname()
     HOST = socket.gethostbyname(HOSTNAME)

@@ -7,12 +7,7 @@ class ObjectRemover(InstructionWriter):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.delete = False
-        self.following = False
-
-    def getDisableInstruction(self):
-        instruction = "Remove" + self.inInstructionHandleValueSeparator
-        instruction += "Lost Track"
-        return instruction
+        self.prevFilteredPoint = {4: None, 5: None, 8: None, 12: None}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Remove" + self.inInstructionHandleValueSeparator
@@ -24,46 +19,40 @@ class ObjectRemover(InstructionWriter):
             if hand["fingersUp"] == [1, 1, 1, 0, 0]:
                 lmList = hand["lmList"]
                 
-                x0 = (lmList[4][0] - camCalib.w/2)*hand["px2cmRate"][0]
-                y0 = (-lmList[4][1] + camCalib.h/2)*hand["px2cmRate"][1]
-                z0 = lmList[4][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                for id in (4, 5, 8, 12):
+                    x = (lmList[id][0] - camCalib.w/2)*hand["px2cmRate"][0]
+                    y = (-lmList[id][1] + camCalib.h/2)*hand["px2cmRate"][1]
+                    z = lmList[id][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                    
+                    if self.filteredPoint[id] == None:
+                        self.filteredPoint[id] = (x, y, z)
+                    
+                    InstructionWriter.filterPointEWA((x, y, z), self.filteredPoint[id])
+                    
+                    self.filteredPoint[id] = (x, y, z)
                 
-                x1 = (lmList[6][0] - camCalib.w/2)*hand["px2cmRate"][0]
-                y1 = (-lmList[6][1] + camCalib.h/2)*hand["px2cmRate"][1]
-                z1 = lmList[6][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                dist = math.hypot(self.filteredPoint[4][0] - self.filteredPoint[5][0], self.filteredPoint[4][1] - self.filteredPoint[5][1], self.filteredPoint[4][2] - self.filteredPoint[5][2])
                 
-                dist = math.hypot(x1 - x0, y1 - y0, z1 - z0)
-                
-                xAvg = (x0 + x1)/2
-                yAvg = (y0 + y1)/2
-                zAvg = (z0 + z1)/2
+                xAvg = (self.filteredPoint[8][0] + self.filteredPoint[12][0])/2
+                yAvg = (self.filteredPoint[8][1] + self.filteredPoint[12][1])/2
+                zAvg = (self.filteredPoint[8][2] + self.filteredPoint[12][2])/2
             
                 #If thumb is touching index finger second landmark
                 if dist < 4:
                     if not self.delete:
                         instruction += "Remove:"
                         self.delete = True
-                    instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
                 else:
                     self.delete = False
-                    instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
                 
-                self.following = True
+                instruction += str(round(xAvg, 2)) + ";" + str(round(yAvg, 2)) + ";" + str(round(zAvg, 2))
             
-            else:
-                if self.following:
-                    instruction += "Lost Track"
-                    self.delete = False
-                    self.following = False
-                else:
-                    instruction = ""
-            
-        else:
-            if self.following:
-                instruction += "Lost Track"
-                self.delete = False
-                self.following = False
             else:
                 instruction = ""
+                self.prevFilteredPoint = {4: None, 5: None, 8: None, 12: None}
+            
+        else:
+            instruction = ""
+            self.prevFilteredPoint = {4: None, 5: None, 8: None, 12: None}
 
         return instruction

@@ -13,13 +13,8 @@ class ObjectSpawner(InstructionWriter):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.spawn = False
-        self.following = False
         self.path = "C:/Users/Gabriel/Desktop/test/"
-
-    def getDisableInstruction(self):
-        instruction = "Spawn" + self.inInstructionHandleValueSeparator
-        instruction += "Lost Track"
-        return instruction
+        self.prevFilteredPoint = {4: None, 8: None}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Spawn" + self.inInstructionHandleValueSeparator
@@ -31,25 +26,29 @@ class ObjectSpawner(InstructionWriter):
             if hand["fingersUp"] == [1, 1, 0, 0, 0]:
                 lmList = hand["lmList"]
                 
-                x1 = (lmList[4][0] - camCalib.w/2)*hand["px2cmRate"][0]
-                y1 = (-lmList[4][1] + camCalib.h/2)*hand["px2cmRate"][1]
-                z1 = lmList[4][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                for id in (4, 8):
+                    x = (lmList[id][0] - camCalib.w/2)*hand["px2cmRate"][0]
+                    y = (-lmList[id][1] + camCalib.h/2)*hand["px2cmRate"][1]
+                    z = lmList[id][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                    
+                    if self.filteredPoint[id] == None:
+                        self.filteredPoint[id] = (x, y, z)
+                    
+                    InstructionWriter.filterPointEWA((x, y, z), self.filteredPoint[id])
+                    
+                    self.filteredPoint[id] = (x, y, z)
                 
-                x2 = (lmList[8][0] - camCalib.w/2)*hand["px2cmRate"][0]
-                y2 = (-lmList[8][1] + camCalib.h/2)*hand["px2cmRate"][1]
-                z2 = lmList[8][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                dist = math.hypot(self.filteredPoint[4][0] - self.filteredPoint[8][0], self.filteredPoint[4][1] - self.filteredPoint[8][1], self.filteredPoint[4][2] - self.filteredPoint[8][2])
                 
-                dist = math.hypot(x2 - x1, y2 - y1, z2 - z1)
-                
-                xAvg = (x1+x2)/2
-                yAvg = (y1+y2)/2
-                zAvg = (z1+z2)/2
+                xAvg = (self.filteredPoint[4][0] + self.filteredPoint[8][0])/2
+                yAvg = (self.filteredPoint[4][1] + self.filteredPoint[8][1])/2
+                zAvg = (self.filteredPoint[4][2] + self.filteredPoint[8][2])/2
                 
                 #If thumb and index fingers are close
                 if dist < 5:
                     if not self.spawn:
                         self.spawn = True
-                    instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
+                    instruction += str(round(xAvg, 2)) + ";" + str(round(yAvg, 2)) + ";" + str(round(zAvg, 2))
                 
                 else:
                     if self.spawn:
@@ -57,27 +56,18 @@ class ObjectSpawner(InstructionWriter):
                         fileName = files[0].split("-", 1)[0]
                         filePath = self.path + files[0]
                         fileHexData = loadFile(filePath)
-                        instruction += "Spawn:" + str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg) + "/" + fileName + "/" + fileHexData
+                        instruction += "Spawn:" + str(round(xAvg, 2)) + ";" + str(round(yAvg, 2)) + ";" + str(round(zAvg, 2)) + "/" + fileName + "/" + fileHexData
                         self.spawn = False
                     else:
                         instruction = ""
-
-                self.following = True
+                        self.prevFilteredPoint = {4: None, 8: None}
             
             else:
-                if self.following:
-                    instruction += "Lost Track"
-                    self.spawn = False
-                    self.following = False
-                else:
-                    instruction = ""
+                instruction = ""
+                self.prevFilteredPoint = {4: None, 8: None}
 
         else:
-            if self.following:
-                instruction += "Lost Track"
-                self.spawn = False
-                self.following = False
-            else:
-                instruction = ""
+            instruction = ""
+            self.prevFilteredPoint = {4: None, 8: None}
                     
         return instruction
