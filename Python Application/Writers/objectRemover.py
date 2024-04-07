@@ -7,7 +7,7 @@ class ObjectRemover(InstructionWriter):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.delete = False
-        self.prevFilteredPoint = {4: None, 5: None, 8: None, 12: None}
+        self.filteredPoint = {4: None, 5: None, 8: None, 12: None}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Remove" + self.inInstructionHandleValueSeparator
@@ -49,10 +49,10 @@ class ObjectRemover(InstructionWriter):
             
             else:
                 instruction = ""
-                self.prevFilteredPoint = {4: None, 5: None, 8: None, 12: None}
+                self.filteredPoint = {4: None, 5: None, 8: None, 12: None}
             
         else:
             instruction = ""
-            self.prevFilteredPoint = {4: None, 5: None, 8: None, 12: None}
+            self.filteredPoint = {4: None, 5: None, 8: None, 12: None}
 
         return instruction

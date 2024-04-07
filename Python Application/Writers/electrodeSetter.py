@@ -7,14 +7,13 @@ def loadFile(filePath):
         data = file.read().hex()
     return data
 
-class ElectrodeSpawner(InstructionWriter):
+class ElectrodeSetter(InstructionWriter):
     
     def __init__(self, inInstructionHandleValueSeparator, modeMask):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.spawn = False
-        self.filter = False
-        self.prevFilteredPoint = {4: None, 5: None, 8: None}
+        self.filteredPoint = {4: None, 5: None, 8: None}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Electrode" + self.inInstructionHandleValueSeparator
@@ -55,9 +54,11 @@ class ElectrodeSpawner(InstructionWriter):
             else:
                 instruction = ""
                 self.spawn = False
+                self.filteredPoint = {4: None, 5: None, 8: None}
 
         else:
             instruction = ""
             self.spawn = False
+            self.filteredPoint = {4: None, 5: None, 8: None}
 
         return instruction

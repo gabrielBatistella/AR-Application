@@ -12,7 +12,7 @@ class MenuHandler(InstructionWriter):
         self.modeCurrent = 0
         self.xAvgInit = None
         self.yAvgInit = None
-        self.prevFilteredPoint = {8: None, 12: None}
+        self.filteredPoint = {8: None, 12: None}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Menu" + self.inInstructionHandleValueSeparator
@@ -45,10 +45,7 @@ class MenuHandler(InstructionWriter):
                 if dist < 5:
                     if self.yAvgInit is None:
                         self.yAvgInit = yAvg
-                        self.yLastPos = yAvg
-                    yPos = (self.beta*self.yLastPos + (1-self.beta)*yAvg)
-                    self.yLastPos = yPos
-                    yDelta = self.yAvgInit - yPos
+                    yDelta = self.yAvgInit - yAvg
                     
                     if not self.menu:
                         if yDelta > 3:
@@ -60,10 +57,7 @@ class MenuHandler(InstructionWriter):
                     else:
                         if self.xAvgInit is None:
                             self.xAvgInit = xAvg
-                            self.xLastPos = xAvg
-                        xPos = (self.beta*self.xLastPos + (1-self.beta)*xAvg)
-                        self.xLastPos = xPos
-                        xDelta = self.xAvgInit - xPos
+                        xDelta = self.xAvgInit - xAvg
                         percentage = round(50*yDelta/3)
                         
                         if xDelta < 0:
@@ -77,11 +71,11 @@ class MenuHandler(InstructionWriter):
                                                        
                         else:
                             if yDelta < 3:
-                                self.modeShown = (self.modeShown + 1) % 5
+                                self.modeShown = (self.modeShown + 1) % 6
                                 self.yAvgInit = yAvg + 1.5
                                 self.xAvgInit = xAvg
                             if yDelta > -3:
-                                self.modeShown = (self.modeShown - 1) % 5
+                                self.modeShown = (self.modeShown - 1) % 6
                                 self.yAvgInit = yAvg - 1.5
                                 self.xAvgInit = xAvg
                             instruction += str(self.modeShown) + ";" + str(percentage)
@@ -91,20 +85,20 @@ class MenuHandler(InstructionWriter):
                     self.menu = 0
                     self.yAvgInit = None
                     self.xAvgInit = None
-                    self.prevFilteredPoint = {8: None, 12: None}
+                    self.filteredPoint = {8: None, 12: None}
 
             else:
                 instruction = ""
                 self.menu = 0
                 self.yAvgInit = None
                 self.xAvgInit = None
-                self.prevFilteredPoint = {8: None, 12: None}
+                self.filteredPoint = {8: None, 12: None}
 
         else:
             instruction = ""
             self.menu = 0
             self.yAvgInit = None
             self.xAvgInit = None
-            self.prevFilteredPoint = {8: None, 12: None}
+            self.filteredPoint = {8: None, 12: None}
  
         return instruction

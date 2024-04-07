@@ -10,8 +10,8 @@ class FreeTransformer(InstructionWriter):
         self.leftFollowing = False
         self.rightHolding = False
         self.rightFollowing = False
-        self.prevFilteredPointLeft = {8: None, 12: None}
-        self.prevFilteredPointRight = {8: None, 12: None}
+        self.filteredPointLeft = {8: None, 12: None}
+        self.filteredPointRight = {8: None, 12: None}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Free" + self.inInstructionHandleValueSeparator
@@ -118,5 +118,7 @@ class FreeTransformer(InstructionWriter):
             self.rightHolding = False
             self.rightFollowing = False
             instruction = ""
+            self.filteredPointLeft = {8: None, 12: None}
+            self.filteredPointRight = {8: None, 12: None}
 
         return instruction

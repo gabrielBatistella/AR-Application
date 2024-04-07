@@ -10,7 +10,7 @@ class ObjectTranslator(InstructionWriter):
         self.xAvgInit = 0
         self.yAvgInit = 0
         self.zAvgInit = 0
-        self.prevFilteredPoint = {4: None, 8: None}
+        self.filteredPoint = {4: None, 8: None}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Translate" + self.inInstructionHandleValueSeparator
@@ -63,10 +63,10 @@ class ObjectTranslator(InstructionWriter):
 
             else:
                 instruction = ""
-                self.prevFilteredPoint = {4: None, 8: None}
+                self.filteredPoint = {4: None, 8: None}
 
         else:
             instruction = ""
-            self.prevFilteredPoint = {4: None, 8: None}
+            self.filteredPoint = {4: None, 8: None}
 
         return instruction

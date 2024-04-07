@@ -14,7 +14,7 @@ class ObjectSpawner(InstructionWriter):
 
         self.spawn = False
         self.path = "C:/Users/Gabriel/Desktop/test/"
-        self.prevFilteredPoint = {4: None, 8: None}
+        self.filteredPoint = {4: None, 8: None}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Spawn" + self.inInstructionHandleValueSeparator
@@ -60,14 +60,14 @@ class ObjectSpawner(InstructionWriter):
                         self.spawn = False
                     else:
                         instruction = ""
-                        self.prevFilteredPoint = {4: None, 8: None}
+                        self.filteredPoint = {4: None, 8: None}
             
             else:
                 instruction = ""
-                self.prevFilteredPoint = {4: None, 8: None}
+                self.filteredPoint = {4: None, 8: None}
 
         else:
             instruction = ""
-            self.prevFilteredPoint = {4: None, 8: None}
+            self.filteredPoint = {4: None, 8: None}
                     
         return instruction

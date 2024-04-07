@@ -8,7 +8,7 @@ class ObjectScaler(InstructionWriter):
 
         self.holding = False
         self.xAvgInit = 0
-        self.prevFilteredPoint = {4: None, 8: None}
+        self.filteredPoint = {4: None, 8: None}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Scale" + self.inInstructionHandleValueSeparator
@@ -56,10 +56,10 @@ class ObjectScaler(InstructionWriter):
                 
             else:
                 instruction = ""
-                self.prevFilteredPoint = {4: None, 8: None}
+                self.filteredPoint = {4: None, 8: None}
 
         else:
             instruction = ""
-            self.prevFilteredPoint = {4: None, 8: None}
+            self.filteredPoint = {4: None, 8: None}
                 
         return instruction

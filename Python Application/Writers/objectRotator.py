@@ -10,7 +10,7 @@ class ObjectRotator(InstructionWriter):
         self.xAvgInit = 0
         self.yAvgInit = 0
         self.zAvgInit = 0
-        self.prevFilteredPoint = {8: None, 12: None}
+        self.filteredPoint = {8: None, 12: None}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Rotate" + self.inInstructionHandleValueSeparator
@@ -62,10 +62,10 @@ class ObjectRotator(InstructionWriter):
 
             else:
                 instruction = ""
-                self.prevFilteredPoint = {8: None, 12: None}
+                self.filteredPoint = {8: None, 12: None}
             
         else:
             instruction = ""
-            self.prevFilteredPoint = {8: None, 12: None}
+            self.filteredPoint = {8: None, 12: None}
 
         return instruction
