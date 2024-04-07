@@ -8,7 +8,7 @@ using UnityEngine;
 public class UDPConnector : Connector
 {
     [SerializeField] private int maxFragmentSize = 512;
-    [SerializeField] private int maxFrameSeq = 30;
+    [SerializeField] private int maxFrameSeq = 512;
 
     private UdpClient udp = new UdpClient();
     private int framesSentCount;

@@ -15,6 +15,8 @@ from Writers.objectTranslator import ObjectTranslator
 from Writers.objectRotator import ObjectRotator
 from Writers.objectScaler import ObjectScaler
 from Writers.freeTransformer import FreeTransformer
+from Writers.electrodeSetter import ElectrodeSetter
+from Writers.brainPoseFollower import BrainPoseFollower
 
 class VCranium(Handler):
     
@@ -28,18 +30,21 @@ class VCranium(Handler):
 
         self.handDetector = HandDetector(maxHands=2, minDetectionCon=0.8)
         self.handInstructionWriters = [
-            MenuHandler(self.__class__.inInstructionHandleValueSeparator, 0b1111),
-            FingerTipsFollower(self.__class__.inInstructionHandleValueSeparator, 0b1000),
-            ObjectSpawner(self.__class__.inInstructionHandleValueSeparator, 0b0100),
-            ObjectRemover(self.__class__.inInstructionHandleValueSeparator, 0b0100),
-            ObjectTranslator(self.__class__.inInstructionHandleValueSeparator, 0b0010),
-            ObjectRotator(self.__class__.inInstructionHandleValueSeparator, 0b0010),
-            ObjectScaler(self.__class__.inInstructionHandleValueSeparator, 0b0010),
-            FreeTransformer(self.__class__.inInstructionHandleValueSeparator, 0b0001)
+            MenuHandler(self.__class__.inInstructionHandleValueSeparator, 0b111111),
+            FingerTipsFollower(self.__class__.inInstructionHandleValueSeparator, 0b100000),
+            ObjectSpawner(self.__class__.inInstructionHandleValueSeparator, 0b010000),
+            ObjectRemover(self.__class__.inInstructionHandleValueSeparator, 0b010000),
+            ObjectTranslator(self.__class__.inInstructionHandleValueSeparator, 0b001000),
+            ObjectRotator(self.__class__.inInstructionHandleValueSeparator, 0b001000),
+            ObjectScaler(self.__class__.inInstructionHandleValueSeparator, 0b001000),
+            FreeTransformer(self.__class__.inInstructionHandleValueSeparator, 0b000100),
+            ElectrodeSetter(self.__class__.inInstructionHandleValueSeparator, 0b000010)
         ]
 
         self.faceDetector = FaceMeshDetector(maxFaces=1, minDetectionCon=0.5)
-        self.faceInstructionWriters = []
+        self.faceInstructionWriters = [
+            BrainPoseFollower(self.__class__.inInstructionHandleValueSeparator, 0b000001)
+        ]
 
     def __del__(self):
         super().__del__()

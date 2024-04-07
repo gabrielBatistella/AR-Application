@@ -34,7 +34,7 @@ public class VCranium : Handler
             byte[] data = cam.GetFrameJPG(imageQuality);
             CallDataReadyEvent(data);
 
-            Debug.Log(data.Length);
+            //Debug.Log(data.Length);
         }
     }
 

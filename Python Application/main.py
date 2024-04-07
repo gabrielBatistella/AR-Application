@@ -5,7 +5,7 @@ from vcranium import VCranium
 from Camera.photor import Photor
 
 def main():
-    server = Server(UDPConnector, VCranium)
+    server = Server(TCPConnector, VCranium)
     server.run()
 
 if __name__ == '__main__' : main()

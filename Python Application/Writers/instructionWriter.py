@@ -6,7 +6,7 @@ class InstructionWriter(abc.ABC):
     
     def __init__(self, inInstructionHandleValueSeparator, modeMask):
         self.inInstructionHandleValueSeparator = inInstructionHandleValueSeparator
-        self.modeMask = int('{:04b}'.format(modeMask)[::-1], 2)
+        self.modeMask = int('{:06b}'.format(modeMask)[::-1], 2)
 
     @abc.abstractmethod
     def generateInstruction(self, detector, trackObjs, camCalib):

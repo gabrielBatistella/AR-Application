@@ -16,9 +16,6 @@ class BrainPoseFollower(InstructionWriter):
         if len(trackObjs) > 0:
             face = trackObjs[0]
 
-            brainPoint, _ = cv.projectPoints(BrainPoseFollower.brainPos, face["rVec"], face["tVec"], cameraMatrix=camCalib.camMatrix, distCoeffs=camCalib.distCof)
-            brainPoint = brainPoint.reshape(2)
-
             rMat, jac = cv.Rodrigues(face["rVec"])
             angles, mtxR, mtxQ, Qx, Qy, Qz = cv.RQDecomp3x3(rMat)
 
@@ -28,8 +25,7 @@ class BrainPoseFollower(InstructionWriter):
             transfMat[3, 3] = 1
 
             brainWorldPos = transfMat @ BrainPoseFollower.brainPosHomogenous
-            print(brainPoint)
-            print(brainWorldPos)
+            brainWorldPos = brainWorldPos.ravel()
             
             rotX = angles[0]
             rotY = angles[1]
