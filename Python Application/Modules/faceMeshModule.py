@@ -35,11 +35,11 @@ class FaceMeshDetector:
         self.featureMarkIds = (1, 199, 33, 263, 61, 291)
 
         self.featureMark3dPoints = np.array([[0.0, 0.0, 0.0],              # Nose tip           -> 1
-                                             [0.0, -330.0, -65.0],         # Chin               -> 199
-                                             [-225.0, 170.0, -135.0],      # Left eye corner    -> 33
-                                             [225.0, 170.0, -135.0],       # Right eye corner   -> 263
-                                             [-150.0, -150.0, -125.0],     # Left mouth         -> 61
-                                             [150.0, -150.0, -125.0]])     # Right mouth        -> 291
+                                             [0.0, -6.6, -1.3],         # Chin               -> 199
+                                             [-4.5, 3.4, -2.7],      # Left eye corner    -> 33
+                                             [4.5, 3.4, -2.7],       # Right eye corner   -> 263
+                                             [-3.0, -3.0, -2.5],     # Left mouth         -> 61
+                                             [3.0, -3.0, -2.5]])     # Right mouth        -> 291
 
     def findFaceMesh(self, img, draw=True):
         """

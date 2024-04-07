@@ -4,8 +4,7 @@ from Writers.instructionWriter import InstructionWriter
 
 class BrainPoseFollower(InstructionWriter):
     
-    brainPos = np.array([[0.0, 350.0, -600.0]])
-    brainPosHomogenous = np.array([[0.0, 350.0, -600.0, 1.0]]).reshape((4, 1))
+    brainPosHomogenous = np.array([[0.0, 7.0, -12.0, 1.0]]).reshape((4, 1))
 
     def __init__(self, inInstructionHandleValueSeparator, modeMask):
         super().__init__(inInstructionHandleValueSeparator, modeMask)

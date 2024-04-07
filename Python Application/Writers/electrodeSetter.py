@@ -1,6 +1,5 @@
 from Writers.instructionWriter import InstructionWriter
 import math
-import os
 
 def loadFile(filePath):
     with open(filePath, "rb") as file:
@@ -25,7 +24,7 @@ class ElectrodeSetter(InstructionWriter):
             if hand["fingersUp"] == [1, 1, 0, 0, 0]:
                 lmList = hand["lmList"]
 
-                for id in (4, 5, 8):
+                for id in (4, 8):
                     x = (lmList[id][0] - camCalib.w/2)*hand["px2cmRate"][0]
                     y = (-lmList[id][1] + camCalib.h/2)*hand["px2cmRate"][1]
                     z = lmList[id][2]*hand["px2cmRate"][2] + hand["tVec"][2]
@@ -37,7 +36,7 @@ class ElectrodeSetter(InstructionWriter):
                     
                     self.filteredPoint[id] = (x, y, z)
                 
-                dist = math.hypot(self.filteredPoint[4][0] - self.filteredPoint[5][0], self.filteredPoint[4][1] - self.filteredPoint[5][1], self.filteredPoint[4][2] - self.filteredPoint[5][2])
+                dist = math.hypot(self.filteredPoint[4][0] - self.filteredPoint[8][0], self.filteredPoint[4][1] - self.filteredPoint[8][1], self.filteredPoint[4][2] - self.filteredPoint[8][2])
 
                 if dist < 5:
                     if not self.spawn:

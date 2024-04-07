@@ -50,7 +50,7 @@ class MenuHandler(InstructionWriter):
                     yDelta = yAvg - self.yAvgInit
                     
                     if not self.menu:
-                        if yDelta > 3:
+                        if yDelta < -3:
                             self.menu = True
                             self.yAvgInit = yAvg
 
