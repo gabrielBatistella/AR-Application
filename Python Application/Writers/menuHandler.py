@@ -60,11 +60,11 @@ class MenuHandler(InstructionWriter):
                         if self.xAvgInit is None:
                             self.xAvgInit = xAvg
                         xDelta = self.xAvgInit - xAvg
-                        percentage = (50*yDelta/3)
+                        percentage = (-50*yDelta/2)
                         
                         if xDelta < 0:
                             self.xAvgInit = xAvg
-                        if xDelta > 3:
+                        if xDelta > 5:
                             self.modeCurrent = self.modeShown
                             self.menu = False
                             self.yAvgInit = None
@@ -72,13 +72,13 @@ class MenuHandler(InstructionWriter):
                             instruction += "Selected:" + str(self.modeCurrent)
                                                        
                         else:
-                            if yDelta > 3:
-                                self.modeShown = (self.modeShown + 1) % MenuHandler.numModes
-                                self.yAvgInit = yAvg - 1.5
+                            if yDelta > 2:
+                                self.modeShown = (self.modeShown -1 ) % MenuHandler.numModes
+                                self.yAvgInit = yAvg + 1
                                 self.xAvgInit = xAvg
-                            if yDelta < -3:
-                                self.modeShown = (self.modeShown - 1) % MenuHandler.numModes
-                                self.yAvgInit = yAvg + 1.5
+                            if yDelta < -2:
+                                self.modeShown = (self.modeShown + 1) % MenuHandler.numModes
+                                self.yAvgInit = yAvg - 1
                                 self.xAvgInit = xAvg
                             instruction += str(self.modeShown) + ";" + str(percentage)
 
