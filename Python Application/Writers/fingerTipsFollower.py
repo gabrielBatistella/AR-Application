@@ -22,11 +22,9 @@ class FingerTipsFollower(InstructionWriter):
                 if id not in self.filteredPoints:
                     self.filteredPoints[id] = (x, y, z)
                 
-                InstructionWriter.filterPointEWA((x, y, z), self.filteredPoints[id])
+                self.filteredPoints[id] = InstructionWriter.filterPointEWA((x, y, z), self.filteredPoints[id])
                 
-                self.filteredPoints[id] = (x, y, z)
-                
-                instruction += str(round(x,2)) + ";" + str(round(y, 2)) + ";" + str(round(z,2)) + "/"
+                instruction += str(round(self.filteredPoints[id][0], 2)) + ";" + str(round(self.filteredPoints[id][1], 2)) + ";" + str(round(self.filteredPoints[id][2], 2)) + "/"
             
             instruction = instruction[:-1]
             

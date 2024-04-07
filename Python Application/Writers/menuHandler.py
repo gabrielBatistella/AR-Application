@@ -9,12 +9,13 @@ class MenuHandler(InstructionWriter):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.menu = False
-        self.loading = False
         self.modeShown = 0
         self.modeCurrent = 0
+        
         self.xAvgInit = None
         self.yAvgInit = None
-        self.filteredPoint = {8: None, 12: None}
+        
+        self.filteredPoints = {}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Menu" + self.inInstructionHandleValueSeparator
@@ -22,26 +23,24 @@ class MenuHandler(InstructionWriter):
         if len(trackObjs) > 0:
             hand = trackObjs[0]
 
-            #If only index and middle fingers are up
+            # If only index and middle fingers are up
             if hand["fingersUp"] == [0, 1, 1, 0, 0]:
                 lmList = hand["lmList"]
                 
                 for id in (8, 12):
-                    x = (lmList[id][0] - camCalib.w/2)*hand["px2cmRate"][0]
-                    y = (-lmList[id][1] + camCalib.h/2)*hand["px2cmRate"][1]
-                    z = lmList[id][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                    x = (lmList[id][0] - camCalib.w/2) * hand["px2cmRate"][0]
+                    y = (-lmList[id][1] + camCalib.h/2) * hand["px2cmRate"][1]
+                    z = lmList[id][2] * hand["px2cmRate"][2] + hand["tVec"][2]
                     
-                    if self.filteredPoint[id] == None:
-                        self.filteredPoint[id] = (x, y, z)
+                    if id not in self.filteredPoints:
+                        self.filteredPoints[id] = (x, y, z)
                     
-                    InstructionWriter.filterPointEWA((x, y, z), self.filteredPoint[id])
-                    
-                    self.filteredPoint[id] = (x, y, z)
+                    self.filteredPoints[id] = InstructionWriter.filterPointEWA((x, y, z), self.filteredPoints[id])
                 
-                dist = math.hypot(self.filteredPoint[8][0] - self.filteredPoint[12][0], self.filteredPoint[8][1] - self.filteredPoint[12][1], self.filteredPoint[8][2] - self.filteredPoint[12][2])
+                dist = math.hypot(self.filteredPoints[8][0] - self.filteredPoints[12][0], self.filteredPoints[8][1] - self.filteredPoints[12][1], self.filteredPoints[8][2] - self.filteredPoints[12][2])
                 
-                xAvg = (self.filteredPoint[8][0] + self.filteredPoint[12][0])/2
-                yAvg = (self.filteredPoint[8][1] + self.filteredPoint[12][1])/2
+                xAvg = (self.filteredPoints[8][0] + self.filteredPoints[12][0])/2
+                yAvg = (self.filteredPoints[8][1] + self.filteredPoints[12][1])/2
                 
                 #If index and middle fingers are close
                 if dist < 5:
@@ -63,13 +62,13 @@ class MenuHandler(InstructionWriter):
                         
                         if xDelta < 0:
                             self.xAvgInit = xAvg
+                            
                         if xDelta > 5:
                             self.modeCurrent = self.modeShown
                             self.menu = False
                             self.yAvgInit = None
                             self.xAvgInit = None
-                            instruction += "Selected:" + str(self.modeCurrent)
-                                                       
+                            instruction += "Selected:" + str(self.modeCurrent)                        
                         else:
                             if yDelta < -2:
                                 self.modeShown = (self.modeShown - 1 ) % MenuHandler.numModes
@@ -89,20 +88,20 @@ class MenuHandler(InstructionWriter):
                     self.menu = 0
                     self.yAvgInit = None
                     self.xAvgInit = None
-                    self.filteredPoint = {8: None, 12: None}
+                    self.filteredPoints = {}
 
             else:
                 instruction = ""
                 self.menu = 0
                 self.yAvgInit = None
                 self.xAvgInit = None
-                self.filteredPoint = {8: None, 12: None}
+                self.filteredPoints = {}
 
         else:
             instruction = ""
             self.menu = 0
             self.yAvgInit = None
             self.xAvgInit = None
-            self.filteredPoint = {8: None, 12: None}
+            self.filteredPoints = {}
  
         return instruction

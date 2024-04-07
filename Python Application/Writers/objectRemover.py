@@ -7,7 +7,8 @@ class ObjectRemover(InstructionWriter):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.delete = False
-        self.filteredPoint = {4: None, 5: None, 8: None, 12: None}
+        
+        self.filteredPoints = {}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Remove" + self.inInstructionHandleValueSeparator
@@ -15,7 +16,6 @@ class ObjectRemover(InstructionWriter):
         if len(trackObjs) > 0:
             hand = trackObjs[0]
 
-            #Rotate
             if hand["fingersUp"] == [1, 1, 1, 0, 0]:
                 lmList = hand["lmList"]
                 
@@ -24,18 +24,16 @@ class ObjectRemover(InstructionWriter):
                     y = (-lmList[id][1] + camCalib.h/2)*hand["px2cmRate"][1]
                     z = lmList[id][2]*hand["px2cmRate"][2] + hand["tVec"][2]
                     
-                    if self.filteredPoint[id] == None:
-                        self.filteredPoint[id] = (x, y, z)
+                    if id not in self.filteredPoints:
+                        self.filteredPoints[id] = (x, y, z)
                     
-                    InstructionWriter.filterPointEWA((x, y, z), self.filteredPoint[id])
-                    
-                    self.filteredPoint[id] = (x, y, z)
+                    self.filteredPoints[id] = InstructionWriter.filterPointEWA((x, y, z), self.filteredPoints[id])
                 
-                dist = math.hypot(self.filteredPoint[4][0] - self.filteredPoint[5][0], self.filteredPoint[4][1] - self.filteredPoint[5][1], self.filteredPoint[4][2] - self.filteredPoint[5][2])
+                dist = math.hypot(self.filteredPoints[4][0] - self.filteredPoints[5][0], self.filteredPoints[4][1] - self.filteredPoints[5][1], self.filteredPoints[4][2] - self.filteredPoints[5][2])
                 
-                xAvg = (self.filteredPoint[8][0] + self.filteredPoint[12][0])/2
-                yAvg = (self.filteredPoint[8][1] + self.filteredPoint[12][1])/2
-                zAvg = (self.filteredPoint[8][2] + self.filteredPoint[12][2])/2
+                xAvg = (self.filteredPoints[8][0] + self.filteredPoints[12][0])/2
+                yAvg = (self.filteredPoints[8][1] + self.filteredPoints[12][1])/2
+                zAvg = (self.filteredPoints[8][2] + self.filteredPoints[12][2])/2
             
                 #If thumb is touching index finger second landmark
                 if dist < 4:
@@ -49,10 +47,12 @@ class ObjectRemover(InstructionWriter):
             
             else:
                 instruction = ""
-                self.filteredPoint = {4: None, 5: None, 8: None, 12: None}
+                self.delete = False
+                self.filteredPoints = {}
             
         else:
             instruction = ""
-            self.filteredPoint = {4: None, 5: None, 8: None, 12: None}
+            self.delete = False
+            self.filteredPoints = {}
 
         return instruction
