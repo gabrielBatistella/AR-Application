@@ -73,11 +73,11 @@ class MenuHandler(InstructionWriter):
                         else:
                             if yDelta < -2:
                                 self.modeShown = (self.modeShown - 1 ) % MenuHandler.numModes
-                                self.yAvgInit = yAvg + 2
+                                self.yAvgInit = yAvg - 2
                                 self.xAvgInit = xAvg
                             if yDelta > 2:
                                 self.modeShown = (self.modeShown + 1) % MenuHandler.numModes
-                                self.yAvgInit = yAvg - 2
+                                self.yAvgInit = yAvg + 2
                                 self.xAvgInit = xAvg
                             
                             yDelta = yAvg - self.yAvgInit
