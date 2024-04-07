@@ -24,8 +24,8 @@ class Photor(Handler):
     def operateOnData(self, data):
         frame_encoded = np.frombuffer(data, dtype=np.uint8)
         frame = cv.imdecode(frame_encoded, cv.IMREAD_COLOR)
-        #inv = cv.flip(frame, 1)
-        img = frame.copy()
+        inv = cv.flip(frame, 1)
+        img = inv.copy()
 
         if not self.showingBoard:
             cv.imshow('img', img)
@@ -34,7 +34,7 @@ class Photor(Handler):
 
         key = cv.waitKey(1)
         if key == ord('s'):
-            width, height, _ = frame.shape
+            height, width, _ = frame.shape
             print(width," - ",height)
 
         if key == ord(' ') and not self.showingBoard:
@@ -51,7 +51,7 @@ class Photor(Handler):
 
         elif key == ord('y') and self.showingBoard:
             self.imagesSaved += 1
-            cv.imwrite(filename = "imagesForCalibration/calib_img{}.png".format(self.imagesSaved), img=self.imageToSave)
+            cv.imwrite(filename = "Camera/imagesForCalibration/calib_img{}.png".format(self.imagesSaved), img=self.imageToSave)
             print("Image {} saved!".format(self.imagesSaved))
             self.showingBoard = False
 

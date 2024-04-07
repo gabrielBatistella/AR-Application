@@ -28,7 +28,7 @@ public class TranslationCaster : InstructionReader
     {
         aim.origin = transform.position;
         aim.direction = transform.forward;
-        aimLine.startColor = aimLine.endColor = Color.black;
+        aimLine.startColor = aimLine.endColor = Color.blue;
 
         grabbedObj = null;
 
@@ -69,6 +69,11 @@ public class TranslationCaster : InstructionReader
         {
             if (grabbedObj != null)
             {
+                if (!gameObject.activeSelf)
+                {
+                    gameObject.SetActive(true);
+                }
+
                 Vector3 deltaPos = PointFromCoords(instructionValue.Split(":")[1].Split(";"));
                 grabbedObj.transform.localPosition = objPosWhenGrabbed + deltaPos * pointerObjTranslationRatio;
 
@@ -120,7 +125,7 @@ public class TranslationCaster : InstructionReader
             contactPointOnObject = Vector3.zero;
             pointerObjTranslationRatio = 0;
 
-            aimLine.startColor = aimLine.endColor = Color.black;
+            aimLine.startColor = aimLine.endColor = Color.blue;
         }
     }
 }

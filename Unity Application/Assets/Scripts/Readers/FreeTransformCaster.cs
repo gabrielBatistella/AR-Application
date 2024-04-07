@@ -129,6 +129,11 @@ public class FreeTransformCaster : InstructionReader
             {
                 if (grabbedObjs[i] != null)
                 {
+                    if (!aimLines[i].gameObject.activeSelf)
+                    {
+                        aimLines[i].gameObject.SetActive(true);
+                    }
+
                     if (grabbedObjs[(i + 1) % 2] == grabbedObjs[i] && instructions[(i + 1) % 2].StartsWith("Holding"))
                     {
                         if (i == 0)

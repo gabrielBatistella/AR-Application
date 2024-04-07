@@ -27,7 +27,7 @@ public class RotationCaster : InstructionReader
     {
         aim.origin = transform.position;
         aim.direction = transform.forward;
-        aimLine.startColor = aimLine.endColor = Color.magenta;
+        aimLine.startColor = aimLine.endColor = Color.green;
 
         grabbedObj = null;
 
@@ -67,6 +67,11 @@ public class RotationCaster : InstructionReader
         {
             if (grabbedObj != null)
             {
+                if (!gameObject.activeSelf)
+                {
+                    gameObject.SetActive(true);
+                }
+
                 Vector3 deltaAngle = PointFromCoords(instructionValue.Split(":")[1].Split(";"));
                 grabbedObj.transform.localEulerAngles = objAngleWhenGrabbed + deltaAngle;
 
@@ -116,7 +121,7 @@ public class RotationCaster : InstructionReader
             objAngleWhenGrabbed = Vector3.zero;
             contactPointOnObject = Vector3.zero;
 
-            aimLine.startColor = aimLine.endColor = Color.magenta;
+            aimLine.startColor = aimLine.endColor = Color.green;
         }
     }
 }

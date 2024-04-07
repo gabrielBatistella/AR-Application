@@ -26,7 +26,7 @@ public class ElectrodeSetter : InstructionReader
     {
         aim.origin = transform.position;
         aim.direction = transform.forward;
-        aimLine.startColor = aimLine.endColor = Color.cyan;
+        aimLine.startColor = aimLine.endColor = Color.blue;
 
         gameObject.SetActive(false);
     }

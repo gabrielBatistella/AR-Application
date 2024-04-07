@@ -68,6 +68,11 @@ public class ScaleCaster : InstructionReader
         {
             if (grabbedObj != null)
             {
+                if (!gameObject.activeSelf)
+                {
+                    gameObject.SetActive(true);
+                }
+
                 float sizeFactor = float.Parse(instructionValue.Split(":")[1], CultureInfo.InvariantCulture.NumberFormat);
                 grabbedObj.transform.localScale = objSizeWhenGrabbed * sizeFactor;
 

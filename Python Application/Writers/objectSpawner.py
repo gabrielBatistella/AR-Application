@@ -16,7 +16,7 @@ def getFileInfo(folderPath):
 
 class ObjectSpawner(InstructionWriter):
     
-    path = "C:/Users/Gabriel/Desktop/test/"
+    path = "./_spawnables/selected/"
     
     def __init__(self, inInstructionHandleValueSeparator, modeMask):
         super().__init__(inInstructionHandleValueSeparator, modeMask)

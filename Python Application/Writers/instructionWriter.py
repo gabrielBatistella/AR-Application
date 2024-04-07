@@ -17,4 +17,4 @@ class InstructionWriter(abc.ABC):
     
     @staticmethod
     def filterPointEWA(realPoint, previousFilteredPoint):
-        return (realPoint[i]*InstructionWriter.beta + previousFilteredPoint[i]*(1-InstructionWriter.beta) for i in range(3))
+        return [realPoint[i]*InstructionWriter.beta + previousFilteredPoint[i]*(1-InstructionWriter.beta) for i in range(3)]
