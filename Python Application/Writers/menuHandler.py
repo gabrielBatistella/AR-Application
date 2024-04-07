@@ -3,6 +3,8 @@ import math
 
 class MenuHandler(InstructionWriter):
     
+    numModes = 6
+    
     def __init__(self, inInstructionHandleValueSeparator, modeMask):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
 
@@ -58,7 +60,7 @@ class MenuHandler(InstructionWriter):
                         if self.xAvgInit is None:
                             self.xAvgInit = xAvg
                         xDelta = self.xAvgInit - xAvg
-                        percentage = round(50*yDelta/3)
+                        percentage = (50*yDelta/3)
                         
                         if xDelta < 0:
                             self.xAvgInit = xAvg
@@ -70,13 +72,13 @@ class MenuHandler(InstructionWriter):
                             instruction += "Selected:" + str(self.modeCurrent)
                                                        
                         else:
-                            if yDelta < 3:
-                                self.modeShown = (self.modeShown + 1) % 6
-                                self.yAvgInit = yAvg + 1.5
-                                self.xAvgInit = xAvg
-                            if yDelta > -3:
-                                self.modeShown = (self.modeShown - 1) % 6
+                            if yDelta > 3:
+                                self.modeShown = (self.modeShown + 1) % MenuHandler.numModes
                                 self.yAvgInit = yAvg - 1.5
+                                self.xAvgInit = xAvg
+                            if yDelta < -3:
+                                self.modeShown = (self.modeShown - 1) % MenuHandler.numModes
+                                self.yAvgInit = yAvg + 1.5
                                 self.xAvgInit = xAvg
                             instruction += str(self.modeShown) + ";" + str(percentage)
 
