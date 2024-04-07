@@ -18,6 +18,7 @@ class UDPConnector(Connector):
 
         self._frameBuffer = [None] * UDPConnector.frameBufferSize
         self._frameSeq = [None] * UDPConnector.frameBufferSize
+        self._packagesLost = 0
 
     def __del__(self):
         super().__del__()
@@ -54,8 +55,9 @@ class UDPConnector(Connector):
                 frameIndex = frameCount % UDPConnector.frameBufferSize
 
                 if self._frameSeq[frameIndex] != frameCount:
-                    
-                    if self._frameBuffer[frameIndex] is not None: print("Pacote perdido!")
+                    if self._frameBuffer[frameIndex] is not None:
+                        self._packagesLost += 1
+                        print(f'Packages Lost: {self._packagesLost}')
 
                     self._frameBuffer[frameIndex] = [None] * numFragments
                     self._frameSeq[frameIndex] = frameCount
