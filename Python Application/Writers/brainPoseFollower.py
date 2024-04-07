@@ -26,9 +26,9 @@ class BrainPoseFollower(InstructionWriter):
             brainWorldPos = transfMat @ BrainPoseFollower.brainPosHomogenous
             brainWorldPos = brainWorldPos.ravel()
             
-            rotX = -angles[0]
+            rotX = angles[2]
             rotY = (angles[1] + 90) % 360
-            rotZ = (angles[2] + 180) % 360
+            rotZ = (-angles[0] + 180) % 360
             
             instruction += str(round(brainWorldPos[0], 2)) + ";" + str(round(-brainWorldPos[1], 2)) + ";" + str(round(brainWorldPos[2], 2)) + ";" + str(round(rotX, 2)) + ";" + str(round(rotY, 2)) + ";" + str(round(rotZ, 2))
 
