@@ -8,7 +8,7 @@ class ObjectScaler(InstructionWriter):
 
         self.holding = False
         self.xAvgInit = 0
-        self.filteredPoint = {4: None, 8: None}
+        self.filteredPoint = {8: None, 12: None}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Scale" + self.inInstructionHandleValueSeparator
@@ -17,10 +17,10 @@ class ObjectScaler(InstructionWriter):
             hand = trackObjs[0]
 
             #Scale
-            if hand["fingersUp"] == [1, 1, 1, 1, 1]:
+            if hand["fingersUp"] == [1, 1, 1, 0, 0]:
                 lmList = hand["lmList"]
                 
-                for id in (4, 8):
+                for id in (8, 12):
                     x = (lmList[id][0] - camCalib.w/2)*hand["px2cmRate"][0]
                     y = (-lmList[id][1] + camCalib.h/2)*hand["px2cmRate"][1]
                     z = lmList[id][2]*hand["px2cmRate"][2] + hand["tVec"][2]
@@ -32,11 +32,11 @@ class ObjectScaler(InstructionWriter):
                     
                     self.filteredPoint[id] = (x, y, z)
                 
-                dist = math.hypot(self.filteredPoint[4][0] - self.filteredPoint[8][0], self.filteredPoint[4][1] - self.filteredPoint[8][1], self.filteredPoint[4][2] - self.filteredPoint[8][2])
+                dist = math.hypot(self.filteredPoint[8][0] - self.filteredPoint[12][0], self.filteredPoint[8][1] - self.filteredPoint[12][1], self.filteredPoint[8][2] - self.filteredPoint[12][2])
                 
-                xAvg = (self.filteredPoint[4][0] + self.filteredPoint[8][0])/2
-                yAvg = (self.filteredPoint[4][1] + self.filteredPoint[8][1])/2
-                zAvg = (self.filteredPoint[4][2] + self.filteredPoint[8][2])/2
+                xAvg = (self.filteredPoint[8][0] + self.filteredPoint[12][0])/2
+                yAvg = (self.filteredPoint[8][1] + self.filteredPoint[12][1])/2
+                zAvg = (self.filteredPoint[8][2] + self.filteredPoint[12][2])/2
                 
                 if dist < 4:
                     if not self.holding:
@@ -45,7 +45,7 @@ class ObjectScaler(InstructionWriter):
                         instruction += "Grab:" + str(round(xAvg, 2)) + ";" + str(round(yAvg, 2)) + ";" + str(round(zAvg, 2))
 
                     else:
-                        scale = abs(self.xAvgInit - xAvg)/3
+                        scale = abs(self.xAvgInit - xAvg)/10
                         instruction += "Holding:" + str(round(scale,2))
 
                 else:
@@ -56,10 +56,10 @@ class ObjectScaler(InstructionWriter):
                 
             else:
                 instruction = ""
-                self.filteredPoint = {4: None, 8: None}
+                self.filteredPoint = {8: None, 12: None}
 
         else:
             instruction = ""
-            self.filteredPoint = {4: None, 8: None}
+            self.filteredPoint = {8: None, 12: None}
                 
         return instruction

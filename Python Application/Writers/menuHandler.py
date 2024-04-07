@@ -47,7 +47,7 @@ class MenuHandler(InstructionWriter):
                 if dist < 5:
                     if self.yAvgInit is None:
                         self.yAvgInit = yAvg
-                    yDelta = self.yAvgInit - yAvg
+                    yDelta = yAvg - self.yAvgInit
                     
                     if not self.menu:
                         if yDelta > 3:
@@ -59,8 +59,7 @@ class MenuHandler(InstructionWriter):
                     else:
                         if self.xAvgInit is None:
                             self.xAvgInit = xAvg
-                        xDelta = self.xAvgInit - xAvg
-                        percentage = (-50*yDelta/2)
+                        xDelta = xAvg - self.xAvgInit
                         
                         if xDelta < 0:
                             self.xAvgInit = xAvg
@@ -72,14 +71,17 @@ class MenuHandler(InstructionWriter):
                             instruction += "Selected:" + str(self.modeCurrent)
                                                        
                         else:
-                            if yDelta > 2:
-                                self.modeShown = (self.modeShown -1 ) % MenuHandler.numModes
-                                self.yAvgInit = yAvg - 2
-                                self.xAvgInit = xAvg
                             if yDelta < -2:
-                                self.modeShown = (self.modeShown + 1) % MenuHandler.numModes
+                                self.modeShown = (self.modeShown - 1 ) % MenuHandler.numModes
                                 self.yAvgInit = yAvg + 2
                                 self.xAvgInit = xAvg
+                            if yDelta > 2:
+                                self.modeShown = (self.modeShown + 1) % MenuHandler.numModes
+                                self.yAvgInit = yAvg - 2
+                                self.xAvgInit = xAvg
+                            
+                            yDelta = yAvg - self.yAvgInit
+                            percentage = (50*yDelta/2)
                             instruction += str(self.modeShown) + ";" + str(round(percentage,2))
 
                 else:
