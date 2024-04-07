@@ -18,8 +18,6 @@ from Writers.freeTransformer import FreeTransformer
 
 class VCranium(Handler):
     
-    headerBodySeparator = "?"
-    inHeaderInfoSeparator = "|"
     inBodyInstructionSeparator = "&"
     inInstructionHandleValueSeparator = "="
 

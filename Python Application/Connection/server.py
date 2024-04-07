@@ -66,10 +66,10 @@ class Server():
                 output = self._environment.operateOnData(data)
 
                 deltaT = time.time() - t
-                connectionInfo = f'{round(1/deltaT)} FPS{self._Handler.inHeaderInfoSeparator}{round((dataSize/1024**2)/deltaT, 2)} MBps' if deltaT > 0 else f'0 FPS{self._Handler.inHeaderInfoSeparator}0.00 MBps'
+                connectionInfo = f'{round(1/deltaT)} FPS{self._Handler.inDetailsInfoSeparator}{round((dataSize/1024**2)/deltaT, 2)} MBps' if deltaT > 0 else f'0 FPS{self._Handler.inDetailsInfoSeparator}0.00 MBps'
                 t = time.time()
 
-                response = connectionInfo + self._Handler.headerBodySeparator + output
+                response = connectionInfo + self._Handler.detailsBodySeparator + output
                 self._communication.sendResponse(response)
 
         except CommunicationCloseException:

@@ -4,6 +4,9 @@ from Connection.server import CommunicationCloseException
 
 class UDPConnector(Connector):
 
+    headerSize = 8
+    frameBufferSize = 128
+
     def __init__(self, ip = socket.gethostbyname(socket.gethostname()), port = 5052):
         super().__init__()
         print('Server type: UDP')
@@ -12,6 +15,9 @@ class UDPConnector(Connector):
         print(f'Host IP: {ip} | Port: {port}')
 
         self._addr = None
+
+        self._frameBuffer = [None] * UDPConnector.frameBufferSize
+        self._frameSeq = [None] * UDPConnector.frameBufferSize
 
     def __del__(self):
         super().__del__()
@@ -41,15 +47,35 @@ class UDPConnector(Connector):
 
     def receiveData(self):
         if self._addr is not None:
-            dataBytes = UDPConnector._recvonlyfrom(self._conn, self._addr)
-            return dataBytes, len(dataBytes)
+            while True:
+                fragment = UDPConnector._recvonlyfrom(self._conn, self._addr)
+                frameCount, numFragments, currentFragment, fragmentSize, fragmentData = UDPConnector._parseFragment(fragment)
+
+                frameIndex = frameCount % UDPConnector.frameBufferSize
+
+                if self._frameSeq[frameIndex] != frameCount:
+                    
+                    if self._frameBuffer[frameIndex] is not None: print("Pacote perdido!")
+
+                    self._frameBuffer[frameIndex] = [None] * numFragments
+                    self._frameSeq[frameIndex] = frameCount
+                    
+                self._frameBuffer[frameIndex][currentFragment] = fragmentData
+
+                if not any(fragment is None for fragment in self._frameBuffer[frameIndex]):
+                    data = b''.join(self._frameBuffer[frameIndex])
+
+                    self._frameBuffer[frameIndex] = None
+                    self._frameSeq[frameIndex] = None
+                    
+                    return data, len(data)
         else:
             raise ValueError()
 
-    def sendResponse(self, response):
+    def sendResponse(self, responseInfo):
         if self._addr is not None:
-            infoEncoded = response.encode('utf-8')
-            self._conn.sendto(infoEncoded, self._addr)
+            response = responseInfo.encode('utf-8')
+            self._conn.sendto(response, self._addr)
         else:
             raise ValueError()
 
@@ -89,3 +115,12 @@ class UDPConnector(Connector):
             finally:
                 conn.settimeout(None)
         return data
+    
+    @staticmethod
+    def _parseFragment(fragment):
+        fragmentHeader, fragmentData = fragment[:UDPConnector.headerSize], fragment[UDPConnector.headerSize:]
+        frameCount = int.from_bytes(fragmentHeader[:2], 'big')
+        numFragments = int.from_bytes(fragmentHeader[2:4], 'big')
+        currentFragment = int.from_bytes(fragmentHeader[4:6], 'big')
+        fragmentSize = int.from_bytes(fragmentHeader[6:], 'big')
+        return frameCount, numFragments, currentFragment, fragmentSize, fragmentData

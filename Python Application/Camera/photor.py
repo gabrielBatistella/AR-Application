@@ -5,11 +5,6 @@ from Connection.handler import Handler
 
 class Photor(Handler):
 
-    headerBodySeparator = "?"
-    inHeaderInfoSeparator = "|"
-    inBodyInstructionSeparator = "&"
-    inInstructionHandleValueSeparator = "="
-
     chessboardSize = (9,6)
     criteria = (cv.TERM_CRITERIA_EPS + cv.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 

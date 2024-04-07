@@ -5,15 +5,11 @@ using UnityEngine;
 public abstract class Handler : MonoBehaviour
 {
     [Header("Decoding Details")]
-    [SerializeField] private char headerBodySeparator = '?';
-    [SerializeField] private char inHeaderInfoSeparator = '|';
-    [SerializeField] private char inBodyInstructionSeparator = '&';
-    [SerializeField] private char inInstructionHandleValueSeparator = '=';
+    [SerializeField] private char detailsBodySeparator = '?';
+    [SerializeField] private char inDetailsInfoSeparator = '|';
 
-    public char HeaderBodySeparator { get => headerBodySeparator; }
-    public char InHeaderInfoSeparator { get => inHeaderInfoSeparator; }
-    public char InBodyInstructionSeparator { get => inBodyInstructionSeparator; }
-    public char InInstructionHandleValueSeparator { get => inInstructionHandleValueSeparator; }
+    public char DetailsBodySeparator { get => detailsBodySeparator; }
+    public char InDetailsInfoSeparator { get => inDetailsInfoSeparator; }
 
     public abstract void UseResponseReceivedFromServer(string response);
     public abstract void Shutdown();

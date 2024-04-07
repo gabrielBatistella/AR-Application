@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class VCranium : Handler
 {
+    [SerializeField] private char inBodyInstructionSeparator = '&';
+    [SerializeField] private char inInstructionHandleValueSeparator = '=';
+
     [Header("Image Parameters")]
     [SerializeField] private CameraVision cam;
     [SerializeField] private int imageQuality = 75;
@@ -37,11 +40,11 @@ public class VCranium : Handler
 
     public override void UseResponseReceivedFromServer(string response)
     {
-        IEnumerable<(string Handle, string Value)> instructions = response.Split(InBodyInstructionSeparator).Select(instruction =>
+        IEnumerable<(string Handle, string Value)> instructions = response.Split(inBodyInstructionSeparator).Select(instruction =>
         {
             if (!string.IsNullOrEmpty(instruction))
             {
-                string[] parsedInstruction = instruction.Split(InInstructionHandleValueSeparator);
+                string[] parsedInstruction = instruction.Split(inInstructionHandleValueSeparator);
                 return (Handle: parsedInstruction[0], Value: parsedInstruction[1]);
             }
             else

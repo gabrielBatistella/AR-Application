@@ -1,7 +1,6 @@
 using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Text;
 
 public class TCPConnector : Connector
 {
@@ -27,18 +26,16 @@ public class TCPConnector : Connector
 
     public override void SendData(byte[] data)
     {
-        string header = data.Length.ToString().PadRight(HeaderSize);
-        byte[] headerEncoded = Encoding.UTF8.GetBytes(header);
+        byte[] header = Int2Bytes(data.Length);
 
-        networkStream.Write(headerEncoded, 0, HeaderSize);
+        networkStream.Write(header, 0, header.Length);
         networkStream.Write(data, 0, data.Length);
     }
 
     public override byte[] ReceiveResponse()
     {
-        byte[] headerData = ReadAll(HeaderSize);
-        string header = Encoding.UTF8.GetString(headerData, 0, HeaderSize);
-        int responseSize = int.Parse(header);
+        byte[] header = ReadAll(HeaderSize);
+        int responseSize = Bytes2Int(header);
 
         byte[] responseData = ReadAll(responseSize);
         return responseData;

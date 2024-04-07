@@ -21,5 +21,5 @@ class Connector(abc.ABC):
         pass
 
     @abc.abstractmethod
-    def sendResponse(self, response):
+    def sendResponse(self, responseInfo):
         pass

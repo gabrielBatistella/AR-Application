@@ -171,7 +171,7 @@ public class Client : MonoBehaviour
             if (response != null)
             {
                 string textData = Encoding.UTF8.GetString(response, 0, response.Length);
-                string[] headerBody = textData.Split(handler.HeaderBodySeparator);
+                string[] headerBody = textData.Split(handler.DetailsBodySeparator);
 
                 ShowHeaderInfo(headerBody[0]);
                 handler.UseResponseReceivedFromServer(headerBody[1]);
@@ -223,7 +223,7 @@ public class Client : MonoBehaviour
 
     private void ShowHeaderInfo(string header)
     {
-        string[] infos = header.Split(handler.InHeaderInfoSeparator);
+        string[] infos = header.Split(handler.InDetailsInfoSeparator);
         string headerText = "";
         foreach (string info in infos)
         {

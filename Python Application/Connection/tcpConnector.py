@@ -4,6 +4,8 @@ from Connection.server import CommunicationCloseException
 
 class TCPConnector(Connector):
 
+    headerSize = 4
+
     def __init__(self, ip = socket.gethostbyname(socket.gethostname()), port = 5050):
         super().__init__()
         print('Server type: TCP')
@@ -43,24 +45,23 @@ class TCPConnector(Connector):
             print('Not connected to any client.')
 
     def receiveData(self):
-        if self._conn is not None: 
-            headerBytes = TCPConnector._recvall(self._conn, 16)
-            header = headerBytes.decode('utf-8')
-            dataSize = int(header)
+        if self._conn is not None:
+            header = TCPConnector._recvall(self._conn, TCPConnector.headerSize)
+            dataSize = int.from_bytes(header, 'big')
 
-            dataBytes = TCPConnector._recvall(self._conn, dataSize)
-            return dataBytes, len(dataBytes)
+            data = TCPConnector._recvall(self._conn, dataSize)
+            return data, len(data)
         else:
             raise ValueError()
 
-    def sendResponse(self, response):
+    def sendResponse(self, responseInfo):
         if self._conn is not None: 
-            headerEncoded = str(len(response)).ljust(16).encode('utf-8')
-            infoEncoded = response.encode('utf-8')
+            header = len(responseInfo).to_bytes(TCPConnector.headerSize, 'big')
+            response = responseInfo.encode('utf-8')
 
             try:
-                self._conn.sendall(headerEncoded)
-                self._conn.sendall(infoEncoded)
+                self._conn.sendall(header)
+                self._conn.sendall(response)
             except ConnectionAbortedError:
                 raise CommunicationCloseException()
         else:

@@ -2,6 +2,9 @@ import abc
 
 class Handler(abc.ABC):
 
+    detailsBodySeparator = "?"
+    inDetailsInfoSeparator = "|"
+
     def __init__(self):
         pass
 
