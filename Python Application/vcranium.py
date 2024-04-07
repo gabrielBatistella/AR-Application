@@ -104,10 +104,7 @@ class VCranium(Handler):
 
             for writer in self.faceInstructionWriters:
                 if writer.shouldExecuteInMode(initialMode):
-                    if not writer.shouldExecuteInMode(self.handInstructionWriters[0].modeCurrent):
-                        instruction = writer.getDisableInstruction()
-                    else:
-                        instruction = writer.generateInstruction(self.faceDetector, faces, self.calib)
+                    instruction = writer.generateInstruction(self.faceDetector, faces, self.calib)
 
                     if instruction != "":
                         result += instruction + self.__class__.inBodyInstructionSeparator

@@ -45,17 +45,12 @@ public class RotationCaster : InstructionReader
 
     protected override void FollowInstruction(string instructionValue)
     {
-        if (instructionValue == "Lost Track")
-        {
-            ReleaseIfHolding();
-            gameObject.SetActive(false);
-        }
-        else if (instructionValue.StartsWith("Grab"))
+        if (instructionValue.StartsWith("Grab"))
         {
             Vector3 targetPoint = PointFromCoords(instructionValue.Split(":")[1].Split(";"));
 
             aim.direction = (fixedParent.TransformPoint(targetPoint) - aim.origin).normalized;
-            aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
+            aimLine.SetPosition(1, transform.parent.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
 
             TryGrabbing(targetPoint);
         }
@@ -66,7 +61,7 @@ public class RotationCaster : InstructionReader
             Vector3 targetPoint = PointFromCoords(instructionValue.Split(":")[1].Split(";"));
 
             aim.direction = (fixedParent.TransformPoint(targetPoint) - aim.origin).normalized;
-            aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
+            aimLine.SetPosition(1, transform.parent.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
         }
         else if (instructionValue.StartsWith("Holding"))
         {
@@ -75,7 +70,7 @@ public class RotationCaster : InstructionReader
                 Vector3 deltaAngle = PointFromCoords(instructionValue.Split(":")[1].Split(";"));
                 grabbedObj.transform.localEulerAngles = objAngleWhenGrabbed + deltaAngle;
 
-                aimLine.SetPosition(1, transform.InverseTransformPoint(grabbedObj.transform.TransformPoint(contactPointOnObject)));
+                aimLine.SetPosition(1, transform.parent.InverseTransformPoint(grabbedObj.transform.TransformPoint(contactPointOnObject)));
             }
             else
             {
@@ -93,7 +88,7 @@ public class RotationCaster : InstructionReader
             }
 
             aim.direction = (fixedParent.TransformPoint(PointFromCoords(instructionValue.Split(";"))) - aim.origin).normalized;
-            aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
+            aimLine.SetPosition(1, transform.parent.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
         }
     }
 
