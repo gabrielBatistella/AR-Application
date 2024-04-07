@@ -26,11 +26,11 @@ class BrainPoseFollower(InstructionWriter):
             brainWorldPos = transfMat @ BrainPoseFollower.brainPosHomogenous
             brainWorldPos = brainWorldPos.ravel()
             
-            rotX = angles[0]
-            rotY = angles[1]
-            rotZ = angles[2]
+            rotX = -angles[0]
+            rotY = -angles[1]
+            rotZ = -angles[2]
             
-            instruction += str(round(brainWorldPos[0], 2)) + ";" + str(round(brainWorldPos[1], 2)) + ";" + str(round(brainWorldPos[2], 2)) + ";" + str(round(rotX, 2)) + ";" + str(round(rotY, 2)) + ";" + str(round(rotZ, 2))
+            instruction += str(round(brainWorldPos[0], 2)) + ";" + str(round(-brainWorldPos[1], 2)) + ";" + str(round(brainWorldPos[2], 2)) + ";" + str(round(rotX, 2)) + ";" + str(round(rotY, 2)) + ";" + str(round(rotZ, 2))
 
         else:
             instruction = ""
