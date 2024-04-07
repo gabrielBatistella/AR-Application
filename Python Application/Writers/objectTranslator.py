@@ -7,15 +7,10 @@ class ObjectTranslator(InstructionWriter):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.holding = False
-        self.following = False
         self.xAvgInit = 0
         self.yAvgInit = 0
         self.zAvgInit = 0
-
-    def getDisableInstruction(self):
-        instruction = "Translate" + self.inInstructionHandleValueSeparator
-        instruction += "Lost Track"
-        return instruction
+        self.prevFilteredPoint = {4: None, 8: None}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Translate" + self.inInstructionHandleValueSeparator
@@ -27,19 +22,23 @@ class ObjectTranslator(InstructionWriter):
             if hand["fingersUp"] == [1, 1, 0, 0, 0]:
                 lmList = hand["lmList"]
                 
-                x0 = (lmList[4][0] - camCalib.w/2)*hand["px2cmRate"][0]
-                y0 = (-lmList[4][1] + camCalib.h/2)*hand["px2cmRate"][1]
-                z0 = lmList[4][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                for id in (4, 8):
+                    x = (lmList[id][0] - camCalib.w/2)*hand["px2cmRate"][0]
+                    y = (-lmList[id][1] + camCalib.h/2)*hand["px2cmRate"][1]
+                    z = lmList[id][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                    
+                    if self.filteredPoint[id] == None:
+                        self.filteredPoint[id] = (x, y, z)
+                    
+                    InstructionWriter.filterPointEWA((x, y, z), self.filteredPoint[id])
+                    
+                    self.filteredPoint[id] = (x, y, z)
                 
-                x1 = (lmList[8][0] - camCalib.w/2)*hand["px2cmRate"][0]
-                y1 = (-lmList[8][1] + camCalib.h/2)*hand["px2cmRate"][1]
-                z1 = lmList[8][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                dist = math.hypot(self.filteredPoint[4][0] - self.filteredPoint[8][0], self.filteredPoint[4][1] - self.filteredPoint[8][1], self.filteredPoint[4][2] - self.filteredPoint[8][2])
                 
-                dist = math.hypot(x1 - x0, y1 - y0, z1 - z0)
-
-                xAvg = (x0 + x1)/2
-                yAvg = (y0 + y1)/2
-                zAvg = (z0 + z1)/2
+                xAvg = (self.filteredPoint[4][0] + self.filteredPoint[8][0])/2
+                yAvg = (self.filteredPoint[4][1] + self.filteredPoint[8][1])/2
+                zAvg = (self.filteredPoint[4][2] + self.filteredPoint[8][2])/2
                 
                 #If thumb and index finger are close
                 if dist < 4:
@@ -49,35 +48,25 @@ class ObjectTranslator(InstructionWriter):
                         self.yAvgInit = yAvg
                         self.zAvgInit = zAvg
                         self.holding = True
-                        instruction += "Grab:" + str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
+                        instruction += "Grab:" + str(round(xAvg, 2)) + ";" + str(round(yAvg, 2)) + ";" + str(round(zAvg, 2))
                     else:
                         xDelta = xAvg - self.xAvgInit
                         yDelta = yAvg - self.yAvgInit
                         zDelta = zAvg - self.zAvgInit
-                        instruction += "Holding:" + str(xDelta) + ";" + str(yDelta) + ";" + str(zDelta)
+                        instruction += "Holding:" + str(round(xDelta, 2)) + ";" + str(round(yDelta, 2)) + ";" + str(round(zDelta, 2))
 
                 else:
                     if self.holding:
                         instruction += "Release:"
                         self.holding = False
-                    instruction += str(xAvg) + ";" + str(yAvg) + ";" + str(zAvg)
-                    
-                self.following = True
+                    instruction += str(round(xAvg, 2)) + ";" + str(round(yAvg, 2)) + ";" + str(round(zAvg, 2))
 
-            else:
-                if self.following:
-                    instruction += "Lost Track"
-                    self.holding = False
-                    self.following = False
-                else:
-                    instruction = ""
-
-        else:
-            if self.following:
-                instruction += "Lost Track"
-                self.holding = False
-                self.following = False
             else:
                 instruction = ""
+                self.prevFilteredPoint = {4: None, 8: None}
+
+        else:
+            instruction = ""
+            self.prevFilteredPoint = {4: None, 8: None}
 
         return instruction
