@@ -77,11 +77,11 @@ class MenuHandler(InstructionWriter):
                                                        
                         else:
                             if yDelta < 3:
-                                self.modeShown = (self.modeShown + 1) % 5
+                                self.modeShown = (self.modeShown + 1) % 4
                                 self.yAvgInit = yAvg + 1.5
                                 self.xAvgInit = xAvg
                             if yDelta > -3:
-                                self.modeShown = (self.modeShown - 1) % 5
+                                self.modeShown = (self.modeShown - 1) % 4
                                 self.yAvgInit = yAvg - 1.5
                                 self.xAvgInit = xAvg
                             instruction += str(self.modeShown) + ";" + str(percentage)

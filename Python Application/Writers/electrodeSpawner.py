@@ -14,10 +14,13 @@ class ElectrodeSpawner(InstructionWriter):
 
         self.spawn = False
         self.filter = False
-        self.prevFilteredPoint = {4: None, 5: None, 8: None}
+        self.beta = 0.75
+        self.Q1 = [0, 0, 0]
+        self.Q2 = [0, 0, 0]
+        self.Q3 = [0, 0, 0]
 
     def generateInstruction(self, detector, trackObjs, camCalib):
-        instruction = "Electrode" + self.inInstructionHandleValueSeparator
+        instruction = "Spawn" + self.inInstructionHandleValueSeparator
 
         if len(trackObjs) > 0:
             hand = trackObjs[0]
@@ -26,28 +29,46 @@ class ElectrodeSpawner(InstructionWriter):
             if hand["fingersUp"] == [1, 1, 0, 0, 0]:
                 lmList = hand["lmList"]
 
-                for id in (4, 5, 8):
-                    x = (lmList[id][0] - camCalib.w/2)*hand["px2cmRate"][0]
-                    y = (-lmList[id][1] + camCalib.h/2)*hand["px2cmRate"][1]
-                    z = lmList[id][2]*hand["px2cmRate"][2] + hand["tVec"][2]
-                    
-                    if self.filteredPoint[id] == None:
-                        self.filteredPoint[id] = (x, y, z)
-                    
-                    InstructionWriter.filterPointEWA((x, y, z), self.filteredPoint[id])
-                    
-                    self.filteredPoint[id] = (x, y, z)
+                x1 = (lmList[4][0] - camCalib.w/2)*hand["px2cmRate"][0]
+                y1 = (-lmList[4][1] + camCalib.h/2)*hand["px2cmRate"][1]
+                z1 = lmList[4][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                P1 = [x1, y1, z1]
+                R1 = P1 [:]
                 
-                dist = math.hypot(self.filteredPoint[4][0] - self.filteredPoint[5][0], self.filteredPoint[4][1] - self.filteredPoint[5][1], self.filteredPoint[4][2] - self.filteredPoint[5][2])
+                x2 = (lmList[5][0] - camCalib.w/2)*hand["px2cmRate"][0]
+                y2 = (-lmList[5][1] + camCalib.h/2)*hand["px2cmRate"][1]
+                z2 = lmList[5][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                P2 = [x2, y2, z2]
+                R2 = P2[:]
+                
+                x3 = (lmList[8][0] - camCalib.w/2)*hand["px2cmRate"][0]
+                y3 = (-lmList[8][1] + camCalib.h/2)*hand["px2cmRate"][1]
+                z3 = lmList[8][2]*hand["px2cmRate"][2] + hand["tVec"][2]
+                P3 = [x3, y3, z3]
+                R3 = P3[:]
+                
+                if not self.filter:
+                    self.Q1 = P1[:]
+                    self.Q2 = P2[:]
+                    self.Q3 = P3[:]
+                    self.filter = True
+                
+                for P, self.Q, R in ((P1, self.Q1, R1), (P2, self.Q1, R1), (P3, self.Q3, R3)):
+                    for i in range(len(P)):
+                        R[i] = P[i]*self.beta + self.Q[i]*(1-self.beta)
+                        self.Q[i] = R[i]
+                
+                dist = math.hypot(R2[0] - R1[0], R2[1] - R2[1], R2[2] - R1[2])
 
+                #If thumb and index fingers are close
                 if dist < 5:
                     if not self.spawn:
                         self.spawn = True
-                    instruction += str(round(self.filteredPoint[8][0], 2)) + ";" + str(round(self.filteredPoint[8][1], 2)) + ";" + str(round(self.filteredPoint[8][2], 2)) + "/" + str(round(self.filteredPoint[5][0], 2)) + ";" + str(round(self.filteredPoint[5][1], 2)) + ";" + str(round(self.filteredPoint[5][2], 2))
+                    instruction += str(x2) + ";" + str(y2) + ";" + str(z2) + "/" + str(x3) + ";" + str(y3) + ";" + str(z3)
 
                 else:
                     if self.spawn:
-                        instruction += "Set:" + str(round(self.filteredPoint[8][0], 2)) + ";" + str(round(self.filteredPoint[8][1], 2)) + ";" + str(round(self.filteredPoint[8][2], 2)) + "/" + str(round(self.filteredPoint[5][0], 2)) + ";" + str(round(self.filteredPoint[5][1], 2)) + ";" + str(round(self.filteredPoint[5][2], 2))
+                        instruction += "Spawn:" + str(x2) + ";" + str(y2) + ";" + str(z2) + "/" + str(x3) + ";" + str(y3) + ";" + str(z3)
                         self.spawn = False
                     else:
                         instruction = ""
