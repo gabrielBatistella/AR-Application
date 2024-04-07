@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 
@@ -9,12 +7,17 @@ public class ObjectSpawner : InstructionReader
     [SerializeField] private Transform objParent;
     [SerializeField] private LayerMask objLayer;
 
-    public override void SetDefault()
+    protected override void InitSettings()
     {
         gameObject.SetActive(false);
     }
 
-    public override void FollowInstruction(string instructionValue)
+    protected override void TurnSilent()
+    {
+        gameObject.SetActive(false);
+    }
+
+    protected override void FollowInstruction(string instructionValue)
     {
         if (instructionValue == "Lost Track")
         {
@@ -24,7 +27,7 @@ public class ObjectSpawner : InstructionReader
         {
             string[] instructionInfos = instructionValue.Split(":")[1].Split("/");
 
-            transform.localPosition = pointFromCoords(instructionInfos[0].Split(";"));
+            transform.localPosition = PointFromCoords(instructionInfos[0].Split(";"));
 
             AssetBundle bundle = LoadBundleFromHex(instructionInfos[2]);
             if (bundle != null)
@@ -42,7 +45,7 @@ public class ObjectSpawner : InstructionReader
                 gameObject.SetActive(true);
             }
 
-            transform.localPosition = pointFromCoords(instructionValue.Split(";"));
+            transform.localPosition = PointFromCoords(instructionValue.Split(";"));
         }
     }
 

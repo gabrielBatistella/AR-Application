@@ -1,11 +1,11 @@
-import socket
 import numpy as np
 import cv2 as cv
 
-from Connection.tcpServer import TCPServer
 from Camera.cameraCalibration import CalibrationInfo
 from Modules.handTrackingModule import HandDetector
 from Modules.faceMeshModule import FaceMeshDetector
+
+from Connection.handler import Handler
 
 from Writers.menuHandler import MenuHandler
 from Writers.followFingerTips import FollowFingerTips
@@ -16,15 +16,13 @@ from Writers.objectRotator import ObjectRotator
 from Writers.objectScaler import ObjectScaler
 from Writers.freeTransformer import FreeTransformer
 
-class VCraniumServer(TCPServer):
+class VCranium(Handler):
     
-    headerBodySeparator = "?"
-    inHeaderInfoSeparator = "|"
     inBodyInstructionSeparator = "&"
     inInstructionHandleValueSeparator = "="
 
-    def __init__(self, ip, port):
-        super().__init__(ip, port)
+    def __init__(self):
+        super().__init__()
 
         self.calib = CalibrationInfo("Camera/calib_results/calculatedValues.npz")
 
@@ -40,12 +38,17 @@ class VCraniumServer(TCPServer):
             FreeTransformer(self.__class__.inInstructionHandleValueSeparator, 0b0001)
         ]
 
-        #self.faceDetector = FaceMeshDetector(maxFaces=1, minDetectionCon=0.5)
-        #self.faceInstructionWriters = []
+        self.faceDetector = FaceMeshDetector(maxFaces=1, minDetectionCon=0.5)
+        self.faceInstructionWriters = []
 
-    def _operateOnDataReceived(self, data):
+    def __del__(self):
+        super().__del__()
+
+    def operateOnData(self, data):
         frame_encoded = np.frombuffer(data, dtype=np.uint8)
         frame = cv.imdecode(frame_encoded, cv.IMREAD_COLOR)
+
+        initialMode = self.handInstructionWriters[0].modeCurrent
 
         result = ""
 
@@ -77,26 +80,36 @@ class VCraniumServer(TCPServer):
 
                 hand["fingersUp"] = self.handDetector.fingersUp(hand)
 
-            initialMode = self.handInstructionWriters[0].modeCurrent
             for writer in self.handInstructionWriters:
+                if writer.shouldExecuteInMode(initialMode):
+                    instruction = writer.generateInstruction(self.handDetector, hands, self.calib)
+
+                    if instruction != "":
+                        result += instruction + self.__class__.inBodyInstructionSeparator
+
+        if len(self.faceInstructionWriters) > 0:
+            faces = self.faceDetector.findFaceMesh(frame, draw=False)
+
+            for face in faces:
+                featureMarkPoints = []
+                for index in self.faceDetector.featureMarkIds:
+                    featureMarkPoints.append(np.array(face["lmList"][index][0:2]))
+                featureMarkPoints = np.array(featureMarkPoints, dtype=np.float32)
+
+                ret, rVec, tVec = cv.solvePnP(self.faceDetector.featureMark3dPoints, featureMarkPoints, self.calib.camMatrix, self.calib.distCof, cv.SOLVEPNP_IPPE)
+                rVec = np.reshape(rVec, 3)
+                tVec = np.reshape(tVec, 3)
+                face["rVec"] = rVec[:]
+                face["tVec"] = tVec[:]
+
+            for writer in self.faceInstructionWriters:
                 if writer.shouldExecuteInMode(initialMode):
                     if not writer.shouldExecuteInMode(self.handInstructionWriters[0].modeCurrent):
                         instruction = writer.getDisableInstruction()
                     else:
-                        instruction = writer.generateInstruction(self.handDetector, hands, self.calib)
+                        instruction = writer.generateInstruction(self.faceDetector, faces, self.calib)
 
                     if instruction != "":
-                        result += instruction + self.inBodyInstructionSeparator
-                        
+                        result += instruction + self.__class__.inBodyInstructionSeparator
+
         return result
-        
-
-        
-def main():
-    HOSTNAME = socket.gethostname()
-    HOST = socket.gethostbyname(HOSTNAME)
-
-    server = VCraniumServer(HOST, 5050)
-    server.run()
-
-if __name__ == '__main__' : main()

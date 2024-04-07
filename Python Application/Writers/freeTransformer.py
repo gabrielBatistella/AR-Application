@@ -10,17 +10,16 @@ class FreeTransformer(InstructionWriter):
         self.leftFollowing = False
         self.rightHolding = False
         self.rightFollowing = False
-
-    def getDisableInstruction(self):
-        instruction = "Free" + self.inInstructionHandleValueSeparator
-        instruction += "Lost Track/Lost Track"
-        return instruction
+        self.prevFilteredPointLeft = {8: None, 12: None}
+        self.prevFilteredPointRight = {8: None, 12: None}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Free" + self.inInstructionHandleValueSeparator
 
         leftOn = False
         rightOn = False
+        leftPos = "None"
+        rightPos = "None"
         
         if len(trackObjs) > 0:
             if trackObjs[0]["type"] == "Left":
@@ -43,22 +42,24 @@ class FreeTransformer(InstructionWriter):
             #Free
             if leftOn:
                 lmListLeft = leftHand["lmList"]
-        
-                x0L = (lmListLeft[4][0] - camCalib.w/2)*leftHand["px2cmRate"][0]
-                y0L = (-lmListLeft[4][1] + camCalib.h/2)*leftHand["px2cmRate"][1]
-                z0L = lmListLeft[4][2]*leftHand["px2cmRate"][2] + leftHand["tVec"][2]
 
-                x1L = (lmListLeft[8][0] - camCalib.w/2)*leftHand["px2cmRate"][0]
-                y1L = (-lmListLeft[8][1] + camCalib.h/2)*leftHand["px2cmRate"][1]
-                z1L = lmListLeft[8][2]*leftHand["px2cmRate"][2] + leftHand["tVec"][2]
+                for id in (8, 12):
+                    x = (lmListLeft[id][0] - camCalib.w/2)*leftHand["px2cmRate"][0]
+                    y = (-lmListLeft[id][1] + camCalib.h/2)*leftHand["px2cmRate"][1]
+                    z = lmListLeft[id][2]*leftHand["px2cmRate"][2] + leftHand["tVec"][2]
+                    
+                    if self.filteredPointLeft[id] == None:
+                        self.filteredPointLeft[id] = (x, y, z)
+                    
+                    InstructionWriter.filterPointEWA((x, y, z), self.filteredPointLeft[id])
+                    
+                    self.filteredPointLeft[id] = (x, y, z)
                 
-                distL = math.hypot(x0L - x1L, y0L - y1L, z0L - z1L)
+                distL = math.hypot(self.filteredPointLeft[8][0] - self.filteredPointLeft[12][0], self.filteredPointLeft[8][1] - self.filteredPointLeft[12][1], self.filteredPointLeft[8][2] - self.filteredPointLeft[12][2])
                 
-                xLAvg = (x0L + x1L)/2
-                yLAvg = (y0L + y1L)/2
-                zLAvg = (z0L + z1L)/2
-                
-                leftPos = ""
+                xLAvg = (self.filteredPointLeft[8][0] + self.filteredPointLeft[12][0])/2
+                yLAvg = (self.filteredPointLeft[8][1] + self.filteredPointLeft[12][1])/2
+                zLAvg = (self.filteredPointLeft[8][2] + self.filteredPointLeft[12][2])/2
 
                 if distL < 4: 
                     if not self.leftHolding:
@@ -70,37 +71,32 @@ class FreeTransformer(InstructionWriter):
                     if self.leftHolding:
                         self.leftHolding = False
                         leftPos = "Release:"
+                    else:
+                        leftPos = ""
                         
-                self.leftFollowing = True
-                        
-                leftPos += str(xLAvg) + ";" + str(yLAvg) + ";" + str(zLAvg)
+                leftPos += str(round(xLAvg, 2)) + ";" + str(round(yLAvg, 2)) + ";" + str(round(zLAvg, 2))
             
-            else:
-                if self.leftFollowing:
-                    leftPos = "Lost Track"
-                    self.leftHolding = False
-                    self.leftFollowing = False
-                else:
-                    leftPos = "None"
-                
             if rightOn:
                 lmListRight = rightHand["lmList"]
-                x0R = (lmListRight[4][0] - camCalib.w/2)*rightHand["px2cmRate"][0]
-                y0R = (-lmListRight[4][1] + camCalib.h/2)*rightHand["px2cmRate"][1]
-                z0R = lmListRight[4][2]*rightHand["px2cmRate"][2] + rightHand["tVec"][2]
-
-                x1R = (lmListRight[8][0] - camCalib.w/2)*rightHand["px2cmRate"][0]
-                y1R = (-lmListRight[8][1] + camCalib.h/2)*rightHand["px2cmRate"][1]
-                z1R = lmListRight[8][2]*rightHand["px2cmRate"][2] + rightHand["tVec"][2]
-
-                distR = math.hypot(x0R - x1R, y0R - y1R, z0R - z1R)
                 
-                xRAvg = (x0R + x1R)/2
-                yRAvg = (y0R + y1R)/2
-                zRAvg = (z0R + z1R)/2
+                for id in (8, 12):
+                    x = (lmListRight[id][0] - camCalib.w/2)*rightHand["px2cmRate"][0]
+                    y = (-lmListRight[id][1] + camCalib.h/2)*rightHand["px2cmRate"][1]
+                    z = lmListRight[id][2]*rightHand["px2cmRate"][2] + rightHand["tVec"][2]
+                    
+                    if self.filteredPointRight[id] == None:
+                        self.filteredPointRight[id] = (x, y, z)
+                    
+                    InstructionWriter.filterPointEWA((x, y, z), self.filteredPointRight[id])
+                    
+                    self.filteredPointRight[id] = (x, y, z)
                 
-                rightPos = ""
-
+                distR = math.hypot(self.filteredPointRight[8][0] - self.filteredPointRight[12][0], self.filteredPointRight[8][1] - self.filteredPointRight[12][1], self.filteredPointRight[8][2] - self.filteredPointRight[12][2])
+                
+                xRAvg = (self.filteredPointRight[8][0] + self.filteredPointRight[12][0])/2
+                yRAvg = (self.filteredPointRight[8][1] + self.filteredPointRight[12][1])/2
+                zRAvg = (self.filteredPointRight[8][2] + self.filteredPointRight[12][2])/2
+                
                 if distR < 4: 
                     if not self.rightHolding:
                         self.rightHolding = True
@@ -111,42 +107,16 @@ class FreeTransformer(InstructionWriter):
                     if self.rightHolding:
                         self.rightHolding = False
                         rightPos = "Release:"
+                    else:
+                        rightPos = ""
                         
-                self.rightFollowing = True
-                        
-                rightPos += str(xRAvg) + ";" + str(yRAvg) + ";" + str(zRAvg)
-            
-            else:
-                if self.rightFollowing:
-                    rightPos = "Lost Track"
-                    self.rightHolding = False
-                    self.rightFollowing = False
-                else:
-                    rightPos = "None"
-        
-            if leftPos == "None" and rightPos == "None":
-                instruction = ""
-            else:
-                instruction += leftPos + "/" + rightPos
-        
-        else:
-            if self.leftFollowing:
-                leftPos = "Lost Track"
-                self.leftHolding = False
-                self.leftFollowing = False
-            else:
-                leftPos = "None"
+                rightPos += str(round(xRAvg, 2)) + ";" + str(round(yRAvg, 2)) + ";" + str(round(zRAvg, 2))
                 
-            if self.rightFollowing:
-                rightPos = "Lost Track"
-                self.rightHolding = False
-                self.rightFollowing = False
-            else:
-                rightPos = "None"
+            instruction += leftPos + "/" + rightPos
 
-            if leftPos == "None" and rightPos == "None":
-                instruction = ""
-            else:
-                instruction += leftPos + "/" + rightPos
-            
+        else:
+            self.rightHolding = False
+            self.rightFollowing = False
+            instruction = ""
+
         return instruction

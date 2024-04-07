@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 
@@ -26,7 +24,7 @@ public class ScaleCaster : InstructionReader
         aimLine = GetComponent<LineRenderer>();
     }
 
-    public override void SetDefault()
+    protected override void InitSettings()
     {
         aim.origin = transform.position;
         aim.direction = transform.forward;
@@ -40,7 +38,13 @@ public class ScaleCaster : InstructionReader
         gameObject.SetActive(false);
     }
 
-    public override void FollowInstruction(string instructionValue)
+    protected override void TurnSilent()
+    {
+        ReleaseIfHolding();
+        gameObject.SetActive(false);
+    }
+
+    protected override void FollowInstruction(string instructionValue)
     {
         if (instructionValue == "Lost Track")
         {
@@ -49,7 +53,7 @@ public class ScaleCaster : InstructionReader
         }
         else if (instructionValue.StartsWith("Grab"))
         {
-            Vector3 targetPoint = pointFromCoords(instructionValue.Split(":")[1].Split(";"));
+            Vector3 targetPoint = PointFromCoords(instructionValue.Split(":")[1].Split(";"));
 
             aim.direction = (fixedParent.TransformPoint(targetPoint) - aim.origin).normalized;
             aimLine.SetPosition(1, transform.parent.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
@@ -60,7 +64,7 @@ public class ScaleCaster : InstructionReader
         {
             ReleaseIfHolding();
 
-            Vector3 targetPoint = pointFromCoords(instructionValue.Split(":")[1].Split(";"));
+            Vector3 targetPoint = PointFromCoords(instructionValue.Split(":")[1].Split(";"));
 
             aim.direction = (fixedParent.TransformPoint(targetPoint) - aim.origin).normalized;
             aimLine.SetPosition(1, transform.parent.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
