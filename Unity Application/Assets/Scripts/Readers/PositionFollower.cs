@@ -1,18 +1,21 @@
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using UnityEngine;
 
 public class PositionFollower : InstructionReader
 {
     [SerializeField] private List<Transform> objPoints;
 
-    public override void SetDefault()
+    protected override void InitSettings()
     {
         gameObject.SetActive(false);
     }
 
-    public override void FollowInstruction(string instructionValue)
+    protected override void TurnSilent()
+    {
+        gameObject.SetActive(false);
+    }
+
+    protected override void FollowInstruction(string instructionValue)
     {
         if (instructionValue == "Lost Track")
         {
@@ -28,7 +31,7 @@ public class PositionFollower : InstructionReader
             string[] coordsOfObjPoints = instructionValue.Split("/");
             for (int i = 0; i < coordsOfObjPoints.Length; i++)
             {
-                objPoints[i].localPosition = pointFromCoords(coordsOfObjPoints[i].Split(";"));
+                objPoints[i].localPosition = PointFromCoords(coordsOfObjPoints[i].Split(";"));
             }
         }
     }

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
@@ -26,7 +24,7 @@ public class TranslationCaster : InstructionReader
         aimLine = GetComponent<LineRenderer>();
     }
 
-    public override void SetDefault()
+    protected override void InitSettings()
     {
         aim.origin = transform.position;
         aim.direction = transform.forward;
@@ -41,7 +39,13 @@ public class TranslationCaster : InstructionReader
         gameObject.SetActive(false);
     }
 
-    public override void FollowInstruction(string instructionValue)
+    protected override void TurnSilent()
+    {
+        ReleaseIfHolding();
+        gameObject.SetActive(false);
+    }
+
+    protected override void FollowInstruction(string instructionValue)
     {
         if (instructionValue == "Lost Track")
         {
@@ -50,7 +54,7 @@ public class TranslationCaster : InstructionReader
         }
         else if (instructionValue.StartsWith("Grab"))
         {
-            Vector3 targetPoint = pointFromCoords(instructionValue.Split(":")[1].Split(";"));
+            Vector3 targetPoint = PointFromCoords(instructionValue.Split(":")[1].Split(";"));
 
             aim.direction = (fixedParent.TransformPoint(targetPoint) - aim.origin).normalized;
             aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
@@ -61,7 +65,7 @@ public class TranslationCaster : InstructionReader
         {
             ReleaseIfHolding();
 
-            Vector3 targetPoint = pointFromCoords(instructionValue.Split(":")[1].Split(";"));
+            Vector3 targetPoint = PointFromCoords(instructionValue.Split(":")[1].Split(";"));
 
             aim.direction = (fixedParent.TransformPoint(targetPoint) - aim.origin).normalized;
             aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
@@ -70,7 +74,7 @@ public class TranslationCaster : InstructionReader
         {
             if (grabbedObj != null)
             {
-                Vector3 deltaPos = pointFromCoords(instructionValue.Split(":")[1].Split(";"));
+                Vector3 deltaPos = PointFromCoords(instructionValue.Split(":")[1].Split(";"));
                 grabbedObj.transform.localPosition = objPosWhenGrabbed + deltaPos * pointerObjTranslationRatio;
 
                 aimLine.SetPosition(1, transform.InverseTransformPoint(grabbedObj.transform.TransformPoint(contactPointOnObject)));
@@ -90,7 +94,7 @@ public class TranslationCaster : InstructionReader
                 gameObject.SetActive(true);
             }
 
-            aim.direction = (fixedParent.TransformPoint(pointFromCoords(instructionValue.Split(";"))) - aim.origin).normalized;
+            aim.direction = (fixedParent.TransformPoint(PointFromCoords(instructionValue.Split(";"))) - aim.origin).normalized;
             aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
         }
     }

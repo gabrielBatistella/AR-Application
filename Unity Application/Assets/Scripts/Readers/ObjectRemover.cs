@@ -1,6 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
 using UnityEngine;
 
 [RequireComponent(typeof(LineRenderer))]
@@ -22,7 +19,7 @@ public class ObjectRemover : InstructionReader
         aimLine = GetComponent<LineRenderer>();
     }
 
-    public override void SetDefault()
+    protected override void InitSettings()
     {
         aim.origin = transform.position;
         aim.direction = transform.forward;
@@ -31,7 +28,12 @@ public class ObjectRemover : InstructionReader
         gameObject.SetActive(false);
     }
 
-    public override void FollowInstruction(string instructionValue)
+    protected override void TurnSilent()
+    {
+        gameObject.SetActive(false);
+    }
+
+    protected override void FollowInstruction(string instructionValue)
     {
         if (instructionValue == "Lost Track")
         {
@@ -39,7 +41,7 @@ public class ObjectRemover : InstructionReader
         }
         else if (instructionValue.StartsWith("Remove"))
         {
-            Vector3 targetPoint = pointFromCoords(instructionValue.Split(":")[1].Split(";"));
+            Vector3 targetPoint = PointFromCoords(instructionValue.Split(":")[1].Split(";"));
 
             aim.direction = (fixedParent.TransformPoint(targetPoint) - aim.origin).normalized;
             aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
@@ -56,7 +58,7 @@ public class ObjectRemover : InstructionReader
                 gameObject.SetActive(true);
             }
 
-            aim.direction = (fixedParent.TransformPoint(pointFromCoords(instructionValue.Split(";"))) - aim.origin).normalized;
+            aim.direction = (fixedParent.TransformPoint(PointFromCoords(instructionValue.Split(";"))) - aim.origin).normalized;
             aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
         }
     }

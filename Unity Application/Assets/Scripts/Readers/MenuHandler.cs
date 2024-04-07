@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using UnityEngine;
 using UnityEngine.UI;
@@ -21,7 +19,7 @@ public class MenuHandler : InstructionReader
         menu = GetComponent<InfiniteScrollHandler>();
     }
 
-    public override void SetDefault()
+    protected override void InitSettings()
     {
         mode = 0;
         modeTextField.text = modeNames[0];
@@ -30,7 +28,13 @@ public class MenuHandler : InstructionReader
         gameObject.SetActive(false);
     }
 
-    public override void FollowInstruction(string instructionValue)
+    protected override void TurnSilent()
+    {
+        menu.SetScrollPosition(mode);
+        gameObject.SetActive(false);
+    }
+
+    protected override void FollowInstruction(string instructionValue)
     {
         if (instructionValue == "Close Menu")
         {

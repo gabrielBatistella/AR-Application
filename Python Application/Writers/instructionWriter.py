@@ -4,7 +4,7 @@ class InstructionWriter(abc.ABC):
 
     def __init__(self, inInstructionHandleValueSeparator, modeMask):
         self.inInstructionHandleValueSeparator = inInstructionHandleValueSeparator
-        self.modeMask = modeMask
+        self.modeMask = int('{:04b}'.format(modeMask)[::-1], 2)
 
     @abc.abstractmethod
     def getDisableInstruction(self):
@@ -15,4 +15,4 @@ class InstructionWriter(abc.ABC):
         pass
 
     def shouldExecuteInMode(self, mode):
-        return self.modeMask & 2**(3-mode) > 0
+        return self.modeMask & 2**mode > 0
