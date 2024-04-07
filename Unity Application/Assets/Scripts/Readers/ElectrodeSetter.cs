@@ -22,7 +22,7 @@ public class ElectrodeSetter : InstructionReader
         aimLine = GetComponent<LineRenderer>();
     }
 
-    public override void SetDefault()
+    protected override void InitSettings()
     {
         aim.origin = transform.position;
         aim.direction = transform.forward;
@@ -31,20 +31,21 @@ public class ElectrodeSetter : InstructionReader
         gameObject.SetActive(false);
     }
 
-    public override void FollowInstruction(string instructionValue)
+    protected override void TurnSilent()
     {
-        if (instructionValue == "Lost Track")
-        {
-            gameObject.SetActive(false);
-        }
-        else if (instructionValue.StartsWith("Set"))
+        gameObject.SetActive(false);
+    }
+
+    protected override void FollowInstruction(string instructionValue)
+    {
+        if (instructionValue.StartsWith("Set"))
         {
             string[] pointsCoords = instructionValue.Split(":")[1].Split("/");
 
-            transform.localPosition = pointFromCoords(pointsCoords[0].Split(";"));
+            transform.localPosition = PointFromCoords(pointsCoords[0].Split(";"));
 
             aim.origin = transform.position;
-            aim.direction = (fixedParent.TransformPoint(pointFromCoords(pointsCoords[1].Split(";"))) - aim.origin).normalized;
+            aim.direction = (fixedParent.TransformPoint(PointFromCoords(pointsCoords[1].Split(";"))) - aim.origin).normalized;
             aimLine.SetPosition(0, transform.parent.InverseTransformPoint(aim.origin));
             aimLine.SetPosition(1, transform.parent.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
 
@@ -67,10 +68,10 @@ public class ElectrodeSetter : InstructionReader
 
             string[] pointsCoords = instructionValue.Split("/");
 
-            transform.localPosition = pointFromCoords(pointsCoords[0].Split(";"));
+            transform.localPosition = PointFromCoords(pointsCoords[0].Split(";"));
 
             aim.origin = transform.position;
-            aim.direction = (fixedParent.TransformPoint(pointFromCoords(pointsCoords[1].Split(";"))) - aim.origin).normalized;
+            aim.direction = (fixedParent.TransformPoint(PointFromCoords(pointsCoords[1].Split(";"))) - aim.origin).normalized;
             aimLine.SetPosition(0, transform.parent.InverseTransformPoint(aim.origin));
             aimLine.SetPosition(1, transform.parent.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
         }

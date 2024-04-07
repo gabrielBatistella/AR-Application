@@ -35,11 +35,7 @@ public class ObjectRemover : InstructionReader
 
     protected override void FollowInstruction(string instructionValue)
     {
-        if (instructionValue == "Lost Track")
-        {
-            gameObject.SetActive(false);
-        }
-        else if (instructionValue.StartsWith("Remove"))
+        if (instructionValue.StartsWith("Remove"))
         {
             Vector3 targetPoint = PointFromCoords(instructionValue.Split(":")[1].Split(";"));
 
@@ -58,7 +54,7 @@ public class ObjectRemover : InstructionReader
                 gameObject.SetActive(true);
             }
 
-            aim.direction = (fixedParent.TransformPoint(pointFromCoords(instructionValue.Split(";"))) - aim.origin).normalized;
+            aim.direction = (fixedParent.TransformPoint(PointFromCoords(instructionValue.Split(";"))) - aim.origin).normalized;
             aimLine.SetPosition(1, transform.parent.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
         }
     }

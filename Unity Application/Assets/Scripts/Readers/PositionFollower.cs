@@ -17,22 +17,15 @@ public class PositionFollower : InstructionReader
 
     protected override void FollowInstruction(string instructionValue)
     {
-        if (instructionValue == "Lost Track")
+        if (!gameObject.activeSelf)
         {
-            gameObject.SetActive(false);
+            gameObject.SetActive(true);
         }
-        else
-        {
-            if (!gameObject.activeSelf)
-            {
-                gameObject.SetActive(true);
-            }
 
-            string[] coordsOfObjPoints = instructionValue.Split("/");
-            for (int i = 0; i < coordsOfObjPoints.Length; i++)
-            {
-                objPoints[i].localPosition = PointFromCoords(coordsOfObjPoints[i].Split(";"));
-            }
+        string[] coordsOfObjPoints = instructionValue.Split("/");
+        for (int i = 0; i < coordsOfObjPoints.Length; i++)
+        {
+            objPoints[i].localPosition = PointFromCoords(coordsOfObjPoints[i].Split(";"));
         }
     }
 }

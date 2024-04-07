@@ -36,12 +36,7 @@ public class MenuHandler : InstructionReader
 
     protected override void FollowInstruction(string instructionValue)
     {
-        if (instructionValue == "Close Menu")
-        {
-            menu.SetScrollPosition(mode);
-            gameObject.SetActive(false);
-        }
-        else if (instructionValue.StartsWith("Selected"))
+        if (instructionValue.StartsWith("Selected"))
         {
             mode = int.Parse(instructionValue.Split(":")[1]);
             modeTextField.text = modeNames[mode];

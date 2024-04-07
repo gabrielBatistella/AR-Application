@@ -47,12 +47,7 @@ public class TranslationCaster : InstructionReader
 
     protected override void FollowInstruction(string instructionValue)
     {
-        if (instructionValue == "Lost Track")
-        {
-            ReleaseIfHolding();
-            gameObject.SetActive(false);
-        }
-        else if (instructionValue.StartsWith("Grab"))
+        if (instructionValue.StartsWith("Grab"))
         {
             Vector3 targetPoint = PointFromCoords(instructionValue.Split(":")[1].Split(";"));
 
@@ -94,7 +89,7 @@ public class TranslationCaster : InstructionReader
                 gameObject.SetActive(true);
             }
 
-            aim.direction = (fixedParent.TransformPoint(pointFromCoords(instructionValue.Split(";"))) - aim.origin).normalized;
+            aim.direction = (fixedParent.TransformPoint(PointFromCoords(instructionValue.Split(";"))) - aim.origin).normalized;
             aimLine.SetPosition(1, transform.parent.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
         }
     }
