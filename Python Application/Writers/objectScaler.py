@@ -45,7 +45,7 @@ class ObjectScaler(InstructionWriter):
                         instruction += "Grab:" + str(round(xAvg, 2)) + ";" + str(round(yAvg, 2)) + ";" + str(round(zAvg, 2))
 
                     else:
-                        scale = abs((self.xAvgInit - xAvg)/3, 3)
+                        scale = abs(self.xAvgInit - xAvg)/3
                         instruction += "Holding:" + str(round(scale,2))
 
                 else:

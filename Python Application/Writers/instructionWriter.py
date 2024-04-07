@@ -2,7 +2,7 @@ import abc
 
 class InstructionWriter(abc.ABC):
    
-    beta = 0.90
+    beta = 0.75
     
     def __init__(self, inInstructionHandleValueSeparator, modeMask):
         self.inInstructionHandleValueSeparator = inInstructionHandleValueSeparator
