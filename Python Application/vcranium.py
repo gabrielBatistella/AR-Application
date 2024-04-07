@@ -8,7 +8,7 @@ from Modules.faceMeshModule import FaceMeshDetector
 from Connection.handler import Handler
 
 from Writers.menuHandler import MenuHandler
-from Writers.followFingerTips import FollowFingerTips
+from Writers.fingerTipsFollower import FingerTipsFollower
 from Writers.objectSpawner import ObjectSpawner
 from Writers.objectRemover import ObjectRemover
 from Writers.objectTranslator import ObjectTranslator
@@ -29,7 +29,7 @@ class VCranium(Handler):
         self.handDetector = HandDetector(maxHands=2, minDetectionCon=0.8)
         self.handInstructionWriters = [
             MenuHandler(self.__class__.inInstructionHandleValueSeparator, 0b1111),
-            FollowFingerTips(self.__class__.inInstructionHandleValueSeparator, 0b1000),
+            FingerTipsFollower(self.__class__.inInstructionHandleValueSeparator, 0b1000),
             ObjectSpawner(self.__class__.inInstructionHandleValueSeparator, 0b0100),
             ObjectRemover(self.__class__.inInstructionHandleValueSeparator, 0b0100),
             ObjectTranslator(self.__class__.inInstructionHandleValueSeparator, 0b0010),

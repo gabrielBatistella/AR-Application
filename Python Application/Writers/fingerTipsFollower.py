@@ -1,6 +1,6 @@
 from Writers.instructionWriter import InstructionWriter
 
-class FollowFingerTips(InstructionWriter):
+class FingerTipsFollower(InstructionWriter):
 
     def __init__(self, inInstructionHandleValueSeparator, modeMask):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
