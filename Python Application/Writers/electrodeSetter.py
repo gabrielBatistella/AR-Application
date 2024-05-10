@@ -22,7 +22,7 @@ class ElectrodeSetter(InstructionWriter):
             hand = trackObjs[0]
 
             #If only index and middle fingers are up
-            if hand["fingersUp"] == [1, 1, 0, 0, 0]:
+            if hand["fingersUp"] == [1, 1, 0, 0, 0] or hand["fingersUp"] == [0, 1, 0, 0, 0]:
                 lmList = hand["lmList"]
 
                 for id in (4, 5, 8):
@@ -35,20 +35,19 @@ class ElectrodeSetter(InstructionWriter):
                     
                     self.filteredPoints[id] = InstructionWriter.filterPointEWA((x, y, z), self.filteredPoints[id])
                 
-                dist = math.hypot(self.filteredPoints[4][0] - self.filteredPoints[8][0], self.filteredPoints[4][1] - self.filteredPoints[8][1], self.filteredPoints[4][2] - self.filteredPoints[8][2])
+                dist = math.hypot(self.filteredPoints[4][0] - self.filteredPoints[5][0], self.filteredPoints[4][1] - self.filteredPoints[5][1], self.filteredPoints[4][2] - self.filteredPoints[5][2])
 
-                if dist < 5:
+                if dist < 2:
                     if not self.spawn:
                         self.spawn = True
+                        instruction += "Set:"
                     instruction += str(round(self.filteredPoints[8][0], 2)) + ";" + str(round(self.filteredPoints[8][1], 2)) + ";" + str(round(self.filteredPoints[8][2], 2)) + "/" + str(round(self.filteredPoints[5][0], 2)) + ";" + str(round(self.filteredPoints[5][1], 2)) + ";" + str(round(self.filteredPoints[5][2], 2))
 
                 else:
                     if self.spawn:
-                        instruction += "Set:" + str(round(self.filteredPoints[8][0], 2)) + ";" + str(round(self.filteredPoints[8][1], 2)) + ";" + str(round(self.filteredPoints[8][2], 2)) + "/" + str(round(self.filteredPoints[5][0], 2)) + ";" + str(round(self.filteredPoints[5][1], 2)) + ";" + str(round(self.filteredPoints[5][2], 2))
                         self.spawn = False
-                    else:
-                        instruction = ""
-
+                    instruction += str(round(self.filteredPoints[8][0], 2)) + ";" + str(round(self.filteredPoints[8][1], 2)) + ";" + str(round(self.filteredPoints[8][2], 2)) + "/" + str(round(self.filteredPoints[5][0], 2)) + ";" + str(round(self.filteredPoints[5][1], 2)) + ";" + str(round(self.filteredPoints[5][2], 2))
+                    
             else:
                 instruction = ""
                 self.spawn = False
