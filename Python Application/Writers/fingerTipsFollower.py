@@ -1,4 +1,5 @@
 from Writers.instructionWriter import InstructionWriter
+import math
 
 class FingerTipsFollower(InstructionWriter):
 
@@ -26,6 +27,13 @@ class FingerTipsFollower(InstructionWriter):
                 
                 instruction += str(round(self.filteredPoints[id][0], 2)) + ";" + str(round(self.filteredPoints[id][1], 2)) + ";" + str(round(self.filteredPoints[id][2], 2)) + "/"
             
+            # SO PARA TESTE
+            targetPoint = (0, 0, 0)
+            distToTarget = math.hypot(targetPoint[0] - self.filteredPoints[8][0], targetPoint[1] - self.filteredPoints[8][1], targetPoint[2] - self.filteredPoints[8][2])
+            if distToTarget < 0.01:
+                print("OK")
+            # SO PARA TESTE
+
             instruction = instruction[:-1]
             
         else:
