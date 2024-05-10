@@ -34,8 +34,8 @@ class FaceMeshDetector:
         self.drawSpec = self.mpDraw.DrawingSpec(thickness=1, circle_radius=1)
         self.featureMarkIds = (1, 199, 33, 263, 61, 291)
 
-        self.featureMark3dPoints = np.array([[0.0, 0.0, 0.0],              # Nose tip           -> 1
-                                             [0.0, -6.6, -1.3],         # Chin               -> 199
+        self.featureMark3dPoints = np.array([[0.0, 0.0, 0.0],        # Nose tip           -> 1
+                                             [0.0, -6.6, -1.3],      # Chin               -> 199
                                              [-4.5, 3.4, -2.7],      # Left eye corner    -> 33
                                              [4.5, 3.4, -2.7],       # Right eye corner   -> 263
                                              [-3.0, -3.0, -2.5],     # Left mouth         -> 61

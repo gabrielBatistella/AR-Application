@@ -57,7 +57,7 @@ class UDPConnector(Connector):
                 if self._frameSeq[frameIndex] != frameCount:
                     if self._frameBuffer[frameIndex] is not None:
                         self._packagesLost += 1
-                        print(f'Packages Lost: {self._packagesLost}')
+                        print(f'Package Lost: {self._frameSeq[frameIndex]} -> Total Losses: {self._packagesLost}')
 
                     self._frameBuffer[frameIndex] = [None] * numFragments
                     self._frameSeq[frameIndex] = frameCount

@@ -101,7 +101,7 @@ class VCranium(Handler):
                     featureMarkPoints.append(np.array(face["lmList"][index][0:2]))
                 featureMarkPoints = np.array(featureMarkPoints, dtype=np.float32)
 
-                ret, rVec, tVec = cv.solvePnP(self.faceDetector.featureMark3dPoints, featureMarkPoints, self.calib.camMatrix, self.calib.distCof, cv.SOLVEPNP_IPPE)
+                ret, rVec, tVec = cv.solvePnP(self.faceDetector.featureMark3dPoints, featureMarkPoints, self.calib.camMatrix, self.calib.distCof, cv.SOLVEPNP_EPNP)
                 rVec = np.reshape(rVec, 3)
                 tVec = np.reshape(tVec, 3)
                 face["rVec"] = rVec[:]
