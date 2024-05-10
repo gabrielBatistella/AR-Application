@@ -7,8 +7,10 @@ class ObjectScaler(InstructionWriter):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.holding = False
+        
         self.xAvgInit = 0
-        self.filteredPoint = {8: None, 12: None}
+        
+        self.filteredPoints = {}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Scale" + self.inInstructionHandleValueSeparator
@@ -25,18 +27,16 @@ class ObjectScaler(InstructionWriter):
                     y = (-lmList[id][1] + camCalib.h/2)*hand["px2cmRate"][1]
                     z = lmList[id][2]*hand["px2cmRate"][2] + hand["tVec"][2]
                     
-                    if self.filteredPoint[id] == None:
-                        self.filteredPoint[id] = (x, y, z)
+                    if id not in self.filteredPoints:
+                        self.filteredPoints[id] = (x, y, z)
                     
-                    InstructionWriter.filterPointEWA((x, y, z), self.filteredPoint[id])
-                    
-                    self.filteredPoint[id] = (x, y, z)
+                    self.filteredPoints[id] = InstructionWriter.filterPointEWA((x, y, z), self.filteredPoints[id])
                 
-                dist = math.hypot(self.filteredPoint[8][0] - self.filteredPoint[12][0], self.filteredPoint[8][1] - self.filteredPoint[12][1], self.filteredPoint[8][2] - self.filteredPoint[12][2])
+                dist = math.hypot(self.filteredPoints[8][0] - self.filteredPoints[12][0], self.filteredPoints[8][1] - self.filteredPoints[12][1], self.filteredPoints[8][2] - self.filteredPoints[12][2])
                 
-                xAvg = (self.filteredPoint[8][0] + self.filteredPoint[12][0])/2
-                yAvg = (self.filteredPoint[8][1] + self.filteredPoint[12][1])/2
-                zAvg = (self.filteredPoint[8][2] + self.filteredPoint[12][2])/2
+                xAvg = (self.filteredPoints[8][0] + self.filteredPoints[12][0])/2
+                yAvg = (self.filteredPoints[8][1] + self.filteredPoints[12][1])/2
+                zAvg = (self.filteredPoints[8][2] + self.filteredPoints[12][2])/2
                 
                 if dist < 4:
                     if not self.holding:
@@ -56,10 +56,10 @@ class ObjectScaler(InstructionWriter):
                 
             else:
                 instruction = ""
-                self.filteredPoint = {8: None, 12: None}
+                self.filteredPoints = {}
 
         else:
             instruction = ""
-            self.filteredPoint = {8: None, 12: None}
+            self.filteredPoints = {}
                 
         return instruction

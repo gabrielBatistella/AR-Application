@@ -7,11 +7,10 @@ class FreeTransformer(InstructionWriter):
         super().__init__(inInstructionHandleValueSeparator, modeMask)
 
         self.leftHolding = False
-        self.leftFollowing = False
         self.rightHolding = False
-        self.rightFollowing = False
-        self.filteredPointLeft = {4: None, 8: None}
-        self.filteredPointRight = {4: None, 8: None}
+        
+        self.filteredPointsLeft = {}
+        self.filteredPointsRight = {}
 
     def generateInstruction(self, detector, trackObjs, camCalib):
         instruction = "Free" + self.inInstructionHandleValueSeparator
@@ -48,18 +47,16 @@ class FreeTransformer(InstructionWriter):
                     y = (-lmListLeft[id][1] + camCalib.h/2)*leftHand["px2cmRate"][1]
                     z = lmListLeft[id][2]*leftHand["px2cmRate"][2] + leftHand["tVec"][2]
                     
-                    if self.filteredPointLeft[id] == None:
-                        self.filteredPointLeft[id] = (x, y, z)
-                    
-                    InstructionWriter.filterPointEWA((x, y, z), self.filteredPointLeft[id])
-                    
-                    self.filteredPointLeft[id] = (x, y, z)
+                    if id not in self.filteredPointsLeft:
+                        self.filteredPointsLeft[id] = (x, y, z)
+
+                    self.filteredPointsLeft[id] = InstructionWriter.filterPointEWA((x, y, z), self.filteredPointsLeft[id])
                 
-                distL = math.hypot(self.filteredPointLeft[4][0] - self.filteredPointLeft[8][0], self.filteredPointLeft[4][1] - self.filteredPointLeft[8][1], self.filteredPointLeft[4][2] - self.filteredPointLeft[8][2])
+                distL = math.hypot(self.filteredPointsLeft[4][0] - self.filteredPointsLeft[8][0], self.filteredPointsLeft[4][1] - self.filteredPointsLeft[8][1], self.filteredPointsLeft[4][2] - self.filteredPointsLeft[8][2])
                 
-                xLAvg = (self.filteredPointLeft[4][0] + self.filteredPointLeft[8][0])/2
-                yLAvg = (self.filteredPointLeft[4][1] + self.filteredPointLeft[8][1])/2
-                zLAvg = (self.filteredPointLeft[4][2] + self.filteredPointLeft[8][2])/2
+                xLAvg = (self.filteredPointsLeft[4][0] + self.filteredPointsLeft[8][0])/2
+                yLAvg = (self.filteredPointsLeft[4][1] + self.filteredPointsLeft[8][1])/2
+                zLAvg = (self.filteredPointsLeft[4][2] + self.filteredPointsLeft[8][2])/2
 
                 if distL < 4: 
                     if not self.leftHolding:
@@ -84,18 +81,16 @@ class FreeTransformer(InstructionWriter):
                     y = (-lmListRight[id][1] + camCalib.h/2)*rightHand["px2cmRate"][1]
                     z = lmListRight[id][2]*rightHand["px2cmRate"][2] + rightHand["tVec"][2]
                     
-                    if self.filteredPointRight[id] == None:
-                        self.filteredPointRight[id] = (x, y, z)
+                    if id not in self.filteredPointsRight:
+                        self.filteredPointsRight[id] = (x, y, z)
                     
-                    InstructionWriter.filterPointEWA((x, y, z), self.filteredPointRight[id])
-                    
-                    self.filteredPointRight[id] = (x, y, z)
+                    self.filteredPointsRight[id] = InstructionWriter.filterPointEWA((x, y, z), self.filteredPointsRight[id])
                 
-                distR = math.hypot(self.filteredPointRight[4][0] - self.filteredPointRight[8][0], self.filteredPointRight[4][1] - self.filteredPointRight[8][1], self.filteredPointRight[4][2] - self.filteredPointRight[8][2])
+                distR = math.hypot(self.filteredPointsRight[4][0] - self.filteredPointsRight[8][0], self.filteredPointsRight[4][1] - self.filteredPointsRight[8][1], self.filteredPointsRight[4][2] - self.filteredPointsRight[8][2])
                 
-                xRAvg = (self.filteredPointRight[4][0] + self.filteredPointRight[8][0])/2
-                yRAvg = (self.filteredPointRight[4][1] + self.filteredPointRight[8][1])/2
-                zRAvg = (self.filteredPointRight[4][2] + self.filteredPointRight[8][2])/2
+                xRAvg = (self.filteredPointsRight[4][0] + self.filteredPointsRight[8][0])/2
+                yRAvg = (self.filteredPointsRight[4][1] + self.filteredPointsRight[8][1])/2
+                zRAvg = (self.filteredPointsRight[4][2] + self.filteredPointsRight[8][2])/2
                 
                 if distR < 4: 
                     if not self.rightHolding:
@@ -116,9 +111,10 @@ class FreeTransformer(InstructionWriter):
 
         else:
             self.rightHolding = False
-            self.rightFollowing = False
+            self.leftHolding = False
             instruction = ""
-            self.filteredPointLeft = {4: None, 8: None}
-            self.filteredPointRight = {4: None, 8: None}
+            
+            self.filteredPointsLeft = {}
+            self.filteredPointsRight = {}
 
         return instruction
