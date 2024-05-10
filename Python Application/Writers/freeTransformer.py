@@ -25,18 +25,25 @@ class FreeTransformer(InstructionWriter):
                 leftHand = trackObjs[0]
                 if leftHand["fingersUp"] == [1, 1, 0, 0, 0]:
                     leftOn = True
-                if len(trackObjs) == 2:
+                if len(trackObjs) > 1:
                     rightHand = trackObjs[1]
                     if rightHand["fingersUp"] == [1, 1, 0, 0, 0]:
                         rightOn = True
+                else:
+                    self.filteredPointsRight = {}
+                    self.rightHolding = False
+                    
             else:
                 rightHand = trackObjs[0]
                 if rightHand["fingersUp"] == [1, 1, 0, 0, 0]:
                     rightOn = True
-                if len(trackObjs) == 2:
+                if len(trackObjs) > 1:
                     leftHand = trackObjs[1]
                     if leftHand["fingersUp"] == [1, 1, 0, 0, 0]:
                        leftOn = True
+                else:
+                    self.filteredPointsLeft = {}
+                    self.leftHolding = False
                 
             #Free
             if leftOn:
