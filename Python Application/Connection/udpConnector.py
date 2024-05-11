@@ -4,12 +4,12 @@ from Connection.server import CommunicationCloseException
 
 class UDPConnector(Connector):
 
+    protocol = "UDP"
     headerSize = 8
     frameBufferSize = 128
 
     def __init__(self, ip = socket.gethostbyname(socket.gethostname()), port = 5052):
         super().__init__()
-        print('Server type: UDP')
         
         self._conn = UDPConnector._initSocket(ip, port)
         print(f'Host IP: {ip} | Port: {port}')

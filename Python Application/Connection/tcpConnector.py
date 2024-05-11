@@ -4,11 +4,11 @@ from Connection.server import CommunicationCloseException
 
 class TCPConnector(Connector):
 
+    protocol = "TCP"
     headerSize = 4
 
     def __init__(self, ip = socket.gethostbyname(socket.gethostname()), port = 5050):
         super().__init__()
-        print('Server type: TCP')
         
         self._listenerSocket = TCPConnector._initSocket(ip, port)
         print(f'Host IP: {ip} | Port: {port}')

@@ -2,8 +2,13 @@ import abc
 
 class Connector(abc.ABC):
 
-    def __init__(self):
+    @property
+    @abc.abstractmethod
+    def protocol(self):
         pass
+
+    def __init__(self):
+        print(f'Server type: {self.__class__.protocol}')
 
     def __del__(self):
         pass
