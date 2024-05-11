@@ -62,7 +62,7 @@ class TCPConnector(Connector):
             try:
                 self._conn.sendall(header)
                 self._conn.sendall(response)
-            except ConnectionAbortedError:
+            except (ConnectionAbortedError, ConnectionResetError):
                 raise CommunicationCloseException()
         else:
             raise ValueError()

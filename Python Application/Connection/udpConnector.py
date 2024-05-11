@@ -6,7 +6,7 @@ class UDPConnector(Connector):
 
     protocol = "UDP"
     headerSize = 8
-    frameBufferSize = 128
+    frameBufferSize = 32
 
     def __init__(self, ip = socket.gethostbyname(socket.gethostname()), port = 5052):
         super().__init__()
