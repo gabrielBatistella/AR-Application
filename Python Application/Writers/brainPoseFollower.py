@@ -33,9 +33,9 @@ class BrainPoseFollower(InstructionWriter):
                 
             self.filteredPoints["pos"] = InstructionWriter.filterPointEWA(brainWorldPos, self.filteredPoints["pos"])
             
-            rotX = angles[2]
-            rotY = (angles[1] + 90) % 360
-            rotZ = (-angles[0] + 180) % 360
+            rotX = -angles[2]
+            rotY = (angles[1] - 90)
+            rotZ = -(-angles[0] + 180)
             
             if "ang" not in self.filteredPoints:
                 self.filteredPoints["ang"] = (rotX, rotY, rotZ)
