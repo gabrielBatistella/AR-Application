@@ -19,8 +19,8 @@ public class ElectrodeInfoHandler : MonoBehaviour
 
     public void UpdateInfo()
     {
-        infoText.text = "Posição do eletrodo: " + transform.parent.InverseTransformPoint(electrodePoint.position) + "\n" +
-                        "Ponto de entrada: " + transform.parent.InverseTransformPoint(entryPoint.position);
+        infoText.text = "Eletrodo: " + transform.parent.InverseTransformPoint(electrodePoint.position) + "\n" +
+                        "Entrada: " + transform.parent.InverseTransformPoint(entryPoint.position);
     }
 
     public void SetElectrode(Vector3 electrodePosition, Vector3 entryPosition)

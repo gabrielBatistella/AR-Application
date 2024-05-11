@@ -46,8 +46,7 @@ public class ElectrodeSetter : InstructionReader
 
             aim.origin = transform.position;
             aim.direction = (fixedParent.TransformPoint(PointFromCoords(pointsCoords[1].Split(";"))) - aim.origin).normalized;
-            aimLine.SetPosition(0, transform.parent.InverseTransformPoint(aim.origin));
-            aimLine.SetPosition(1, transform.parent.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
+            aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
 
             if (Physics.Raycast(aim.origin + aim.direction * reachDistance, -aim.direction, out RaycastHit hitInfo, reachDistance, layerGrabbable))
             {
@@ -72,8 +71,7 @@ public class ElectrodeSetter : InstructionReader
 
             aim.origin = transform.position;
             aim.direction = (fixedParent.TransformPoint(PointFromCoords(pointsCoords[1].Split(";"))) - aim.origin).normalized;
-            aimLine.SetPosition(0, transform.parent.InverseTransformPoint(aim.origin));
-            aimLine.SetPosition(1, transform.parent.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
+            aimLine.SetPosition(1, transform.InverseTransformPoint(aim.origin + aim.direction * reachDistance));
         }
     }
 }
