@@ -1,0 +1,209 @@
+----- 0.2 -----
+--escuro branco--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+--luz branco--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+--escuro preto--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+--luz preto--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+
+----- 0.4 -----
+--escuro branco--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+--luz branco--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+--escuro preto--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+--luz preto--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+
+----- 0.6 -----
+--escuro branco--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+--luz branco--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+--escuro preto--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+--luz preto--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+
+----- 0.8 -----
+--escuro branco--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+--luz branco--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+--escuro preto--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+--luz preto--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+
+----- 0.8 -----
+--escuro branco--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+--luz branco--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+--escuro preto--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+--luz preto--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha
+
+----- 0.9 -----
+--escuro branco--
+mao aberta
+menu
+menu com dedao
+pinca - X
+pinca aberta
+arminha
+--luz branco--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta - X
+arminha
+--escuro preto--
+mao aberta
+menu
+menu com dedao
+pinca
+pinca aberta
+arminha - X
+--luz preto--
+mao aberta
+menu - X
+menu com dedao
+pinca
+pinca aberta
+arminha - X
+
+----- 0.95 -----
+--escuro branco--
+mao aberta
+menu
+menu com dedao
+pinca - XX
+pinca aberta - XX
+arminha
+--luz branco--
+mao aberta
+menu - X
+menu com dedao
+pinca - X
+pinca aberta - XX
+arminha
+--escuro preto--
+mao aberta
+menu - XX
+menu com dedao
+pinca - XX
+pinca aberta - X
+arminha - X
+--luz preto--
+mao aberta
+menu - XX
+menu com dedao
+pinca - XX
+pinca aberta - X
+arminha
