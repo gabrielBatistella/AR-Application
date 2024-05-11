@@ -49,9 +49,9 @@ class ObjectRotator(InstructionWriter):
                         self.holding = True
                         instruction += "Grab:" + str(round(xAvg, 2)) + ";" + str(round(yAvg, 2)) + ";" + str(round(zAvg, 2))
                     else:
-                        rollDelta = (self.xAvgInit - xAvg)/10*360
-                        pitchDelta = (self.yAvgInit - yAvg)/10*360
-                        yawDelta = (self.zAvgInit - zAvg)/10*360
+                        pitchDelta = (xAvg - self.xAvgInit)/100*360
+                        rollDelta = (yAvg -  self.yAvgInit)/100*360
+                        yawDelta = (zAvg - self.zAvgInit)/100*360
                         instruction += "Holding:" + str(round(rollDelta, 2)) + ";" + str(round(pitchDelta, 2)) + ";" + str(round(yawDelta, 2))
 
                 else:
