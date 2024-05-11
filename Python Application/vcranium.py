@@ -57,7 +57,7 @@ class VCranium(Handler):
 
         result = ""
 
-        if len(self.handInstructionWriters) > 0:
+        if any(writer.shouldExecuteInMode(initialMode) for writer in self.handInstructionWriters):
             hands = self.handDetector.findHands(frame, draw=False, flipType=False)
 
             for hand in hands:
@@ -92,7 +92,7 @@ class VCranium(Handler):
                     if instruction != "":
                         result += instruction + self.__class__.inBodyInstructionSeparator
 
-        if len(self.faceInstructionWriters) > 0:
+        if any(writer.shouldExecuteInMode(initialMode) for writer in self.faceInstructionWriters):
             faces = self.faceDetector.findFaceMesh(frame, draw=False)
 
             for face in faces:

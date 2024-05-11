@@ -2,7 +2,7 @@ import abc
 
 class InstructionWriter(abc.ABC):
    
-    beta = 0.80
+    beta = 1 - 1/1
     
     def __init__(self, inInstructionHandleValueSeparator, modeMask):
         self.inInstructionHandleValueSeparator = inInstructionHandleValueSeparator
@@ -17,4 +17,4 @@ class InstructionWriter(abc.ABC):
     
     @staticmethod
     def filterPointEWA(realPoint, previousFilteredPoint):
-        return [realPoint[i]*InstructionWriter.beta + previousFilteredPoint[i]*(1-InstructionWriter.beta) for i in range(3)]
+        return [previousFilteredPoint[i]*InstructionWriter.beta + realPoint[i]*(1-InstructionWriter.beta) for i in range(3)]

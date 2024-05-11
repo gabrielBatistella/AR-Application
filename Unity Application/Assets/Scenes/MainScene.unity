@@ -1148,7 +1148,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 244470660}
-  - component: {fileID: 244470665}
+  - component: {fileID: 244470664}
   - component: {fileID: 244470663}
   - component: {fileID: 244470659}
   - component: {fileID: 244470661}
@@ -1177,7 +1177,7 @@ MonoBehaviour:
   inInstructionHandleValueSeparator: 61
   cam: {fileID: 539792854}
   imageQuality: 75
-  maxFPS: 30
+  maxFPS: 20
   readers:
   - {fileID: 1419024927}
   - {fileID: 136087753}
@@ -1236,7 +1236,7 @@ MonoBehaviour:
   defaultServerPort: 5050
   startConnecting: 0
   connTextField: {fileID: 1038576001}
---- !u!114 &244470665
+--- !u!114 &244470664
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1711,7 +1711,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6a4030e08f47e3646885852360bedfc2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  width: 1560
+  width: 1280
   height: 720
   startActivated: 1
 --- !u!1 &563308216
@@ -5944,7 +5944,7 @@ MonoBehaviour:
   m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 1560, y: 720}
+  m_ReferenceResolution: {x: 1280, y: 720}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3

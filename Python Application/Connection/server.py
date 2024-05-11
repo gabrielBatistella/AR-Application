@@ -19,16 +19,8 @@ class Server():
         self._managerThread.daemon = True
         
         self._connectionInfoHistory = []
-        
-    def __del__(self):
-        super().__del__()
-        
-        # SO PARA TESTE
-        with open(f"Tests/test_results/latency_protocol/{self._Connector.protocol}", "w") as f:
-            for connectionInfo in self._connectionInfoHistory:
-                f.write(f"{connectionInfo[0]}, {connectionInfo[1]}\n")
-        # SO PARA TESTE
-                
+
+
 
     def run(self):
         self.start()
@@ -68,6 +60,12 @@ class Server():
             self._communication.closeCommunication()
             del self._environment
 
+            # SO PARA TESTE
+            with open(f"Tests/test_results/communication_speed/{self._Connector.protocol}.txt", "w") as f:
+                for connectionInfo in self._connectionInfoHistory:
+                    f.write(f"{connectionInfo[0]}, {connectionInfo[1]}\n")
+            # SO PARA TESTE
+
             print()
 
     def _runEnvironment(self):
@@ -79,10 +77,11 @@ class Server():
 
                 deltaT = time.time() - t
                 connectionInfo = f'{round(1/deltaT)} FPS{self._Handler.inDetailsInfoSeparator}{round((dataSize/1024**2)/deltaT, 2)} MBps' if deltaT > 0 else f'0 FPS{self._Handler.inDetailsInfoSeparator}0.00 MBps'
+                t = time.time()
+                
                 # SO PARA TESTE
                 self._connectionInfoHistory.append((round(1/deltaT), round((dataSize/1024**2)/deltaT, 2)))
                 # SO PARA TESTE
-                t = time.time()
 
                 response = connectionInfo + self._Handler.detailsBodySeparator + output
                 self._communication.sendResponse(response)

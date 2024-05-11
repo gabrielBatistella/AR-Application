@@ -4,7 +4,6 @@ import cv2 as cv
 from Connection.handler import Handler
 from Modules.handTrackingModule import HandDetector
 from Camera.cameraCalibration import CalibrationInfo
-from Writers.instructionWriter import InstructionWriter
 
 class HandlerB(Handler):
 
@@ -13,17 +12,15 @@ class HandlerB(Handler):
         self.calib = CalibrationInfo("Camera/calib_results/calculatedValues.npz")
         self.handDetector = HandDetector(maxHands=1, minDetectionCon=0.8, minTrackCon=0.5)
         
-        self.filteredPoints = {}
-        self.pointsHistory = []
+        self.betas = [1 - 1/i for i in range(1, 10+1)]
+        self.filteredPoints = {beta: None for beta in self.betas}
+        self.pointsHistory = {beta: [] for beta in self.betas}
 
     def __del__(self):
         super().__del__()
         cv.destroyAllWindows()
-        
-        with open(f"Tests/test_results/stability/stability_beta{InstructionWriter.beta}", "w") as f:
-            for point in self.pointsHistory:
-                f.write(f"{point[0]}, {point[1]}, {point[2]}\n")
-            
+
+    
 
     def operateOnData(self, data):
         frame_encoded = np.frombuffer(data, dtype=np.uint8)
@@ -60,16 +57,26 @@ class HandlerB(Handler):
             y = (-lmList[8][1] + self.calib.h/2)*px2cmRate_y
             z = lmList[8][2]*px2cmRate_z + tVec[2]
             
-            if 8 not in self.filteredPoints:
-                self.filteredPoints[8] = (x, y, z)
+            for beta in self.betas:
+                if self.filteredPoints[beta] is None:
+                    self.filteredPoints[beta] = (x, y, z)
 
-            self.filteredPoints[8] = InstructionWriter.filterPointEWA((x, y, z), self.filteredPoints[8])
-            self.pointsHistory.append(self.filteredPoints[8])
+                previousFilteredPoint = self.filteredPoints[beta]
+                realPoint = (x, y, z)
+
+                self.filteredPoints[beta] = [previousFilteredPoint[i]*beta + realPoint[i]*(1-beta) for i in range(3)]
+                self.pointsHistory[beta].append(self.filteredPoints[beta])
         
         else:
-            self.filteredPoints = {}
+            self.filteredPoints = {beta: None for beta in self.betas}
         
         cv.imshow('img', img)
+
         key = cv.waitKey(1)
+        if key == ord(' '):
+            for beta in self.betas:
+                with open(f"Tests/test_results/latency/latency_beta{round(beta, 3)}.txt", "w") as f:
+                    for point in self.pointsHistory[beta]:
+                        f.write(f"{point[0]}, {point[1]}, {point[2]}\n")
 
         return ""

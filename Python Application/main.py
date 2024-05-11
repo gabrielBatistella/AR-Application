@@ -5,10 +5,9 @@ from vcranium import VCranium
 from Camera.photor import Photor
 from Tests.handlera import HandlerA
 from Tests.handlerb import HandlerB
-from Tests.handlerapnp import HandlerAPNP
 
 def main():
-    server = Server(UDPConnector, VCranium)
+    server = Server(TCPConnector, HandlerB)
     server.run()
 
 if __name__ == '__main__' : main()
