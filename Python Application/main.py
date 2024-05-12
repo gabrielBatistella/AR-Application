@@ -7,7 +7,7 @@ from Tests.handlera import HandlerA
 from Tests.handlerb import HandlerB
 
 def main():
-    server = Server(UDPConnector, VCranium)
+    server = Server(TCPConnector, VCranium)
     server.run()
 
 if __name__ == '__main__' : main()
