@@ -43,7 +43,7 @@ class MenuHandler(InstructionWriter):
                 yAvg = (self.filteredPoints[8][1] + self.filteredPoints[12][1])/2
                 
                 #If index and middle fingers are close
-                if dist < 5:
+                if dist < 4:
                     if self.yAvgInit is None:
                         self.yAvgInit = yAvg
                     yDelta = yAvg - self.yAvgInit
@@ -63,24 +63,24 @@ class MenuHandler(InstructionWriter):
                         if xDelta < 0:
                             self.xAvgInit = xAvg
                             
-                        if xDelta > 5:
+                        if xDelta > 3:
                             self.modeCurrent = self.modeShown
                             self.menu = False
                             self.yAvgInit = None
                             self.xAvgInit = None
                             instruction += "Selected:" + str(self.modeCurrent)                        
                         else:
-                            if yDelta < -2:
+                            if yDelta < -1.5:
                                 self.modeShown = (self.modeShown - 1 ) % MenuHandler.numModes
-                                self.yAvgInit = yAvg - 2
+                                self.yAvgInit = yAvg - 1.5
                                 self.xAvgInit = xAvg
-                            if yDelta > 2:
+                            if yDelta > 1.5:
                                 self.modeShown = (self.modeShown + 1) % MenuHandler.numModes
-                                self.yAvgInit = yAvg + 2
+                                self.yAvgInit = yAvg + 1.5
                                 self.xAvgInit = xAvg
                             
                             yDelta = yAvg - self.yAvgInit
-                            percentage = (50*yDelta/2)
+                            percentage = (50*yDelta/1.5)
                             instruction += str(self.modeShown) + ";" + str(round(percentage,2))
 
                 else:
