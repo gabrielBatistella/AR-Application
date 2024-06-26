@@ -26,7 +26,7 @@ class VCranium(Handler):
     def __init__(self):
         super().__init__()
 
-        self.calib = CalibrationInfo("Camera/calib_results/calculatedValues.npz")
+        self.calib = CalibrationInfo("_calibs/_selected/calculatedValues.npz")
 
         self.handDetector = HandDetector(maxHands=2, minDetectionCon=0.8)
         self.handInstructionWriters = [

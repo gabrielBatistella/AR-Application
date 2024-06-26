@@ -37,7 +37,7 @@ class ElectrodeSetter(InstructionWriter):
                 
                 dist = math.hypot(self.filteredPoints[4][0] - self.filteredPoints[5][0], self.filteredPoints[4][1] - self.filteredPoints[5][1], self.filteredPoints[4][2] - self.filteredPoints[5][2])
 
-                if dist < 2:
+                if dist < 3:
                     if not self.spawn:
                         self.spawn = True
                         instruction += "Set:"

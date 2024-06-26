@@ -96,7 +96,7 @@ def main():
 
     print("Saving the data into one files using numpy")
     np.savez(
-        f"calib_results/calculatedValues.npz",
+        "calib_results/calculatedValues.npz",
         camMatrix = cameraMatrix,
         distCoef = dist,
         rVector = rvecs,
