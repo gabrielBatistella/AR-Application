@@ -11,7 +11,7 @@ A aplicação possibilita:
 
 ## :wrench: Tecnologias utilizadas
 * Python 3.10;
-* Unity 2022.3.9f1
+* Unity 2022.3.9f1.
 
 ## :rocket: Rodando a aplicação
 Para executar a aplicação, é necessário iniciar dois processos distintos, o cliente e o servidor.
@@ -36,11 +36,6 @@ python main.py
         </sub>
       </a>
     </td>
-  </tr>
-</table>
-
-<table>
-  <tr>
     <td align="center">
       <a href="https://www.linkedin.com/in/henrique-chen/">
         <img src="https://media.licdn.com/dms/image/D4E03AQHlSA3MoIc6SQ/profile-displayphoto-shrink_400_400/0/1679534909312?e=1724889600&v=beta&t=dwwsGCLwMb9lit8hayg2pooH-uogGNYvXyl0RhZRd_Y" width="100px;" alt="Foto de Henrique Chen no Linkedin"/><br>
