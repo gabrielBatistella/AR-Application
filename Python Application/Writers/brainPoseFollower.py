@@ -35,10 +35,14 @@ class BrainPoseFollower(InstructionWriter):
             
             rotX = -angles[2]
             rotY = (angles[1] - 90)
-            rotZ = -(-angles[0] + 180)
+            rotZ = (angles[0] - 180)
             
             if "ang" not in self.filteredPoints:
                 self.filteredPoints["ang"] = (rotX, rotY, rotZ)
+
+            rotX = (rotX + 360) if abs(self.filteredPoints["ang"][0] - (rotX + 360)) < abs(self.filteredPoints["ang"][0] - (rotX)) else (rotX - 360) if abs(self.filteredPoints["ang"][0] - (rotX - 360)) < abs(self.filteredPoints["ang"][0] - (rotX)) else rotX
+            rotY = (rotY + 360) if abs(self.filteredPoints["ang"][1] - (rotY + 360)) < abs(self.filteredPoints["ang"][1] - (rotY)) else (rotY - 360) if abs(self.filteredPoints["ang"][1] - (rotY - 360)) < abs(self.filteredPoints["ang"][1] - (rotY)) else rotY
+            rotZ = (rotZ + 360) if abs(self.filteredPoints["ang"][2] - (rotZ + 360)) < abs(self.filteredPoints["ang"][2] - (rotZ)) else (rotZ - 360) if abs(self.filteredPoints["ang"][2] - (rotZ - 360)) < abs(self.filteredPoints["ang"][2] - (rotZ)) else rotZ
                 
             self.filteredPoints["ang"] = InstructionWriter.filterPointEWA((rotX, rotY, rotZ), self.filteredPoints["ang"])
             

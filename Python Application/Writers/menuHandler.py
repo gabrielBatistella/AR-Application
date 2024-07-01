@@ -71,7 +71,7 @@ class MenuHandler(InstructionWriter):
                             instruction += "Selected:" + str(self.modeCurrent)                        
                         else:
                             if yDelta < -1.5:
-                                self.modeShown = (self.modeShown - 1 ) % MenuHandler.numModes
+                                self.modeShown = (self.modeShown - 1) % MenuHandler.numModes
                                 self.yAvgInit = yAvg - 1.5
                                 self.xAvgInit = xAvg
                             if yDelta > 1.5:
